@@ -24,6 +24,7 @@ optdepends=(
 makedepends=(
     cmake extra-cmake-modules
     wayland-protocols plasma-wayland-protocols
+    kauth kidletime ksvg
 )
 provides=('kwin')
 conflicts=('kwin')
