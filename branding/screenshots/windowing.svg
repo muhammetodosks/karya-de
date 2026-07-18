@@ -1,0 +1,89 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" font-family="Noto Sans, DejaVu Sans, sans-serif">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#1a1a2e"/>
+      <stop offset="100%" stop-color="#0f3460"/>
+    </linearGradient>
+    <linearGradient id="header" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#4a90d9"/>
+      <stop offset="100%" stop-color="#6c5ce7"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="800" height="500" fill="url(#bg)" rx="12"/>
+
+  <!-- Header -->
+  <rect x="0" y="0" width="800" height="48" fill="rgba(0,0,0,0.3)"/>
+  <text x="20" y="30" fill="white" font-size="14" font-weight="bold">KWin Pencere Yöneticisi — Auto Tiling</text>
+
+  <!-- Master-Stack Layout Preview -->
+  <rect x="30" y="65" width="350" height="200" rx="8" fill="rgba(74,144,217,0.15)" stroke="#4a90d9" stroke-width="1"/>
+  <!-- Main window (55%) -->
+  <rect x="40" y="75" width="185" height="180" rx="6" fill="rgba(74,144,217,0.25)" stroke="#4a90d9" stroke-width="1.5"/>
+  <rect x="40" y="75" width="185" height="24" rx="6" fill="#4a90d9" opacity="0.4"/>
+  <circle cx="48" cy="87" r="4" fill="#e74c3c"/>
+  <circle cx="60" cy="87" r="4" fill="#f1c40f"/>
+  <circle cx="72" cy="87" r="4" fill="#2ecc71"/>
+  <text x="50" y="115" fill="rgba(255,255,255,0.7)" font-size="11">Ana Pencere (%55)</text>
+  <!-- Stacked windows -->
+  <rect x="235" y="75" width="135" height="55" rx="4" fill="rgba(108,92,231,0.2)" stroke="#6c5ce7" stroke-width="1"/>
+  <text x="250" y="95" fill="rgba(255,255,255,0.6)" font-size="10">Pencere 2</text>
+  <rect x="235" y="138" width="135" height="55" rx="4" fill="rgba(108,92,231,0.2)" stroke="#6c5ce7" stroke-width="1"/>
+  <text x="250" y="158" fill="rgba(255,255,255,0.6)" font-size="10">Pencere 3</text>
+  <rect x="235" y="200" width="135" height="55" rx="4" fill="rgba(108,92,231,0.2)" stroke="#6c5ce7" stroke-width="1"/>
+  <text x="250" y="220" fill="rgba(255,255,255,0.6)" font-size="10">Pencere 4</text>
+
+  <text x="40" y="285" fill="#4a90d9" font-size="13" font-weight="bold">Master-Stack</text>
+  <text x="40" y="300" fill="rgba(255,255,255,0.5)" font-size="11">Meta+T — Ana + yığılmış pencereler</text>
+
+  <!-- Split Layout Preview -->
+  <rect x="420" y="65" width="350" height="200" rx="8" fill="rgba(74,144,217,0.15)" stroke="#4a90d9" stroke-width="1"/>
+  <rect x="430" y="75" width="155" height="180" rx="6" fill="rgba(74,144,217,0.25)" stroke="#4a90d9" stroke-width="1.5"/>
+  <rect x="430" y="75" width="155" height="24" rx="6" fill="#4a90d9" opacity="0.4"/>
+  <circle cx="438" cy="87" r="4" fill="#e74c3c"/>
+  <circle cx="450" cy="87" r="4" fill="#f1c40f"/>
+  <circle cx="462" cy="87" r="4" fill="#2ecc71"/>
+  <text x="440" y="115" fill="rgba(255,255,255,0.7)" font-size="11">Pencere 1</text>
+  <rect x="600" y="75" width="155" height="180" rx="6" fill="rgba(108,92,231,0.2)" stroke="#6c5ce7" stroke-width="1.5"/>
+  <rect x="600" y="75" width="155" height="24" rx="6" fill="#6c5ce7" opacity="0.4"/>
+  <circle cx="608" cy="87" r="4" fill="#e74c3c"/>
+  <circle cx="620" cy="87" r="4" fill="#f1c40f"/>
+  <circle cx="632" cy="87" r="4" fill="#2ecc71"/>
+  <text x="610" y="115" fill="rgba(255,255,255,0.7)" font-size="11">Pencere 2</text>
+
+  <text x="430" y="285" fill="#6c5ce7" font-size="13" font-weight="bold">Split</text>
+  <text x="430" y="300" fill="rgba(255,255,255,0.5)" font-size="11">Meta+Shift+T — iki eşit parça</text>
+
+  <!-- Grid Layout -->
+  <rect x="30" y="320" width="350" height="160" rx="8" fill="rgba(74,144,217,0.15)" stroke="#4a90d9" stroke-width="1"/>
+  <rect x="40" y="330" width="155" height="65" rx="4" fill="rgba(74,144,217,0.2)" stroke="#4a90d9" stroke-width="1"/>
+  <text x="90" y="365" fill="rgba(255,255,255,0.6)" font-size="10">P1</text>
+  <rect x="205" y="330" width="155" height="65" rx="4" fill="rgba(108,92,231,0.2)" stroke="#6c5ce7" stroke-width="1"/>
+  <text x="255" y="365" fill="rgba(255,255,255,0.6)" font-size="10">P2</text>
+  <rect x="40" y="405" width="155" height="65" rx="4" fill="rgba(108,92,231,0.2)" stroke="#6c5ce7" stroke-width="1"/>
+  <text x="90" y="440" fill="rgba(255,255,255,0.6)" font-size="10">P3</text>
+  <rect x="205" y="405" width="155" height="65" rx="4" fill="rgba(74,144,217,0.2)" stroke="#4a90d9" stroke-width="1"/>
+  <text x="255" y="440" fill="rgba(255,255,255,0.6)" font-size="10">P4</text>
+
+  <text x="40" y="500" fill="#4a90d9" font-size="13" font-weight="bold">Grid</text>
+  <text x="40" y="515" fill="rgba(255,255,255,0.5)" font-size="11">Eşit grid düzeni</text>
+
+  <!-- Monocle Layout -->
+  <rect x="420" y="320" width="350" height="160" rx="8" fill="rgba(74,144,217,0.15)" stroke="#4a90d9" stroke-width="1"/>
+  <rect x="430" y="330" width="330" height="140" rx="6" fill="rgba(74,144,217,0.2)" stroke="#4a90d9" stroke-width="2"/>
+  <rect x="430" y="330" width="330" height="24" rx="6" fill="#4a90d9" opacity="0.4"/>
+  <circle cx="438" cy="342" r="4" fill="#e74c3c"/>
+  <circle cx="450" cy="342" r="4" fill="#f1c40f"/>
+  <circle cx="462" cy="342" r="4" fill="#2ecc71"/>
+  <text x="540" y="410" fill="rgba(255,255,255,0.6)" font-size="12">Aktif Pencere (Tam Ekran)</text>
+
+  <text x="430" y="500" fill="#e74c3c" font-size="13" font-weight="bold">Monocle</text>
+  <text x="430" y="515" fill="rgba(255,255,255,0.5)" font-size="11">Tam ekran, gezinti ile</text>
+
+  <!-- Glassmorphism indicator -->
+  <rect x="15" y="540" width="770" height="35" rx="8" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
+  <text x="20" y="562" fill="rgba(255,255,255,0.6)" font-size="11">
+     Glassmorphism Efekti: C++ (derlenmiş) + JS script — BlurRadius: 12px, Opaklık: 0.75
+  </text>
+</svg>

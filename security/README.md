@@ -1,6 +1,6 @@
-# Karya DE Guvenlik Sistemi
+# Karya DE Güvenlik Sistemi
 
-## Katmanli Guvenlik Mimarisi
+## Katmanli Güvenlik Mimarisi
 
 ```
 +--------------------------------------------------+
@@ -9,7 +9,7 @@
 |  - karya-oobe: OOBE erisim kisitlamasi           |
 |  - karya-widgets: Widget ag/dosya kisitlamasi    |
 |  - kwin-karya: WM erisim kisitlamasi             |
-|  - karya-drivers: Surucu yonetimi kisitlamasi    |
+|  - karya-drivers: Surucu yönetimi kisitlamasi    |
 +--------------------------------------------------+
 |                 SISTEM KATMANI                    |
 |  Sysctl hardening                                 |
@@ -34,13 +34,13 @@
 | `karya-oobe` | OOBE sihirbazi | Sadece /etc/karya, pacman, bash |
 | `karya-widgets` | Hava/Namaz/Haber/Sistem | Ag, /proc okuma, SSL |
 | `kwin-karya` | Window manager | DRM, X11, GPU, input |
-| `karya-drivers` | Surucu yonetimi | Pacman, modprobe, Xorg |
+| `karya-drivers` | Surucu yönetimi | Pacman, modprobe, Xorg |
 
 ---
 
-## 2. Guvenlik Duyurulari
+## 2. Güvenlik Duyurulari
 
-Guvenlik aciklari icin: `security@karya-de.org`
+Güvenlik açıklari icin: `security@karya-de.org`
 
 - **CVSS 9.0+**: 24 saat icinde yama
 - **CVSS 7.0-8.9**: 72 saat icinde yama

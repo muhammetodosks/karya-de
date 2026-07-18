@@ -1,13 +1,13 @@
-# Karya DE Guvenlik Politikasi
+# Karya DE Güvenlik Politikasi
 
-## Versiyon: 1.0.0 | Son Guncelleme: 2026
+## Versiyön: 1.0.0 | Son Guncelleme: 2026
 
 ---
 
-## 1. Giris
+## 1. Giriş
 
-Karya DE, guvenlik odakli tasarlanmis bir masaustu ortamidir.
-Bu belge, guvenlik politikalari, tehdit modeli, ve raporlama sureclerini aciklar.
+Karya DE, guvenlik odakli tasarlanmis bir masaüstü ortamidir.
+Bu belge, guvenlik politikalari, tehdit modeli, ve raporlama sureclerini açıklar.
 
 ---
 
@@ -18,24 +18,24 @@ Bu belge, guvenlik politikalari, tehdit modeli, ve raporlama sureclerini aciklar
 | Seviye | Kabiliyet | Karsi Onlem |
 |--------|-----------|-------------|
 | D1 | Script kiddie | Temel sysctl, AppArmor |
-| D2 | Yetkisiz yerel kullanici | AppArmor profilleri |
-| D3 | Ag tabanli saldirgan | Ag sysctl, firewall |
-| D4 | Kernel exploit | Boot mitigasyonlari |
-| D5 | Fiziksel erisim | IOMMU, disk sifreleme |
+| D2 | Yetkisiz yerel kullanıcı | AppArmor profilleri |
+| D3 | Ag tabanlı saldirgan | Ag sysctl, firewall |
+| D4 | Kernel exploit | Boot mitigasyönlari |
+| D5 | Fiziksel erisim | IOMMU, disk şifreleme |
 
 ### 2.2. Varsayilan Guven Duzeyi
 
-| Bilesen | Guven Seviyesi | Aciklama |
+| Bilesen | Guven Seviyesi | Açıklama |
 |---------|----------------|----------|
 | KWin (kwin-karya) | Trusted | Window manager |
 | OOBE | Semi-trusted | Sudo erisimi, AppArmor |
 | Widget'lar | Restricted | Ag ve dosya erisimi kisitli |
 | Driver Scripts | Semi-trusted | Pacman erisimi |
-| SDDM | Trusted | PAM oturum yoneticisi |
+| SDDM | Trusted | PAM oturum yöneticisi |
 
 ---
 
-## 3. Guvenlik Mimarisi
+## 3. Güvenlik Mimarisi
 
 ```
 KATMAN 4: UYGULAMA
@@ -67,11 +67,11 @@ KATMAN 1: DONANIM
 
 ---
 
-## 5. Guvenlik Duyurulari
+## 5. Güvenlik Duyurulari
 
 ### 5.1. Raporlama
 
-Guvenlik aciklari: **security@karya-de.org**
+Güvenlik açıklari: **security@karya-de.org**
 
 ### 5.2. Cozum Sureleri
 
@@ -88,13 +88,13 @@ Guvenlik aciklari: **security@karya-de.org**
 
 | Log | Konum | Icerik |
 |-----|-------|--------|
-| OOBE kurulum | `/var/log/karya-oobe.log` | Kurulum adimlari |
-| Surucu kurulum | `/var/log/karya-driver-install.log` | Surucu islemleri |
+| OOBE kurulum | `/var/log/karya-oobe.log` | Kurulum adımlari |
+| Surucu kurulum | `/var/log/karya-driver-install.log` | Surucu işlemleri |
 | AppArmor | `/var/log/audit/audit.log` | AppArmor ihlalleri |
 
 ---
 
-## 7. Guvenlik Ekibi
+## 7. Güvenlik Ekibi
 
 | Rol | Iletisim |
 |-----|----------|
@@ -102,4 +102,4 @@ Guvenlik aciklari: **security@karya-de.org**
 
 ---
 
-*Karya DE - Guvenlik odakli, Turk yapimi masaustu ortami.*
+*Karya DE - Güvenlik odakli, Türk yapimi masaüstü ortami.*
