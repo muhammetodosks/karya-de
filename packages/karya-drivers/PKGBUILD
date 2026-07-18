@@ -21,8 +21,10 @@ source=(
     "hardware/profiles/nvidia.conf"
     "hardware/profiles/amd.conf"
     "hardware/profiles/intel.conf"
+    "security/sentinel/karya-sentinel.sh"
+    "security/sentinel/karya-sentinel.conf"
 )
-sha256sums=('SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP')
+sha256sums=('SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP')
 
 package() {
     install -dm755 "$pkgdir/usr/lib/karya/scripts"
@@ -71,4 +73,18 @@ options i915 fastboot=1
 IEOF
 
     install -dm755 "$pkgdir/etc/karya/hardware"
+
+    # Karya Sentinel
+    install -Dm755 "$srcdir/../../security/sentinel/karya-sentinel.sh" \
+        "$pkgdir/usr/lib/karya/scripts/karya-sentinel.sh"
+    install -Dm644 "$srcdir/../../security/sentinel/karya-sentinel.conf" \
+        "$pkgdir/etc/karya/sentinel.conf"
+
+    # Runit service
+    install -dm755 "$pkgdir/etc/runit/sv/karya-sentinel"
+    cat > "$pkgdir/etc/runit/sv/karya-sentinel/run" << 'RUNIT'
+#!/usr/bin/env bash
+exec /usr/lib/karya/scripts/karya-sentinel.sh start
+RUNIT
+    chmod +x "$pkgdir/etc/runit/sv/karya-sentinel/run"
 }

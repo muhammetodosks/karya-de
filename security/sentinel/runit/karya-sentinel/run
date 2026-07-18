@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+# runit servisi icin Karya Sentinel
+exec /usr/lib/karya/scripts/karya-sentinel.sh start
