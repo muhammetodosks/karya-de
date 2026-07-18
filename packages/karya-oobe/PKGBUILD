@@ -19,7 +19,6 @@ package() {
 
     install -dm755 "$pkgdir/usr/lib/karya/oobe"
     cp -r src/services "$pkgdir/usr/lib/karya/oobe/"
-    cp -r src/pages "$pkgdir/usr/lib/karya/oobe/"
 
     install -dm755 "$pkgdir/etc/xdg/autostart"
     cat > "$pkgdir/etc/xdg/autostart/karya-first-run.desktop" << 'EOF'

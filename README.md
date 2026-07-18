@@ -25,13 +25,9 @@ Qt6 ve KDE teknolojileri uzerine insa edilmistir ancak **KDE Plasma degildir**. 
 |---|---|---|
 | ![Masaustu](branding/screenshots/desktop-overview.svg) | ![OOBE](branding/screenshots/oobe-wizard.svg) | ![SDDM](branding/screenshots/sddm-login.svg) |
 
-| Widget Koleksiyonu | Kurulum Akisi | Kernel Panic (Intel Bloklama) |
-|---|---|---|
-| ![Widgets](branding/screenshots/widgets-showcase.svg) | ![Kurulum](branding/screenshots/installation-flow.svg) | ![Kernel Panic](branding/screenshots/kernel-panic-intel.svg) |
-
-| Guvenlik Paneli | Firewall Yapilandirmasi | AppArmor Profilleri |
-|---|---|---|
-| ![Security](branding/screenshots/security-dashboard.svg) | ![Firewall](branding/screenshots/firewall-config.svg) | ![AppArmor](branding/screenshots/apparmor-profiles.svg) |
+| Widget Koleksiyonu | Kurulum Akisi |
+|---|---|
+| ![Widgets](branding/screenshots/widgets-showcase.svg) | ![Kurulum](branding/screenshots/installation-flow.svg) |
 
 ---
 
@@ -41,10 +37,7 @@ Qt6 ve KDE teknolojileri uzerine insa edilmistir ancak **KDE Plasma degildir**. 
 - [Ozellikler](#ozellikler)
 - [Donanim Destegi](#donanim-destegi)
 - [Intel Neden Desteklenmiyor](#intel-neden-desteklenmiyor)
-- [Kernel Seviyesinde Intel Bloklama](#kernel-seviyesinde-intel-bloklama)
-- [Guvenlik Altyapisi](#guvenlik-altyapisi)
-- [Kernel Sertlestirme](#kernel-sertlestirme)
-- [AppArmor Profilleri](#apparmor-profilleri)
+- [Guvenlik](#guvenlik)
 - [Kurulum Adimlari](#kurulum-adimlari)
 - [PKGBUILD ile Kurulum](#pkgbuild-ile-kurulum)
 - [Kaynak Koddan Derleme](#kaynak-koddan-derleme)
@@ -118,14 +111,10 @@ Karya DE, baslangictan itibaren Turk kullanicilar icin tasarlanmis bir masaustu 
 - Turkce arayuz
 - Kapatma/Yeniden baslat butonlari
 
-### Kernel Seviyesinde Guvenlik
-- **Karya Security LKM** - Linux Security Module ile kernel seviyesinde guvenlik
-- **Intel GPU Blocker DKMS** - PCI probe ile Intel GPU tespitinde kernel panic
-- **Sysctl Hardening** - ASLR, kptr_restrict, dmesg_restrict, ag korumalari
-- **Boot Parametreleri** - Meltdown/Spectre/MDS/TAA mitigasyonlari + lockdown
-- **AppArmor Profilleri** - OOBE, widget, KWin, surucu profilleri
-- **Modprobe Blacklist** - Intel modulleri (/bin/false) + guvenlik acigi tasiyan moduller
-- **Initramfs Hook** - Boot oncesi Intel GPU taramasi ve bloklama
+### Guvenlik
+- **Sysctl Hardening** - ASLR, kptr_restrict, dmesg_restrict ag korumalari
+- **AppArmor Profilleri** - OOBE, script, surucu profilleri
+- **Boot Parametreleri** - Meltdown/Spectre/MDS/TAA mitigasyonlari
 
 ### Sistem
 | Ozellik | Deger |
@@ -147,7 +136,7 @@ Karya DE, baslangictan itibaren Turk kullanicilar icin tasarlanmis bir masaustu 
 | **NVIDIA** (GTX 600- / eski) | Sinirli | nouveau | Orta |
 | **AMD** (GCN 2+) | Tam destek | amdgpu (acik kaynak) | Cok iyi |
 | **AMD** (GCN 1 / eski) | Sinirli | radeon | Orta |
-| **Intel** | Desteklenmiyor | - | - |
+| **Intel** | Resmi destek yok (deneysel) | modesetting/i915 | Dusuk |
 | **Sanal Makine** | Tam destek | vmware/virtio | Orta |
 
 ### NVIDIA Yapilandirmasi
@@ -202,322 +191,33 @@ Intel entegre GPU'lari resmi olarak **desteklenmemektedir**. Bunun nedenleri:
 
 ---
 
-## Kernel Seviyesinde Intel Bloklama
+## Guvenlik
 
-Karya DE, Intel GPU'lari sadece yazilim seviyesinde degil, **kernel seviyesinde** bloklar. 4 katmanli bloklama sistemi sayesinde Intel GPU tespit edildiginde sistem baslamaz.
+Karya DE, asagidaki guvenlik onlemleri ile gelir:
 
-### Katmanli Bloklama Mimarisi
+- **Sysctl sertlestirme** - ASLR, kptr_restrict, dmesg_restrict, SYN flood korumasi
+- **AppArmor profilleri** - OOBE, widget, KWin, surucu profilleri ile erisim kisitlamasi
+- **CPU mitigasyonlari** - Meltdown (pti), Spectre (ssbd), MDS, TAA, MMIO korumalari
 
-```
-BASLANGIC
-    |
-    v
-[1] INITRAMFS HOOK (boot oncesi)
-    |-- PCI veriyolu taramasi
-    |-- Vendor 0x8086 + Class 0x0300/0x0380 tespiti
-    |-- 10 saniye bekleme + kirmizi hata mesaji
-    |-- panic() ile boot durdurma
-    |
-    v
-[2] DKMS KERNEL MODULU (karya-intel-block.ko)
-    |-- PCI probe callback kaydi
-    |-- Intel GPU her eklendiginde tetiklenir
-    |-- 5 saniye bekleme (goruntu icin)
-    |-- pr_emerg() + panic()
-    |
-    v
-[3] MODPROBE BLACKLIST
-    |-- i915 -> /bin/false
-    |-- intel_agp -> /bin/false
-    |-- 20+ Intel modulu engellendi
-    |-- Tum Intel donanim modulleri sessiz basarisizliga ugratilir
-    |
-    v
-[4] LSM KERNEL MODULU (karya-security.ko)
-    |-- Ayri bir PCI taramasi
-    |-- /tmp'den exec engelleme
-    |-- /proc/karya/sec/ uzerinden izleme
-    |-- KWin calismadan once kontrol
-    |
-    v
-[TAM BLOKLAMA - Intel GPU calisamaz]
-```
-
-### Kaynak Kod: Kernel Modulu
-
-```c
-// kernel/intel-blocker/dkms/karya-intel-block.c
-#include <linux/pci.h>
-#include <linux/reboot.h>
-
-static int karya_intel_probe(struct pci_dev *pdev,
-                              const struct pci_device_id *ent)
-{
-    pr_emerg("Karya DE Intel Blocker: Intel GPU algilandi\n");
-    pr_emerg("Vendor: 0x%04lx, Device: 0x%04lx\n",
-             pdev->vendor, pdev->device);
-    ssleep(5);
-
-    panic("Karya DE: Intel GPU desteklenmiyor - "
-          "Sistem guvenlik nedeniyle durduruldu");
-    return 0;
-}
-
-static struct pci_driver karya_intel_blocker_driver = {
-    .name     = "karya_intel_blocker",
-    .id_table = intel_gpu_ids,  // PCI_VENDOR_ID_INTEL
-    .probe    = karya_intel_probe,
-};
-```
-
-### Initramfs Hook
-
-```bash
-# /etc/mkinitcpio.conf
-# (udev'den ONCE calisir)
-HOOKS=(... karya-intel-block udev ...)
-
-# Hook: PCI taramasi yapar, Intel GPU bulursa panic()
-# Atlatma yontemi: YOK (KARYA_SKIP_INTEL_CHECK ise yaramaz)
-```
-
-### Modprobe Blacklist (20+ Intel modulu)
-
-```bash
-install i915 /bin/false
-install intel_agp /bin/false
-install intel_gtt /bin/false
-install mei /bin/false
-install mei_me /bin/false
-# ... tum Intel donanim modulleri
-blacklist i915
-blacklist intel_agp
-blacklist intel_gtt
-blacklist mei
-blacklist mei_me
-```
-
-### Kernel Boot Parametreleri
-
-```bash
-# /etc/default/grub icine eklenir
-modprobe.blacklist=i915
-modprobe.blacklist=intel_agp
-modprobe.blacklist=intel_gtt
-modprobe.blacklist=mei
-modprobe.blacklist=mei_me
-```
-
-### Bypass Korumasi
-
-| Bypass Yontemi | Koruma Seviyesi | Aciklama |
-|----------------|-----------------|----------|
-| KARYA_SKIP_INTEL_CHECK=1 | Initramfs gecersiz | Sadece initramfs hook'u hedefler, DKMS module yine bloklar |
-| allow_ignore=1 | Varsayilan kapali | Parametre degistirilse bile bloklama surer |
-| modprobe blacklist silme | Korumali degil | Fiziksel erisim gerektirir |
-| Farkli kernel | Korumali degil | Karya DE kernel disinda calismaz |
-
----
-
-## Guvenlik Altyapisi
-
-Karya DE, 6 katmanli guvenlik mimarisi ile gelir:
-
-```
-KATMAN 6: UYGULAMA
-  - AppArmor profilleri (oobe, widgets, kwin, drivers)
-  - SELinux politikasi (karya.te)
-  - SUID degisim loglamasi
-
-KATMAN 5: SISTEM
-  - Sysctl hardening (10 kategori, 40+ ayar)
-  - Core dump kisitlamasi
-  - Dosya butunlugu korumasi
-
-KATMAN 4: KERNEL LSM MODULU
-  - karya-security.ko
-  - /tmp'den exec engelleme
-  - Intel GPU bloklama (yedek)
-  - ProcFS izleme (/proc/karya/sec/)
-
-KATMAN 3: BOOT PARAMETRELERI
-  - CPU mitigations (Meltdown, Spectre v2/v4, MDS, TAA, MMIO)
-  - Lockdown mode (confidentiality)
-  - Module signing enforced
-  - IOMMU forced
-  - debugfs kapali, vsyscall=none
-
-KATMAN 2: INTEL BLOKLAMA
-  - Initramfs hook (boot oncesi)
-  - DKMS kernel module (panic)
-  - Modprobe blacklist (/bin/false)
-  - 20+ Intel modulu engelli
-
-KATMAN 1: DONANIM
-  - IOMMU zorunlu
-  - Thunderbolt kapali
-  - FireWire kapali
-  - USB storage opsiyonel
-```
-
-### Guvenlik Skoru
-
-Karya DE, `karya-harden.sh` scripti ile 12 maddelik guvenlik dogrulamasi yapar:
-
-```bash
-# Calistirma
-sudo bash hardware/scripts/karya-harden.sh
-
-# Cikti ornegi:
-============================================
-  Karya DE Guvenlik Dogrulama
-============================================
-  [OK] Kernel security modulu yuklu
-  [OK] Intel bloklama modulu yuklu
-  [OK] ASLR tam (randomize_va_space=2)
-  [OK] kptr_restrict tam
-  [OK] dmesg kisitli
-  [OK] kexec kapali
-  [OK] SYN cookies aktif
-  [OK] ICMP redirect kapali
-  [OK] AppArmor: 4 Karya profili yuklu
-  [OK] BPF JIT kapali
-  [OK] User namespaces kapali
-  [OK] SUID core dump kapali
-============================================
-  Skor: 12/12
-  DURUM: TAM GUVENLIK - Tum kontroller gecti
-============================================
-```
-
----
-
-## Kernel Sertlestirme
-
-### Boot Parametreleri (CPU Guvenlik Aciklari)
-
-```bash
-# Meltdown (KAISER)
-pti=on
-
-# Kernel Page Table Isolation
-kpti=1
-
-# Spectre v4 (Speculative Store Bypass)
-ssbd=force
-
-# Return Stack Overflow
-srso=on
-
-# Retbleed (AMD/Intel)
-retbleed=auto
-
-# L1 Terminal Fault
-l1tf=full
-
-# Microarchitectural Data Sampling (ZombieLoad)
-mds=full
-
-# TSX Async Abort
-tsx_async_abort=full
-
-# MMIO Stale Data
-mmio_stale_data=full
-
-# Kernel Lockdown
-lockdown=confidentiality
-
-# Module Signing
-module.sig_enforce=1
-
-# IOMMU
-iommu=force
-intel_iommu=on
-amd_iommu=on
-```
-
-### Sysctl Hardening
-
-```ini
-# /etc/sysctl.d/90-karya-hardening.conf
-
-# Bellek
-kernel.randomize_va_space = 2    # Tam ASLR
-kernel.kptr_restrict = 2         # Kernel pointer gizle
-kernel.dmesg_restrict = 1        # dmesg kisitla
-kernel.kexec_load_disabled = 1   # Kexec kapat
-user.max_user_namespaces = 0     # User namespace kapat
-
-# Ag
-net.ipv4.tcp_syncookies = 1      # SYN flood
-net.ipv4.conf.all.rp_filter = 1  # IP spoofing
-net.ipv4.conf.all.accept_redirects = 0  # ICMP redirect
-net.ipv4.conf.all.log_martians = 1      # Martian log
-net.ipv4.tcp_timestamps = 0      # TCP timestamp kapat
-
-# Core dump
-fs.suid_dumpable = 0
-```
-
-### Kernel Module (karya-security.ko)
-
-```bash
-# ProcFS arabirimi
-cat /proc/karya/sec/status
-cat /proc/karya/sec/version
-cat /proc/karya/sec/violations
-```
-
-### Bloklanan Moduleler
-
-```bash
-# Intel GPU (tamamen)
-i915, intel_agp, intel_gtt, mei, mei_me
-
-# Guvenlik acigi tasiyan
-usb_storage, bluetooth, firewire_ohci, thunderbolt
-```
-
----
-
-## AppArmor Profilleri
-
-Karya DE, 4 AppArmor profili ile gelir:
-
-| Profil | Dosya | Kisitlamalar |
-|--------|-------|--------------|
-| Karya OOBE | `security/apparmor/karya-oobe` | /etc/karya okuma/yazma, pacman, bash |
-| Karya Widgets | `security/apparmor/karya-widgets` | Ag, /proc okuma, SSL sertifikalari |
-| KWin Karya | `security/apparmor/kwin-karya` | DRM, X11 soket, GPU, input |
-| Karya Drivers | `security/apparmor/karya-drivers` | Pacman, modprobe, Xorg config |
+| Guvenlik Katmani | Aciklama |
+|-----------------|----------|
+| AppArmor | OOBE, widget, KWin ve surucu profilleri |
+| Sysctl | ASLR, ag korumalari, core dump kisitlamasi |
+| CPU | Spekulatif saldiri mitigasyonlari |
+| IOMMU | Zorunlu IOMMU ile DMA korumasi |
 
 Kurulum:
 ```bash
+# AppArmor profilleri
 sudo cp security/apparmor/* /etc/apparmor.d/
-sudo apparmor_parser -r /etc/apparmor.d/karya-oobe
-sudo apparmor_parser -r /etc/apparmor.d/karya-widgets
-sudo apparmor_parser -r /etc/apparmor.d/kwin-karya
-sudo apparmor_parser -r /etc/apparmor.d/karya-drivers
+sudo apparmor_parser -a /etc/apparmor.d/karya-oobe
+sudo apparmor_parser -a /etc/apparmor.d/karya-scripts
+sudo apparmor_parser -a /etc/apparmor.d/karya-drivers
+
+# Sysctl hardening
+sudo cp security/sysctl/99-karya-security.conf /etc/sysctl.d/
+sudo sysctl -p /etc/sysctl.d/99-karya-security.conf
 ```
-
----
-
-## Sertlestirme Scripti
-
-```bash
-# Tum guvenlik katmanlarini tek komutla uygula
-sudo bash hardware/scripts/karya-harden.sh
-```
-
-Bu script:
-1. Kernel guvenlik modulunu kurar (DKMS)
-2. Intel bloklama modulunu kurar (DKMS)
-3. Sysctl hardening uygular
-4. Modprobe blacklist uygular
-5. AppArmor profillerini kurar
-6. Boot parametrelerini gunceller (GRUB)
-7. Initramfs hook kurar
-8. Guvenlik dogrulamasi yapar (12 test)
 
 ---
 
@@ -672,8 +372,8 @@ Plasmoid.title: "Karya Hava"
 - Tarih gosterimi
 
 ### Karya Haber
-- 10 haber basligi, 5 kategori
-- Kategori filtreleme (Gundem, Ekonomi, Teknoloji, Spor, Bilim)
+- 10 haber basligi, 8 kategori
+- Kategori filtreleme (Gundem, Ekonomi, Hava, Teknoloji, Spor, Egitim, Bilim, Turizm)
 - Renk kodlu kategori gostergeleri
 - Kaynak ve saat bilgisi
 - Habere tiklayinca tarayicida acma
@@ -890,10 +590,8 @@ sudo bash /usr/lib/karya/scripts/install-drivers.sh nvidia
 # AMD
 sudo bash /usr/lib/karya/scripts/install-drivers.sh amd
 
-# Intel (BLOKLANDI - calismaz)
+# Intel (deneysel - resmi destek yok)
 sudo bash /usr/lib/karya/scripts/install-drivers.sh intel
-# Not: Intel GPU bloklama sistemi aktif oldugu icin
-# bu komut hata verecek ve kurulumu reddedecektir.
 
 # VM
 sudo bash /usr/lib/karya/scripts/install-drivers.sh vm
@@ -967,16 +665,10 @@ karya-de/
 ├── kwin-effects/               # Ozel KWin efektleri
 │   ├── karya-glassmorphism/    # C++ cam efekti
 │   └── scripts/                # JS script efekti
-├── kernel/                     # KERNEL SEVIYESINDE GUVENLIK
-│   ├── intel-blocker/          # Intel GPU bloklama sistemi
-│   │   ├── dkms/               # DKMS kernel modulu (karya-intel-block.ko)
-│   │   └── initcpio/           # Initramfs hook (boot oncesi bloklama)
-│   ├── hardening/              # Kernel sertlestirme
-│   │   ├── modprobe.d/         # Module blacklist (20+ Intel modulu)
-│   │   ├── 90-karya-hardening.conf    # Sysctl ayarlari
-│   │   └── 90-karya-kernel-params.conf # Boot parametreleri
-│   └── modules/                # LSM kernel modulu
-│       └── karya-security.c    # Kernel seviyesinde guvenlik
+├── security/                   # GUVENLIK POLITIKALARI
+│   ├── apparmor/               # AppArmor profilleri (4 adet)
+│   ├── sysctl/                 # Sysctl guvenlik ayarlari
+│   └── selinux/                # SELinux politika dosyasi
 ├── shell/                      # Yerel yapilandirma
 │   ├── layouts/                # Panel/dock layout'lari
 │   ├── look-and-feel/          # Tema paketi
@@ -986,20 +678,15 @@ karya-de/
 │   ├── karya-namaz/            # Namaz vakitleri
 │   ├── karya-haber/            # Haber basliklari
 │   └── karya-sistem/           # Sistem monitoru
-├── security/                   # GUVENLIK POLITIKALARI
-│   ├── apparmor/               # AppArmor profilleri (4 adet)
-│   ├── sysctl/                 # Ek sysctl guvenlik ayarlari
-│   └── selinux/                # SELinux politika dosyasi
 ├── hardware/                   # Donanim destegi
-│   ├── scripts/                # detect + install + harden
+│   ├── scripts/                # detect + install
 │   │   ├── detect-hardware.sh  # Donanim algilama
-│   │   ├── install-drivers.sh  # Surucu kurulumu
-│   │   └── karya-harden.sh     # Sistem sertlestirme
+│   │   └── install-drivers.sh  # Surucu kurulumu
 │   └── profiles/               # GPU konfigurasyonlari
 ├── branding/                   # Gorsel kimlik
 │   ├── logo/                   # SVG logo (profesyonel)
 │   ├── icons/karya-icons/      # Ozel ikon temasi (5 ikon)
-│   ├── screenshots/            # Ekran goruntuleri (9 adet)
+│   ├── screenshots/            # Ekran goruntuleri (7 adet)
 │   └── mockup/                 # Konsept tasarim
 ├── sddm-theme/                 # SDDM giris temasi
 │   └── karya-sddm/             # Login ekrani (QML)
@@ -1033,8 +720,7 @@ karya-de/
 | `plasma-desktop-karya` | Masaustu uygulamalari | workspace |
 | `karya-widgets` | 4 widget (hava/namaz/haber/sistem) | workspace |
 | `karya-oobe` | Kurulum sihirbazi | PyQt6, bash |
-| `karya-drivers` | GPU surucu destegi + sertlestirme | bash, jq, dkms |
-| `karya-security` | Kernel LSM + Intel blocker DKMS | dkms, linux-headers |
+| `karya-drivers` | GPU surucu destegi | bash, jq |
 | `karya-icons` | SVG ikon temasi | breeze-icons |
 
 ---

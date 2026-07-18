@@ -28,8 +28,12 @@ install:
 	@sudo cp -r widgets/karya-hava /usr/share/plasma/plasmoids/org.karya.hava 2>/dev/null || true
 	@sudo cp -r widgets/karya-namaz /usr/share/plasma/plasmoids/org.karya.namaz 2>/dev/null || true
 	@sudo cp -r widgets/karya-haber /usr/share/plasma/plasmoids/org.karya.haber 2>/dev/null || true
+	@sudo cp -r widgets/karya-sistem /usr/share/plasma/plasmoids/org.karya.sistem 2>/dev/null || true
 	@echo "    Splash kuruluyor..."
-	@sudo cp -r branding/splash/karya-splash /usr/share/plasma/look-and-feel/ 2>/dev/null || true
+	@sudo cp -r branding/splash/karya-splash /usr/share/plasma/splashes/ 2>/dev/null || true
+	@echo "    Duvarkagidi kuruluyor..."
+	@sudo mkdir -p /usr/share/wallpapers/ 2>/dev/null || true
+	@sudo cp branding/wallpapers/karya-default.jpg /usr/share/wallpapers/ 2>/dev/null || true
 	@echo "=== Kurulum tamamlandı ==="
 
 # ISO oluştur

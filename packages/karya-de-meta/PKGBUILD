@@ -8,12 +8,8 @@ arch=('x86_64')
 url="https://karya-de.org"
 license=('GPL2')
 depends=(
-    kwin-karya
-    plasma-workspace-karya
-    plasma-desktop-karya
-    plasma-pa-karya
-    systemsettings-karya
-    kdeplasma-addons
+    kwin
+    plasma-workspace
     xorg-server
     xorg-xinit
     xorg-xrandr
@@ -58,6 +54,7 @@ optdepends=(
     'bluedevil: Bluetooth support'
     'print-manager: Printer support'
     'calamares: System installer'
+    'kdeplasma-addons: Additional Plasma applets'
 )
 provides=('karya-desktop')
-conflicts=('plasma-desktop' 'plasma-workspace' 'kwin')
+conflicts=('plasma-desktop')

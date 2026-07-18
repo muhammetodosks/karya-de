@@ -14,7 +14,7 @@ dolphin
 konsole
 kate
 gwenview
-kalc
+kcalc
 spectacle
 noto-fonts
 noto-fonts-emoji
@@ -22,6 +22,5 @@ ttf-dejavu
 ttf-liberation
 breeze-icons
 ark
-kate
 xdg-user-dirs
 xdg-utils

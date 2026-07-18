@@ -53,7 +53,7 @@ Karya DE, KDE Plasma 6'nın tam fork'udur. Aşağıdaki bileşenlerden oluşur:
 
 ### 4. OOBE
 - `karya-oobe/src/karya-oobe.py` - PyQt6 kurulum sihirbazı
-- 4 adımlı: Hoşgeldin → Tema → Layout → Bileşenler
+- 7 adımlı: Hoşgeldin → GPU Sürücü → Layout → Bileşenler → Kullanıcı → Özet → Kurulum
 - İlk çalıştırmada otomatik başlar
 
 ### 5. Init Sistemi
@@ -64,12 +64,13 @@ Karya DE, KDE Plasma 6'nın tam fork'udur. Aşağıdaki bileşenlerden oluşur:
 ## Derleme Sırası
 
 ```
-1. kwin-karya       (bağımlılık yok)
-2. plasma-workspace-karya (kwin gerekir)
-3. plasma-desktop-karya   (workspace gerekir)
-4. systemsettings-karya   (desktop gerekir)
-5. breeze-karya           (tema)
-6. kdeplasma-addons       (eklentiler)
+1. kwin                (bağımlılık yok)
+2. plasma-workspace    (kwin gerekir)
+3. plasma-desktop      (workspace gerekir)
+4. plasma-pa           (workspace gerekir)
+5. systemsettings      (desktop gerekir)
+6. breeze-icons        (tema)
+7. kdeplasma-addons    (eklentiler)
 ```
 
 ## ISO Yapısı

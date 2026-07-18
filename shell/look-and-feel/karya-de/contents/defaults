@@ -20,7 +20,7 @@ Style=SelectionForeground=255,255,255
 Theme=karya-icons
 
 [cursor]
-Theme=karya-cursors
+Theme=breeze_cursors
 
 [Compositing]
 Enabled=true
@@ -28,7 +28,7 @@ OpenGLIsUnsafe=false
 Backend=OpenGL
 
 [KWin]
-WindowDecoration=karya-decoration
+WindowDecoration=org.kde.breeze.desktop
 BorderColor=100,140,200
 TitleColor=50,50,50
 TitleTextColor=255,255,255

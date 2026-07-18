@@ -42,7 +42,7 @@ Rectangle {
         height: 480
         anchors.centerIn: parent
         radius: 24
-        color: Qt.rgba(30, 30, 50, 0.7)
+        color: Qt.rgba(30/255, 30/255, 50/255, 0.7)
         border.color: Qt.rgba(255, 255, 255, 0.08)
         border.width: 1
 

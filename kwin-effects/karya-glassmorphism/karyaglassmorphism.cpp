@@ -1,5 +1,5 @@
 #include <kwineffects.h>
-#include <kwinglutils.h>
+#include <kwin/opengl/glframebuffer.h>
 #include <QFile>
 #include <QJsonDocument>
 #include <QJsonObject>
@@ -31,8 +31,8 @@ KaryaGlassmorphismEffect::KaryaGlassmorphismEffect()
     , m_opacity(0.75)
     , m_enabled(true)
 {
-    QFile configFile(QStandardPaths::locate(QStandardPaths::ConfigLocation,
-                                             "karyaglassmorphism.conf"));
+    QString configPath = QStandardPaths::writableLocation(QStandardPaths::ConfigHome) + "/karyaglassmorphism.conf";
+    QFile configFile(configPath);
     if (configFile.open(QIODevice::ReadOnly)) {
         QJsonDocument doc = QJsonDocument::fromJson(configFile.readAll());
         QJsonObject obj = doc.object();
