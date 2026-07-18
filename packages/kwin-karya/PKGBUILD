@@ -2,10 +2,10 @@
 
 pkgname=kwin-karya
 pkgver=6.0.0
-pkgrel=1
+pkgrel=2
 pkgdesc="Karya DE - Fork of KWin with custom tiling, gestures, glassmorphism"
 arch=('x86_64')
-url="https://github.com/karya-de/kwin"
+url="https://github.com/muhammetodosks/kwin"
 license=('GPL2')
 depends=(
     qt6-base qt6-declarative qt6-wayland
@@ -24,11 +24,11 @@ makedepends=(
 )
 provides=('kwin')
 conflicts=('kwin')
-source=("https://github.com/karya-de/kwin/archive/v$pkgver.tar.gz")
+source=("https://github.com/muhammetodosks/kwin/archive/v$pkgver.tar.gz")
 sha256sums=('SKIP')
 
 build() {
-    cmake -B build \
+    cmake -B build -S . \
         -DCMAKE_INSTALL_PREFIX=/usr \
         -DCMAKE_BUILD_TYPE=Release \
         -DBUILD_TESTING=OFF \

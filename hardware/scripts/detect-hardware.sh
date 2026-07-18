@@ -6,7 +6,8 @@ KARYA_HARDWARE_DIR="/etc/karya/hardware"
 mkdir -p "$KARYA_HARDWARE_DIR"
 
 detect_gpu() {
-    local gpu_info="" gpu_vendor="unknown" gpu_model="" gpu_driver=""
+    local gpu_info
+    local gpu_vendor="unknown" gpu_model="" gpu_driver=""
     local gpu_is_nvidia=false gpu_is_amd=false gpu_is_intel=false
 
     if command -v lspci &>/dev/null; then

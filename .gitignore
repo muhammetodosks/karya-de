@@ -15,10 +15,11 @@ __pycache__/
 .DS_Store
 Thumbs.db
 
-# Packages
+# Packages (makepkg artifacts)
 packages/*/*.pkg.tar.zst
-packages/*/src/
 packages/*/pkg/
+packages/*/src/*.tar.*
+packages/*/src/karya-*/
 
 # ISO
 iso/releng/work/

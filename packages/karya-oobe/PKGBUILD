@@ -2,23 +2,35 @@
 
 pkgname=karya-oobe
 pkgver=1.0.0
-pkgrel=2
+pkgrel=3
 pkgdesc="Karya DE First Run Setup Wizard - Hardware-aware installer"
 arch=('x86_64')
 url="https://karya-de.org"
 license=('GPL2')
 depends=(
-    'qt6-base' 'qt6-declarative' 'kirigami2' 'pyqt6'
+    'qt6-base' 'qt6-declarative' 'python-pyqt6'
     'python' 'bash' 'jq' 'pciutils'
 )
-makedepends=('cmake' 'extra-cmake-modules')
+source=(
+    "src/karya-oobe.py"
+    "src/services/driver_service.py"
+    "src/services/hardware_service.py"
+    "src/services/config_service.py"
+    "scripts/karya-first-run.sh"
+)
+sha256sums=('SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP')
 
 package() {
     install -dm755 "$pkgdir/usr/bin"
-    install -Dm755 src/karya-oobe.py "$pkgdir/usr/bin/karya-oobe"
+    install -Dm755 "$srcdir/src/karya-oobe.py" "$pkgdir/usr/bin/karya-oobe"
 
-    install -dm755 "$pkgdir/usr/lib/karya/oobe"
-    cp -r src/services "$pkgdir/usr/lib/karya/oobe/"
+    install -dm755 "$pkgdir/usr/lib/karya/oobe/services"
+    install -Dm644 "$srcdir/src/services/driver_service.py" \
+        "$pkgdir/usr/lib/karya/oobe/services/driver_service.py"
+    install -Dm644 "$srcdir/src/services/hardware_service.py" \
+        "$pkgdir/usr/lib/karya/oobe/services/hardware_service.py"
+    install -Dm644 "$srcdir/src/services/config_service.py" \
+        "$pkgdir/usr/lib/karya/oobe/services/config_service.py"
 
     install -dm755 "$pkgdir/etc/xdg/autostart"
     cat > "$pkgdir/etc/xdg/autostart/karya-first-run.desktop" << 'EOF'
@@ -34,6 +46,6 @@ X-KDE-autostart-phase=2
 NoDisplay=true
 EOF
 
-    install -Dm755 scripts/karya-first-run.sh \
+    install -Dm755 "$srcdir/scripts/karya-first-run.sh" \
         "$pkgdir/usr/lib/karya/scripts/karya-first-run.sh"
 }

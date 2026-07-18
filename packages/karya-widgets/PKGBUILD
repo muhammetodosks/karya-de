@@ -2,7 +2,7 @@
 
 pkgname=karya-widgets
 pkgver=1.0.0
-pkgrel=1
+pkgrel=2
 pkgdesc="Karya DE custom widgets - Weather, Prayer Times, News, System"
 arch=('x86_64')
 url="https://karya-de.org"
@@ -10,17 +10,24 @@ license=('GPL2')
 depends=('plasma-workspace' 'qt6-base' 'qt6-declarative')
 makedepends=('cmake' 'extra-cmake-modules')
 provides=('karya-widgets')
+source=(
+    "widgets/karya-hava/"
+    "widgets/karya-namaz/"
+    "widgets/karya-haber/"
+    "widgets/karya-sistem/"
+)
+sha256sums=('SKIP' 'SKIP' 'SKIP' 'SKIP')
 
 package() {
     install -dm755 "$pkgdir/usr/share/plasma/plasmoids/org.karya.hava"
-    cp -r "$srcdir/karya-hava/"* "$pkgdir/usr/share/plasma/plasmoids/org.karya.hava/"
+    cp -r "$srcdir/../../widgets/karya-hava/"* "$pkgdir/usr/share/plasma/plasmoids/org.karya.hava/"
 
     install -dm755 "$pkgdir/usr/share/plasma/plasmoids/org.karya.namaz"
-    cp -r "$srcdir/karya-namaz/"* "$pkgdir/usr/share/plasma/plasmoids/org.karya.namaz/"
+    cp -r "$srcdir/../../widgets/karya-namaz/"* "$pkgdir/usr/share/plasma/plasmoids/org.karya.namaz/"
 
     install -dm755 "$pkgdir/usr/share/plasma/plasmoids/org.karya.haber"
-    cp -r "$srcdir/karya-haber/"* "$pkgdir/usr/share/plasma/plasmoids/org.karya.haber/"
+    cp -r "$srcdir/../../widgets/karya-haber/"* "$pkgdir/usr/share/plasma/plasmoids/org.karya.haber/"
 
     install -dm755 "$pkgdir/usr/share/plasma/plasmoids/org.karya.sistem"
-    cp -r "$srcdir/karya-sistem/"* "$pkgdir/usr/share/plasma/plasmoids/org.karya.sistem/"
+    cp -r "$srcdir/../../widgets/karya-sistem/"* "$pkgdir/usr/share/plasma/plasmoids/org.karya.sistem/"
 }

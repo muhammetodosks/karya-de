@@ -37,6 +37,8 @@ Qt6 ve KDE teknolojileri üzerine inşa edilmiştir ancak **KDE Plasma değildir
 - [Özellikler](#özellikler)
 - [Donanım Desteği](#donanım-desteği)
 - [Intel Neden Desteklenmiyor](#intel-neden-desteklenmiyor)
+- [Kernel Yapılandırması](#kernel-yapılandırması)
+- [Kernel Yapılandırması](#kernel-yapılandırması)
 - [Güvenlik](#güvenlik)
 - [Diğer Masaüstü Ortamlarıyla Karşılaştırma](#diğer-masaüstü-ortamlarıyla-karşılaştırma)
 - [Kurulum Adımları](#kurulum-adımları)
@@ -194,15 +196,11 @@ Intel entegre GPU'ları resmi olarak **desteklenmemektedir**. Bunun nedenleri:
 
 Karya DE, aşağıdaki güvenlik önlemleri ile gelir:
 
-- **Sysctl sertleştirme** - ASLR, kptr_restrict, dmesg_restrict, SYN flood koruması
-- **AppArmor profilleri** - OOBE, script, sürücü profilleri ile erişim kısıtlaması
-- **CPU mitigasyonları** - Meltdown (pti), Spectre (ssbd), MDS, TAA, MMIO korumaları
-
 | Güvenlik Katmanı | Açıklama |
 |-----------------|----------|
 | AppArmor | OOBE, script ve sürücü profilleri |
 | Sysctl | ASLR, ağ korumaları, core dump kısıtlaması |
-| CPU | Spekülatif saldırı mitigasyonları |
+| Kernel | PTI, Retpoline, IBRS, SRSO mitigasyonları |
 | IOMMU | Zorunlu IOMMU ile DMA koruması |
 
 Kurulum:
@@ -216,6 +214,9 @@ sudo apparmor_parser -a /etc/apparmor.d/karya-drivers
 # Sysctl hardening
 sudo cp security/sysctl/99-karya-security.conf /etc/sysctl.d/
 sudo sysctl -p /etc/sysctl.d/99-karya-security.conf
+
+# Kernel (opsiyonel, kaynaktan derleme gerektirir)
+cp kernel/config-6.17-x86_64 /usr/src/linux/.config
 ```
 
 ---
@@ -776,6 +777,29 @@ karya-de/
 
 ---
 
+## Sıkça Sorulan Sorular (SSS)
+
+### Karya DE systemd gerektiriyor mu?
+Hayır. Karya DE, elogind + runit ile çalışır. systemd bağımlılığı yoktur.
+
+### NVIDIA Optimus laptop'um var, çalışır mı?
+Evet. OOBE sihirbazı NVIDIA Optimus seçeneği sunar. `nvidia-prime` ve `optimus-manager` desteği dahildir.
+
+### Intel GPU kullanıyorum, ne yapmalıyım?
+Intel GPU'lar resmi olarak desteklenmez. Deneysel modda çalışabilir ancak performans garantisi yoktur. NVIDIA veya AMD GPU önerilir.
+
+### Wayland sorunlu mu?
+Hayır. Karya DE varsayılan olarak Wayland kullanır. NVIDIA EGLStreams ile tam uyumludur. X11 oturumu da opsiyonel olarak mevcuttur.
+
+### ISO'dan nasıl kurarım?
+`make iso` komutu ile ISO oluşturup USB'ye yazabilirsiniz:
+```bash
+make iso
+dd if=iso/releng/out/karya-de-1.0.0-x86_64.iso of=/dev/sdX bs=4M status=progress
+```
+
+---
+
 ## Lisans
 
 Bu proje GNU General Public License v2.0 altında lisanslanmıştır.
@@ -786,5 +810,6 @@ Güvenlik politikası için [SECURITY.md](SECURITY.md) dosyasına bakın.
 ---
 
 **Karya DE Ekibi** - [karya@karya-de.org](mailto:karya@karya-de.org)
+**GitHub:** [github.com/muhammetodosks/karya-de](https://github.com/muhammetodosks/karya-de)
 
 *Türk mühendisliği ile, Türk kullanıcılar için.*

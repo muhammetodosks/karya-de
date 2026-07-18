@@ -154,7 +154,7 @@ Rectangle {
                 }
                 onClicked: {
                     // Trigger SDDM login
-                    sddm.login(usernameField.text, passwordField.text, 0)
+                    sddm.login(usernameField.text, passwordField.text, sessionSelector.currentValue)
                 }
             }
 

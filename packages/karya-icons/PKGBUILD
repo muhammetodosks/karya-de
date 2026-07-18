@@ -2,14 +2,16 @@
 
 pkgname=karya-icons
 pkgver=1.0.0
-pkgrel=1
+pkgrel=2
 pkgdesc="Karya DE - Custom SVG icon theme"
 arch=('x86_64')
 url="https://karya-de.org"
 license=('GPL2')
 depends=('breeze-icons')
+source=("branding/icons/karya-icons/")
+sha256sums=('SKIP')
 
 package() {
     install -dm755 "$pkgdir/usr/share/icons/karya-icons"
-    cp -r ../../branding/icons/karya-icons/* "$pkgdir/usr/share/icons/karya-icons/"
+    cp -r "$srcdir/../../branding/icons/karya-icons/"* "$pkgdir/usr/share/icons/karya-icons/"
 }

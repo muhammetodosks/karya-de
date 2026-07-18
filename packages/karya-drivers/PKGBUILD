@@ -15,19 +15,28 @@ optdepends=(
     'pipewire: Audio support'
 )
 
+source=(
+    "hardware/scripts/detect-hardware.sh"
+    "hardware/scripts/install-drivers.sh"
+    "hardware/profiles/nvidia.conf"
+    "hardware/profiles/amd.conf"
+    "hardware/profiles/intel.conf"
+)
+sha256sums=('SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP')
+
 package() {
     install -dm755 "$pkgdir/usr/lib/karya/scripts"
-    install -Dm755 ../../hardware/scripts/detect-hardware.sh \
+    install -Dm755 "$srcdir/../../hardware/scripts/detect-hardware.sh" \
         "$pkgdir/usr/lib/karya/scripts/detect-hardware.sh"
-    install -Dm755 ../../hardware/scripts/install-drivers.sh \
+    install -Dm755 "$srcdir/../../hardware/scripts/install-drivers.sh" \
         "$pkgdir/usr/lib/karya/scripts/install-drivers.sh"
 
     install -dm755 "$pkgdir/usr/share/karya/hardware/profiles"
-    install -Dm644 ../../hardware/profiles/nvidia.conf \
+    install -Dm644 "$srcdir/../../hardware/profiles/nvidia.conf" \
         "$pkgdir/usr/share/karya/hardware/profiles/nvidia.conf"
-    install -Dm644 ../../hardware/profiles/amd.conf \
+    install -Dm644 "$srcdir/../../hardware/profiles/amd.conf" \
         "$pkgdir/usr/share/karya/hardware/profiles/amd.conf"
-    install -Dm644 ../../hardware/profiles/intel.conf \
+    install -Dm644 "$srcdir/../../hardware/profiles/intel.conf" \
         "$pkgdir/usr/share/karya/hardware/profiles/intel.conf"
 
     install -dm755 "$pkgdir/etc/X11/xorg.conf.d"

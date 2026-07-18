@@ -54,8 +54,8 @@ clean:
 
 # OOBE'yi derle
 oobe:
-	@echo "OOBE derleniyor..."
-	@cd packages/karya-oobe && python3 -m PyQt6.uic.pyuic -x src/karya-oobe.py 2>/dev/null || true
+	@echo "OOBE kontrol ediliyor..."
+	@python3 -c "from PyQt6 import QtWidgets; print('PyQt6 OK')" 2>/dev/null || echo "PyQt6 yuklu degil"
 
 # Paketleri oluştur (Arch)
 packages:

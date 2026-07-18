@@ -5,9 +5,23 @@ Subject: [PATCH 01] Karya Tiling - Custom tiling window manager for KWin
 Adds auto-tiling support to KWin:
 - Master-stack layout
 - Split layout
+- Grid layout
+- Monocle layout
 - Custom gap configuration
 - Keyboard shortcuts: Meta+T toggle, Meta+Shift+T cycle layout
 
+diff --git a/src/tiling/CMakeLists.txt b/src/tiling/CMakeLists.txt
+new file mode 100644
+index 0000000..e69de29
+--- /dev/null
++++ b/src/tiling/CMakeLists.txt
+@@ -0,0 +1,5 @@
++set(kwin_tiling_SRCS
++    karyatilemanager.cpp
++)
++
++add_library(kwin-tiling STATIC ${kwin_tiling_SRCS})
++target_link_libraries(kwin-tiling PUBLIC KWin::kwinkwin)
 diff --git a/src/tiling/karyatilemanager.h b/src/tiling/karyatilemanager.h
 new file mode 100644
 index 0000000..e69de29
@@ -28,10 +42,10 @@ index 0000000..e69de29
 +class AbstractClient;
 +
 +enum TileLayout {
-+    TileLayoutMasterStack,  // Master + stack sağda
-+    TileLayoutSplit,        // Eşit bölünmüş
-+    TileLayoutGrid,         // Grid layout
-+    TileLayoutMonocle       // Tek pencere tam ekran
++    TileLayoutMasterStack,
++    TileLayoutSplit,
++    TileLayoutGrid,
++    TileLayoutMonocle
 +};
 +
 +class KaryaTileManager : public QObject
@@ -53,11 +67,11 @@ index 0000000..e69de29
 +    bool keyEvent(QKeyEvent* event);
 +
 +private:
-+    void layoutMasterStack(QList<AbstractClient*> windows, QRect area);
-+    void layoutSplit(QList<AbstractClient*> windows, QRect area);
-+    void layoutGrid(QList<AbstractClient*> windows, QRect area);
-+    void layoutMonocle(QList<AbstractClient*> windows, QRect area);
-+    void applyGeometry(AbstractClient* client, QRect geo);
++    void layoutMasterStack(const QList<AbstractClient*>& windows, const QRect& area);
++    void layoutSplit(const QList<AbstractClient*>& windows, const QRect& area);
++    void layoutGrid(const QList<AbstractClient*>& windows, const QRect& area);
++    void layoutMonocle(const QList<AbstractClient*>& windows, const QRect& area);
++    void applyGeometry(AbstractClient* client, const QRect& geo);
 +
 +    bool m_enabled;
 +    int m_gap;
@@ -143,34 +157,37 @@ index 0000000..e69de29
 +    }
 +}
 +
-+void KaryaTileManager::layoutMasterStack(QList<AbstractClient*> windows, QRect area)
++void KaryaTileManager::layoutMasterStack(const QList<AbstractClient*>& windows, const QRect& area)
 +{
 +    if (windows.isEmpty()) return;
-+    AbstractClient* master = windows.takeFirst();
++    AbstractClient* master = const_cast<AbstractClient*>(windows.first());
 +    int masterWidth = area.width() * 0.55;
 +    applyGeometry(master, QRect(area.x(), area.y(), masterWidth, area.height()));
 +
-+    if (windows.isEmpty()) return;
++    if (windows.size() < 2) return;
 +    int stackWidth = area.width() - masterWidth - m_gap;
 +    int stackY = area.y();
-+    int stackHeight = (area.height() - m_gap * (windows.size() - 1)) / windows.size();
-+    for (auto* w : windows) {
-+        applyGeometry(w, QRect(area.x() + masterWidth + m_gap, stackY, stackWidth, stackHeight));
++    int remaining = windows.size() - 1;
++    int stackHeight = (area.height() - m_gap * (remaining - 1)) / remaining;
++    for (int i = 1; i < windows.size(); i++) {
++        applyGeometry(const_cast<AbstractClient*>(windows[i]),
++                      QRect(area.x() + masterWidth + m_gap, stackY, stackWidth, stackHeight));
 +        stackY += stackHeight + m_gap;
 +    }
 +}
 +
-+void KaryaTileManager::layoutSplit(QList<AbstractClient*> windows, QRect area)
++void KaryaTileManager::layoutSplit(const QList<AbstractClient*>& windows, const QRect& area)
 +{
 +    if (windows.isEmpty()) return;
 +    int count = qMin(windows.size(), 2);
 +    for (int i = 0; i < count; i++) {
 +        int w = area.width() / count;
-+        applyGeometry(windows[i], QRect(area.x() + i * w, area.y(), w - m_gap/2, area.height()));
++        applyGeometry(const_cast<AbstractClient*>(windows[i]),
++                      QRect(area.x() + i * w, area.y(), w - m_gap/2, area.height()));
 +    }
 +}
 +
-+void KaryaTileManager::layoutGrid(QList<AbstractClient*> windows, QRect area)
++void KaryaTileManager::layoutGrid(const QList<AbstractClient*>& windows, const QRect& area)
 +{
 +    int count = windows.size();
 +    if (count == 0) return;
@@ -181,22 +198,22 @@ index 0000000..e69de29
 +    for (int i = 0; i < count; i++) {
 +        int x = area.x() + (i % cols) * cellW;
 +        int y = area.y() + (i / cols) * cellH;
-+        applyGeometry(windows[i], QRect(x, y, cellW - m_gap/2, cellH - m_gap/2));
++        applyGeometry(const_cast<AbstractClient*>(windows[i]),
++                      QRect(x, y, cellW - m_gap/2, cellH - m_gap/2));
 +    }
 +}
 +
-+void KaryaTileManager::layoutMonocle(QList<AbstractClient*> windows, QRect area)
++void KaryaTileManager::layoutMonocle(const QList<AbstractClient*>& windows, const QRect& area)
 +{
 +    for (auto* w : windows) {
-+        applyGeometry(w, area);
++        applyGeometry(const_cast<AbstractClient*>(w), area);
 +    }
 +}
 +
-+void KaryaTileManager::applyGeometry(AbstractClient* client, QRect geo)
++void KaryaTileManager::applyGeometry(AbstractClient* client, const QRect& geo)
 +{
 +    if (!client) return;
 +    client->setGeometry(geo);
-+    client->setKeepAbove(false);
 +}
 +
 +bool KaryaTileManager::keyEvent(QKeyEvent* event)
