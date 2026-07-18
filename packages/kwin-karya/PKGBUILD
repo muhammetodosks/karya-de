@@ -16,7 +16,10 @@ depends=(
     libepoxy libxcb xcb-util-cursor xcb-util-keysyms
     xcb-util-wm xcb-util-xrm
     libdrm mesa wayland
-    elogind
+    systemd-libs
+)
+optdepends=(
+    'elogind: lightweight logind (alternative to systemd-libs)'
 )
 makedepends=(
     cmake extra-cmake-modules
