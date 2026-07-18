@@ -1,0 +1,159 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" font-family="'Noto Sans','DejaVu Sans',sans-serif">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#1a1a2e"/><stop offset="100%" stop-color="#0f3460"/>
+    </linearGradient>
+    <linearGradient id="pnl" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="rgba(30,30,50,0.9)"/><stop offset="100%" stop-color="rgba(20,20,40,0.95)"/>
+    </linearGradient>
+    <linearGradient id="winbg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="rgba(40,45,70,0.75)"/><stop offset="100%" stop-color="rgba(30,35,60,0.9)"/>
+    </linearGradient>
+    <linearGradient id="dockg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="rgba(30,30,50,0.8)"/><stop offset="100%" stop-color="rgba(20,20,40,0.95)"/>
+    </linearGradient>
+    <filter id="sh"><feDropShadow dx="0" dy="4" stdDeviation="12" flood-color="rgba(0,0,0,0.4)"/></filter>
+  </defs>
+
+  <!-- Wallpaper -->
+  <rect width="1280" height="720" fill="url(#bg)"/>
+  <circle cx="200" cy="180" r="160" fill="rgba(74,144,217,0.04)"/>
+  <circle cx="1100" cy="520" r="220" fill="rgba(108,92,231,0.04)"/>
+  <circle cx="800" cy="120" r="100" fill="rgba(74,144,217,0.03)"/>
+
+  <!-- Label top-left -->
+  <text x="30" y="55" font-size="28" fill="white" font-weight="bold" opacity="0.15">Karya DE</text>
+
+  <!-- ===== WINDOW 1: Dolphin (file manager) ===== -->
+  <rect x="50" y="70" width="460" height="340" rx="10" fill="url(#winbg)" stroke="rgba(255,255,255,0.06)" filter="url(#sh)"/>
+  <rect x="50" y="70" width="460" height="34" rx="10" fill="rgba(25,28,50,0.95)"/>
+  <rect x="50" y="94" width="460" height="10" fill="rgba(25,28,50,0.95)"/>
+  <circle cx="72" cy="87" r="6" fill="#ff5f57"/><circle cx="90" cy="87" r="6" fill="#ffbd2e"/><circle cx="108" cy="87" r="6" fill="#28c840"/>
+  <text x="280" y="91" font-size="11" fill="rgba(255,255,255,0.4)" text-anchor="middle">Dolphin</text>
+  <!-- Toolbar -->
+  <rect x="50" y="104" width="460" height="28" fill="rgba(255,255,255,0.03)"/>
+  <text x="70" y="122" font-size="10" fill="rgba(255,255,255,0.4)">Ana Dizin</text>
+  <text x="140" y="122" font-size="10" fill="#4a90d9">/home/kullanici</text>
+  <!-- File list -->
+  <g transform="translate(60, 140)">
+    <rect x="0" y="0" width="440" height="24" rx="4" fill="rgba(255,255,255,0.03)"/>
+    <text x="10" y="16" font-size="11" fill="rgba(255,255,255,0.6)">Belgeler</text>
+    <text x="200" y="16" font-size="10" fill="rgba(255,255,255,0.3)">Klasor</text>
+    <rect x="0" y="26" width="440" height="24" rx="4"/>
+    <text x="10" y="42" font-size="11" fill="rgba(255,255,255,0.6)">Gorseller</text>
+    <text x="200" y="42" font-size="10" fill="rgba(255,255,255,0.3)">Klasor</text>
+    <rect x="0" y="52" width="440" height="24" rx="4" fill="rgba(255,255,255,0.03)"/>
+    <text x="10" y="68" font-size="11" fill="rgba(255,255,255,0.6)">Indirilenler</text>
+    <text x="200" y="68" font-size="10" fill="rgba(255,255,255,0.3)">Klasor</text>
+    <rect x="0" y="78" width="440" height="24" rx="4"/>
+    <text x="10" y="94" font-size="11" fill="rgba(255,255,255,0.6)">Masaustu</text>
+    <text x="200" y="94" font-size="10" fill="rgba(255,255,255,0.3)">Klasor</text>
+    <rect x="0" y="104" width="440" height="24" rx="4" fill="rgba(255,255,255,0.03)"/>
+    <text x="10" y="120" font-size="11" fill="rgba(255,255,255,0.6)">proje.karya</text>
+    <text x="200" y="120" font-size="10" fill="rgba(255,255,255,0.3)">1.2 GB</text>
+  </g>
+
+  <!-- ===== WINDOW 2: Terminal ===== -->
+  <rect x="530" y="100" width="440" height="300" rx="10" fill="url(#winbg)" stroke="rgba(255,255,255,0.06)" filter="url(#sh)"/>
+  <rect x="530" y="100" width="440" height="34" rx="10" fill="rgba(25,28,50,0.95)"/>
+  <circle cx="552" cy="117" r="6" fill="#ff5f57"/><circle cx="570" cy="117" r="6" fill="#ffbd2e"/><circle cx="588" cy="117" r="6" fill="#28c840"/>
+  <text x="750" y="121" font-size="11" fill="rgba(255,255,255,0.4)" text-anchor="middle">Konsole</text>
+  <g transform="translate(545, 150)">
+    <text y="0" font-size="12" fill="#4a90d9" font-family="monospace">kullanici@karya:~$</text>
+    <text x="155" y="0" font-size="12" fill="rgba(255,255,255,0.8)" font-family="monospace"> neofetch</text>
+    <text y="24" font-size="12" fill="#4a90d9" font-family="monospace">                    Karya DE 1.0.0</text>
+    <text y="44" font-size="11" fill="rgba(255,255,255,0.5)" font-family="monospace">Isletim Sistemi: Karya Linux</text>
+    <text y="62" font-size="11" fill="rgba(255,255,255,0.5)" font-family="monospace">Kernel: 6.8.0-karya</text>
+    <text y="80" font-size="11" fill="rgba(255,255,255,0.5)" font-family="monospace">GPU: NVIDIA RTX 3060</text>
+    <text y="98" font-size="11" fill="rgba(255,255,255,0.5)" font-family="monospace">Bellek: 3264/8192 MB</text>
+    <text y="122" font-size="12" fill="#4a90d9" font-family="monospace">kullanici@karya:~$</text>
+    <text x="155" y="122" font-size="12" fill="rgba(255,255,255,0.8)" font-family="monospace">_</text>
+  </g>
+
+  <!-- ===== WINDOW 3: Karya Hava widget (right) ===== -->
+  <rect x="880" y="420" width="360" height="260" rx="14" fill="url(#winbg)" stroke="rgba(255,255,255,0.06)" filter="url(#sh)"/>
+  <rect x="880" y="420" width="360" height="36" rx="14" fill="rgba(25,28,50,0.95)"/>
+  <text x="1060" y="443" font-size="12" fill="rgba(255,255,255,0.5)" text-anchor="middle">Karya Hava - Istanbul</text>
+  <g transform="translate(900, 470)">
+    <text x="0" y="30" font-size="42" fill="white" font-weight="bold">24 C</text>
+    <text x="0" y="55" font-size="12" fill="rgba(255,255,255,0.5)">Acik, hissedilen 22 C</text>
+    <text x="0" y="75" font-size="10" fill="rgba(255,255,255,0.3)">Nem: %45  Ruzgar: 12 km/h</text>
+    <!-- Mini forecast -->
+    <g transform="translate(0, 95)">
+      <text x="0" y="0" font-size="10" fill="rgba(255,255,255,0.4)">Pzt</text>
+      <text x="42" y="0" font-size="10" fill="rgba(255,255,255,0.4)">Sal</text>
+      <text x="84" y="0" font-size="10" fill="rgba(255,255,255,0.4)">Car</text>
+      <text x="126" y="0" font-size="10" fill="rgba(255,255,255,0.4)">Per</text>
+      <text x="168" y="0" font-size="10" fill="rgba(255,255,255,0.4)">Cum</text>
+      <text x="210" y="0" font-size="10" fill="rgba(255,255,255,0.4)">Cmt</text>
+      <text x="252" y="0" font-size="10" fill="rgba(255,255,255,0.4)">Paz</text>
+      <rect x="0" y="10" width="30" height="30" rx="8" fill="rgba(241,196,15,0.15)"/>
+      <rect x="42" y="10" width="30" height="30" rx="8" fill="rgba(241,196,15,0.15)"/>
+      <rect x="84" y="10" width="30" height="30" rx="8" fill="rgba(255,255,255,0.05)"/>
+      <rect x="126" y="10" width="30" height="30" rx="8" fill="rgba(74,144,217,0.15)"/>
+      <rect x="168" y="10" width="30" height="30" rx="8" fill="rgba(241,196,15,0.15)"/>
+      <rect x="210" y="10" width="30" height="30" rx="8" fill="rgba(255,255,255,0.05)"/>
+      <rect x="252" y="10" width="30" height="30" rx="8" fill="rgba(241,196,15,0.15)"/>
+      <text x="6" y="30" font-size="14">S</text>
+      <text x="48" y="30" font-size="14">S</text>
+      <text x="90" y="30" font-size="14">~</text>
+      <text x="132" y="30" font-size="14">R</text>
+      <text x="174" y="30" font-size="14">S</text>
+      <text x="216" y="30" font-size="14">~</text>
+      <text x="258" y="30" font-size="14">S</text>
+      <text y="48" font-size="11" fill="white">26</text>
+      <text x="42" y="48" font-size="11" fill="white">28</text>
+      <text x="84" y="48" font-size="11" fill="white">22</text>
+      <text x="126" y="48" font-size="11" fill="white">18</text>
+      <text x="168" y="48" font-size="11" fill="white">25</text>
+      <text x="210" y="48" font-size="11" fill="white">23</text>
+      <text x="252" y="48" font-size="11" fill="white">27</text>
+    </g>
+  </g>
+
+  <!-- ===== TOP PANEL ===== -->
+  <rect x="0" y="0" width="1280" height="38" fill="url(#pnl)" stroke="rgba(255,255,255,0.04)"/>
+
+  <!-- Kickoff -->
+  <rect x="10" y="7" width="24" height="24" rx="6" fill="#4a90d9"/>
+  <text x="22" y="24" font-size="14" fill="white" text-anchor="middle" font-weight="bold">K</text>
+
+  <!-- Task icons -->
+  <g transform="translate(46, 9)">
+    <rect x="0" y="0" width="22" height="20" rx="4" fill="rgba(255,255,255,0.08)"/><text x="11" y="15" font-size="11" fill="white" text-anchor="middle">D</text>
+    <rect x="28" y="0" width="22" height="20" rx="4" fill="rgba(255,255,255,0.12)"/><text x="39" y="15" font-size="11" fill="white" text-anchor="middle">T</text>
+    <rect x="56" y="0" width="22" height="20" rx="4" fill="rgba(255,255,255,0.08)"/><text x="67" y="15" font-size="11" fill="white" text-anchor="middle">F</text>
+    <rect x="84" y="0" width="22" height="20" rx="4" fill="rgba(255,255,255,0.08)"/><text x="95" y="15" font-size="11" fill="white" text-anchor="middle">K</text>
+  </g>
+
+  <!-- System tray right -->
+  <g transform="translate(1050, 11)">
+    <text x="0" y="13" font-size="13" fill="rgba(255,255,255,0.6)">S</text>
+    <text x="28" y="13" font-size="13" fill="rgba(255,255,255,0.6)">W</text>
+    <text x="56" y="13" font-size="13" fill="rgba(255,255,255,0.6)">B</text>
+  </g>
+
+  <!-- Clock -->
+  <rect x="1130" y="4" width="140" height="30" rx="8" fill="rgba(255,255,255,0.04)"/>
+  <text x="1200" y="17" font-size="12" fill="white" text-anchor="middle">15:24</text>
+  <text x="1200" y="29" font-size="9" fill="rgba(255,255,255,0.4)" text-anchor="middle">18 Temmuz 2026 Cumartesi</text>
+
+  <!-- ===== BOTTOM DOCK ===== -->
+  <rect x="370" y="666" width="540" height="48" rx="14" fill="url(#dockg)" stroke="rgba(255,255,255,0.06)" filter="url(#sh)"/>
+  <g transform="translate(390, 672)">
+    <rect x="0" y="0" width="32" height="36" rx="8" fill="rgba(255,255,255,0.08)"/><text x="16" y="24" font-size="14" fill="white" text-anchor="middle">D</text>
+    <rect x="42" y="0" width="32" height="36" rx="8" fill="rgba(255,255,255,0.15)"/><text x="58" y="24" font-size="14" fill="white" text-anchor="middle">T</text>
+    <rect x="84" y="0" width="32" height="36" rx="8" fill="rgba(255,255,255,0.08)"/><text x="100" y="24" font-size="14" fill="white" text-anchor="middle">F</text>
+    <rect x="126" y="0" width="32" height="36" rx="8" fill="rgba(255,255,255,0.08)"/><text x="142" y="24" font-size="14" fill="white" text-anchor="middle">K</text>
+    <rect x="168" y="0" width="32" height="36" rx="8" fill="rgba(255,255,255,0.08)"/><text x="184" y="24" font-size="14" fill="white" text-anchor="middle">R</text>
+    <rect x="210" y="0" width="32" height="36" rx="8" fill="rgba(255,255,255,0.08)"/><text x="226" y="24" font-size="14" fill="white" text-anchor="middle">H</text>
+    <rect x="252" y="0" width="32" height="36" rx="8" fill="rgba(255,255,255,0.08)"/><text x="268" y="24" font-size="14" fill="white" text-anchor="middle">S</text>
+    <rect x="294" y="0" width="32" height="36" rx="8" fill="rgba(255,255,255,0.08)"/><text x="310" y="24" font-size="14" fill="white" text-anchor="middle">A</text>
+    <rect x="336" y="0" width="32" height="36" rx="8" fill="rgba(255,255,255,0.08)"/><text x="352" y="24" font-size="14" fill="white" text-anchor="middle">C</text>
+    <rect x="378" y="0" width="32" height="36" rx="8" fill="rgba(255,255,255,0.05)"/><text x="394" y="24" font-size="14" fill="white" text-anchor="middle">M</text>
+    <rect x="420" y="0" width="32" height="36" rx="8" fill="rgba(255,255,255,0.05)"/><text x="436" y="24" font-size="14" fill="white" text-anchor="middle">E</text>
+    <rect x="462" y="0" width="32" height="36" rx="8" fill="rgba(255,255,255,0.05)"/><text x="478" y="24" font-size="14" fill="white" text-anchor="middle">S</text>
+  </g>
+  <!-- Active indicator -->
+  <circle cx="448" cy="710" r="3" fill="#4a90d9"/>
+</svg>

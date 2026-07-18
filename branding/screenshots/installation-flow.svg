@@ -1,0 +1,120 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 500" font-family="'Noto Sans','DejaVu Sans',sans-serif">
+  <defs>
+    <linearGradient id="ibg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#1a1a2e"/><stop offset="100%" stop-color="#0f3460"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="900" height="500" fill="url(#ibg)"/>
+
+  <text x="450" y="35" font-size="20" fill="white" text-anchor="middle" font-weight="bold">Karya DE Kurulum Akisi</text>
+
+  <!-- Step 1: Clone -->
+  <g transform="translate(30, 60)">
+    <rect x="0" y="0" width="260" height="180" rx="14" fill="rgba(15,52,96,0.4)" stroke="rgba(255,255,255,0.04)"/>
+    <rect x="10" y="10" width="40" height="40" rx="10" fill="#4a90d9"/>
+    <text x="30" y="36" font-size="18" fill="white" text-anchor="middle" font-weight="bold">1</text>
+    <text x="62" y="30" font-size="15" fill="white" font-weight="bold">Klonla</text>
+    <text x="62" y="48" font-size="11" fill="rgba(255,255,255,0.3)">Kaynak kodu indir</text>
+    <rect x="12" y="62" width="236" height="30" rx="8" fill="rgba(0,0,0,0.3)"/>
+    <text x="130" y="82" font-size="10" fill="#4a90d9" text-anchor="middle" font-family="monospace">git clone karya-de</text>
+    <text x="16" y="110" font-size="11" fill="rgba(255,255,255,0.5)">Proje dosyalari</text>
+    <text x="16" y="128" font-size="11" fill="rgba(255,255,255,0.5)">indirilir.</text>
+  </g>
+
+  <!-- Arrow -->
+  <g transform="translate(295, 140)">
+    <text x="0" y="0" font-size="24" fill="rgba(255,255,255,0.2)">→</text>
+  </g>
+
+  <!-- Step 2: Setup -->
+  <g transform="translate(320, 60)">
+    <rect x="0" y="0" width="260" height="180" rx="14" fill="rgba(15,52,96,0.4)" stroke="rgba(255,255,255,0.04)"/>
+    <rect x="10" y="10" width="40" height="40" rx="10" fill="#3498db"/>
+    <text x="30" y="36" font-size="18" fill="white" text-anchor="middle" font-weight="bold">2</text>
+    <text x="62" y="30" font-size="15" fill="white" font-weight="bold">Hazirlik</text>
+    <text x="62" y="48" font-size="11" fill="rgba(255,255,255,0.3)">Bagimliliklari kur</text>
+    <rect x="12" y="62" width="236" height="30" rx="8" fill="rgba(0,0,0,0.3)"/>
+    <text x="130" y="82" font-size="10" fill="#f39c12" text-anchor="middle" font-family="monospace">make setup</text>
+    <text x="16" y="110" font-size="11" fill="rgba(255,255,255,0.5)">Qt6, KF6, elogind,</text>
+    <text x="16" y="128" font-size="11" fill="rgba(255,255,255,0.5)">runit, cmake, ECM</text>
+    <text x="16" y="146" font-size="11" fill="rgba(255,255,255,0.5)">otomatik kurulur.</text>
+  </g>
+
+  <!-- Arrow -->
+  <g transform="translate(585, 140)">
+    <text x="0" y="0" font-size="24" fill="rgba(255,255,255,0.2)">→</text>
+  </g>
+
+  <!-- Step 3: Build -->
+  <g transform="translate(610, 60)">
+    <rect x="0" y="0" width="260" height="180" rx="14" fill="rgba(15,52,96,0.4)" stroke="rgba(255,255,255,0.04)"/>
+    <rect x="10" y="10" width="40" height="40" rx="10" fill="#2ecc71"/>
+    <text x="30" y="36" font-size="18" fill="white" text-anchor="middle" font-weight="bold">3</text>
+    <text x="62" y="30" font-size="15" fill="white" font-weight="bold">Derle</text>
+    <text x="62" y="48" font-size="11" fill="rgba(255,255,255,0.3)">Tum bilesenleri build et</text>
+    <rect x="12" y="62" width="236" height="30" rx="8" fill="rgba(0,0,0,0.3)"/>
+    <text x="130" y="82" font-size="10" fill="#2ecc71" text-anchor="middle" font-family="monospace">make build</text>
+    <text x="16" y="110" font-size="11" fill="rgba(255,255,255,0.5)">1. kwin-karya</text>
+    <text x="16" y="128" font-size="11" fill="rgba(255,255,255,0.5)">2. plasma-workspace</text>
+    <text x="16" y="146" font-size="11" fill="rgba(255,255,255,0.5)">3. plasma-desktop</text>
+  </g>
+
+  <!-- Step 4: PKGBUILD -->
+  <g transform="translate(30, 270)">
+    <rect x="0" y="0" width="260" height="190" rx="14" fill="rgba(15,52,96,0.4)" stroke="rgba(255,255,255,0.04)"/>
+    <rect x="10" y="10" width="40" height="40" rx="10" fill="#e74c3c"/>
+    <text x="30" y="36" font-size="18" fill="white" text-anchor="middle" font-weight="bold">4</text>
+    <text x="62" y="30" font-size="15" fill="white" font-weight="bold">Paketle</text>
+    <text x="62" y="48" font-size="11" fill="rgba(255,255,255,0.3)">Arch PKGBUILD ile kur</text>
+    <rect x="12" y="62" width="236" height="60" rx="8" fill="rgba(0,0,0,0.2)"/>
+    <text x="20" y="80" font-size="10" fill="rgba(255,255,255,0.6)" font-family="monospace">$ makepkg -si</text>
+    <text x="20" y="96" font-size="10" fill="rgba(255,255,255,0.4)" font-family="monospace">> installing kwin-karya...</text>
+    <text x="20" y="112" font-size="10" fill="#2ecc71" font-family="monospace">> Karya DE ready!</text>
+    <text x="16" y="145" font-size="11" fill="rgba(255,255,255,0.5)">karya-de-meta, karya-drivers,</text>
+    <text x="16" y="163" font-size="11" fill="rgba(255,255,255,0.5)">karya-oobe, karya-icons</text>
+  </g>
+
+  <!-- Arrow -->
+  <g transform="translate(295, 350)">
+    <text x="0" y="0" font-size="24" fill="rgba(255,255,255,0.2)">→</text>
+  </g>
+
+  <!-- Step 5: OOBE -->
+  <g transform="translate(320, 270)">
+    <rect x="0" y="0" width="260" height="190" rx="14" fill="rgba(15,52,96,0.4)" stroke="rgba(255,255,255,0.04)"/>
+    <rect x="10" y="10" width="40" height="40" rx="10" fill="#e67e22"/>
+    <text x="30" y="36" font-size="18" fill="white" text-anchor="middle" font-weight="bold">5</text>
+    <text x="62" y="30" font-size="15" fill="white" font-weight="bold">Kur</text>
+    <text x="62" y="48" font-size="11" fill="rgba(255,255,255,0.3)">OOBE sihirbazi</text>
+    <rect x="12" y="62" width="236" height="60" rx="8" fill="rgba(0,0,0,0.2)"/>
+    <text x="20" y="80" font-size="10" fill="rgba(255,255,255,0.6)" font-family="monospace">> GPU detected: NVIDIA</text>
+    <text x="20" y="96" font-size="10" fill="rgba(255,255,255,0.6)" font-family="monospace">> Installing driver...</text>
+    <text x="20" y="112" font-size="10" fill="#2ecc71" font-family="monospace">> Configuring KWin...</text>
+    <text x="16" y="145" font-size="11" fill="rgba(255,255,255,0.5)">Donanim algilama +</text>
+    <text x="16" y="163" font-size="11" fill="rgba(255,255,255,0.5)">otomatik yapilandirma</text>
+  </g>
+
+  <!-- Arrow -->
+  <g transform="translate(585, 350)">
+    <text x="0" y="0" font-size="24" fill="rgba(255,255,255,0.2)">→</text>
+  </g>
+
+  <!-- Step 6: Ready -->
+  <g transform="translate(610, 270)">
+    <rect x="0" y="0" width="260" height="190" rx="14" fill="rgba(46,204,113,0.08)" stroke="rgba(46,204,113,0.2)"/>
+    <rect x="10" y="10" width="40" height="40" rx="10" fill="#2ecc71"/>
+    <text x="30" y="36" font-size="18" fill="white" text-anchor="middle" font-weight="bold">✓</text>
+    <text x="62" y="30" font-size="15" fill="#2ecc71" font-weight="bold">Hazir!</text>
+    <text x="62" y="48" font-size="11" fill="rgba(255,255,255,0.3)">Karya DE kullanima hazir</text>
+    <rect x="12" y="62" width="236" height="60" rx="8" fill="rgba(0,0,0,0.2)"/>
+    <text x="20" y="80" font-size="10" fill="#2ecc71" font-family="monospace">Karya DE v1.0.0</text>
+    <text x="20" y="100" font-size="10" fill="rgba(255,255,255,0.6)" font-family="monospace">NVIDIA RTX 3060</text>
+    <text x="20" y="120" font-size="10" fill="rgba(255,255,255,0.6)" font-family="monospace">8 GB RAM</text>
+    <text x="16" y="155" font-size="11" fill="rgba(255,255,255,0.5)">Yeniden baslat ve</text>
+    <text x="16" y="173" font-size="11" fill="rgba(255,255,255,0.5)">Karya DE'nin keyfini cikar</text>
+    <rect x="170" y="145" width="80" height="30" rx="8" fill="#2ecc71"/>
+    <text x="210" y="164" font-size="12" fill="white" text-anchor="middle" font-weight="bold">YENIDEN BASLAT</text>
+  </g>
+
+</svg>

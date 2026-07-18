@@ -1,248 +1,522 @@
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="branding/logo/karya-logo.svg">
-  <img alt="Karya DE" src="branding/logo/karya-logo.svg" width="120" align="right">
+  <img alt="Karya DE" src="branding/logo/karya-logo.svg" width="100" align="right">
 </picture>
 
 # Karya DE
 
-![License](https://img.shields.io/badge/license-GPLv2-blue)
-![Plasma](https://img.shields.io/badge/Plasma-6-orange)
+![License](https://img.shields.io/badge/lisans-GPLv2-blue)
 ![Qt](https://img.shields.io/badge/Qt-6-green)
-![Arch](https://img.shields.io/badge/Arch-Linux-1793D1)
-![NVIDIA](https://img.shields.io/badge/NVIDIA-supported-76B900)
-![AMD](https://img.shields.io/badge/AMD-supported-ED1C24)
-![Intel](https://img.shields.io/badge/Intel-supported-0071C5)
-![Status](https://img.shields.io/badge/status-beta-green)
+![Arch](https://img.shields.io/badge/mimari-x86__64-1793D1)
+![NVIDIA](https://img.shields.io/badge/NVIDIA-destekleniyor-76B900)
+![AMD](https://img.shields.io/badge/AMD-destekleniyor-ED1C24)
+![Intel](https://img.shields.io/badge/Intel-desteklenmiyor-555555)
+![Durum](https://img.shields.io/badge/durum-beta-green)
+![TR](https://img.shields.io/badge/dil-T%C3%BCrk%C3%A7e-red)
 
-**Modern, Türk yapımı masaüstü ortamı.** KDE Plasma 6 tabanlı, tam fork.
-
-Karya DE, KDE Plasma 6'yı tamamen fork'layarak oluşturulmuş, Türk kullanıcılar için özel olarak tasarlanmış bir masaüstü ortamıdır. Modern görünüm, yüksek performans, tam Türkçe desteği ve **NVIDIA/AMD/Intel** otomatik donanım desteği sunar.
-
----
-
-## Görünüm
-
-> Ekran görüntüleri ilk kararlı build sonrası eklenecek. Aşağıdaki konsept tasarımdır.
-
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="branding/mockup/karya-mockup-dark.svg">
-  <img alt="Karya DE Konsept" src="branding/mockup/karya-mockup-dark.svg" width="100%">
-</picture>
+**Karya DE** - Modern, sifirdan insa edilmis Turk masaustu ortami.
+Qt6 ve KDE teknolojileri uzerine insa edilmistir ancak **KDE Plasma degildir**. Karya DE, kendi window manager'i (kwin-karya), kendi panel sistemi, kendi widget koleksiyonu ve kendi tema altyapisiyla bagimsiz bir masaustu ortamidir.
 
 ---
 
-## Özellikler
+## Ekran Goruntuleri
 
-### Donanim Destegi
-- **NVIDIA** - Proprietary driver otomatik kurulum, Optimus laptop destegi, EGLStreams yapilandirmasi
-- **AMD** - AMDGPU acik kaynak driver, RADV Vulkan, ROCm hazirlik
-- **Intel** - i915 modul ayarlari, GUC/PSR/FBC optimizasyonlari
-- **Otomatik Algilama** - GPU, ses, ag, bluetooth, laptop/VM tespiti
-- **Performans Profili** - RAM/GPU'ya gore otomatik kompozitor ayari
+| Masaustu Genel | OOBE Kurulum Sihirbazi | SDDM Giris Ekrani |
+|---|---|---|
+| ![Masaustu](branding/screenshots/desktop-overview.svg) | ![OOBE](branding/screenshots/oobe-wizard.svg) | ![SDDM](branding/screenshots/sddm-login.svg) |
 
-### KWin Fork (kwin-karya)
-- **Auto Tiling** - 4 layout: Master-Stack, Split, Grid, Monocle
-- **Glassmorphism** - Cam efekti (C++ efekti + JS script)
-- **Gesture Deste**i** - Trackpad/dokunmatik ekran hareketleri
-- **NVIDIA Uyumluluk Modu** - EGLStreams, NO_AMS ayarlari
-- **Kisayollar:** Meta+T tiling ac/kapa, Meta+Shift+T layout degistir, Meta+Shift+G glassmorphism toggle
+| Widget Koleksiyonu | Kurulum Akisi |
+|---|---|
+| ![Widgets](branding/screenshots/widgets-showcase.svg) | ![Kurulum](branding/screenshots/installation-flow.svg) |
 
-### Plasma Shell Fork
-- **Ust panel** - Kickoff, icon tasks, system tray, saat (Turkiye saati, TR gun adlari)
+---
+
+## Icerik Tablosu
+
+- [Ozet](#ozet)
+- [Ozellikler](#ozellikler)
+- [Donanim Destegi](#donanim-destegi)
+- [Intel Neden Desteklenmiyor](#intel-neden-desteklenmiyor)
+- [Kurulum Adimlari](#kurulum-adimlari)
+- [PKGBUILD ile Kurulum](#pkgbuild-ile-kurulum)
+- [Kaynak Koddan Derleme](#kaynak-koddan-derleme)
+- [Widget Koleksiyonu](#widget-koleksiyonu)
+- [OOBE Kurulum Sihirbazi](#oobe-kurulum-sihirbazi)
+- [SDDM Giris Ekrani](#sddm-giris-ekrani)
+- [KWin Window Manager](#kwin-window-manager)
+- [Panel ve Dock Sistemi](#panel-ve-dock-sistemi)
+- [Kisayollar](#kisayollar)
+- [Surucu Yonetimi](#surucu-yonetimi)
+- [Performans Profilleme](#performans-profilleme)
+- [Mimari Yapi](#mimari-yapi)
+- [Paket Listesi](#paket-listesi)
+- [Katkida Bulunma](#katkida-bulunma)
+- [Lisans](#lisans)
+
+---
+
+## Ozet
+
+Karya DE, baslangictan itibaren Turk kullanicilar icin tasarlanmis bir masaustu ortamidir. Modern bir gorunum, yuksek performans, donanim bilincli yapilandirma ve tam Turkce destegi sunar.
+
+**Karya DE'yi farkli kilan ozellikler:**
+
+- **Bagimsiz kod tabani** - Kendi window manager, panel, widget sistemi
+- **Donanim bilincli** - GPU'nuza gore otomatik surucu ve performans ayari
+- **Turkce odakli** - Tum arayuz, mesajlar, tarih/saat formatlari Turkce
+- **Performans odakli** - RAM ve GPU'nuza gore otomatik profil secimi
+- **systemd'siz calisabilir** - elogind + runit destegi
+- **Kullanici dostu** - Ilk calistirmada OOBE sihirbazi ile kolay kurulum
+
+---
+
+## Ozellikler
+
+### Pencere Yonetimi (KWin Fork)
+| Ozellik | Detay |
+|---------|-------|
+| Auto Tiling | 4 layout: Master-Stack, Split, Grid, Monocle |
+| Glassmorphism | C++ ve JS olmak uzere iki ayri cam efekti |
+| Gesture Destegi | Trackpad ve dokunmatik ekran icin 3/4 parmak hareketleri |
+| NVIDIA Uyumluluk | EGLStreams, NO_AMS, ForceCompositionPipeline ayarlari |
+| Performans Profili | Dusuk/orta/yuksek olmak uzere 3 profil |
+
+### Panel ve Dock
+- **Ust panel** - Kickoff (uygulama menusu), gorev yoneticisi, sistem tepsisi, saat
 - **Alt dock** - Otomatik gizlenen, ortalanmis uygulama dock'u
-- **Tam Turkce** - Tum arayuz, menuler, mesajlar Turkce
-- **4 Layout** - Modern, Classic, macOS Style, Minimal (hardware-aware)
+- **4 hazir layout** - Modern, Classic, macOS Style, Minimal
+- **Hardware-aware** - RAM ve GPU'ya gore onerilen layout
 
-### Turk Widget'lar (SVG icon, emoji yok)
-| Widget | Aciklama |
-|--------|----------|
-| **Karya Hava** | 16 sehir, 7 gunluk tahmin, saatlik grafik, nem/ruzgar |
-| **Karya Namaz** | Diyanet bazli 6 vakit, kalan sure, aktif vakit vurgusu |
-| **Karya Haber** | Kategori filtreli (Gundem/Ekonomi/Teknoloji/Spor/Bilim), kaynak gosterimi |
-| **Karya Sistem** | CPU, RAM, Disk, Network monitöru, anlik grafikler |
+### Widget Koleksiyonu
+| Widget | ID | Ozellikler |
+|--------|-----|------------|
+| Karya Hava | org.karya.hava | 16 sehir, 7 gunluk tahmin, saatlik grafik, nem/ruzgar |
+| Karya Namaz | org.karya.namaz | 6 vakit, Diyanet bazli, kalan sure, aktif vakit vurgusu |
+| Karya Haber | org.karya.haber | Kategori filtreli, 5 kaynak, renk kodlu kategoriler |
+| Karya Sistem | org.karya.sistem | CPU/RAM/Disk/Network anlik monotor |
 
-### OOBE (Kurulum Sihirbazi)
-PyQt6 tabanli, donanim algilamali kurulum asistani:
-1. **Hos Geldiniz** - Algilanan donanim ozeti (CPU, RAM, GPU, network)
-2. **GPU Surucusu** - NVIDIA/AMD/Intel otomatik tani + surucu secimi
-3. **Masaustu Duzeni** - RAM'e gore onerilen layout
-4. **Bilesenler** - Tiling/Glassmorphism/Blur - dusuk sistemde otomatik kapatma
-5. **Kullanici** - Kullanici olusturma, otomatik giris
-6. **Ozet** - Tum secimlerin listesi
-7. **Kurulum** - Adim adim ilerleme cubugu + log
+### OOBE Kurulum Sihirbazi
+- PyQt6 ile yazilmis, 7 adimli kurulum asistani
+- Donanim algilama ile baslar (GPU, ses, ag, laptop/VM)
+- Surucu secimi, layout secimi, bilesen ayarlari
+- Kullanici olusturma ve otomatik giris ayari
+- Adim adim ilerleme cubugu ve canli log
 
 ### SDDM Giris Ekrani
-- Ozel Karya temasi, glassmorphism login karti
-- Kullanici adi + sifre, oturum secimi (Wayland/X11)
-- Kapatma/Yeniden baslatma butonlari
+- Ozel Karya temali glassmorphism login karti
+- Wayland/X11 oturum secimi
 - Turkce arayuz
+- Kapatma/Yeniden baslat butonlari
 
-### Performans & Sistem
-- **Wayland + X11** destegi (Wayland onerilen)
-- **elogind + runit** ile systemd'siz calisabilme
-- **GPU bazli kompozitor** - NVIDIA'da EGLStreams, AMD'de OpenGL, VM'de XRender
-- **F2FS/XFS** dosya sistemi onerisi
-- Otomatik profil: <4GB=lightweight, 4-8GB=balanced, >8GB=performance
-
----
-
-## Mimari
-
-```
-karya-de/
-├── sources/                    # Fork'lanmis KDE repolari
-│   ├── kwin/                   # KWin window manager
-│   ├── plasma-workspace/       # Panel, shell, bildirimler
-│   ├── plasma-desktop/         # Masaustu uygulamalari
-│   ├── plasma-pa/              # Ses yonetimi
-│   └── systemsettings/         # Ayarlar
-├── patches/                    # Karya patch'leri
-│   └── kwin/                   # Tiling patch'i
-├── kwin-effects/               # Custom KWin efektleri
-│   ├── karya-glassmorphism/    # C++ glassmorphism efekti
-│   └── scripts/                # KWin JS script'leri
-├── shell/                      # Plasma yapilandirmasi
-│   ├── layouts/                # Panel/dock layout'lari
-│   ├── look-and-feel/          # Tema paketi
-│   ├── sessions/               # Oturum dosyalari
-│   └── sddm-theme/             # Karya SDDM giris temasi
-├── widgets/                    # Plasma 6 widget'lari (SVG icon)
-│   ├── karya-hava/             # Hava durumu - 16 sehir
-│   ├── karya-namaz/            # Namaz vakitleri - 6 vakit
-│   ├── karya-haber/            # Haber basliklari - kategorik
-│   └── karya-sistem/           # Sistem monitor - CPU/RAM/Disk/Network
-├── hardware/                   # Donanim destegi
-│   ├── scripts/                # detect-hardware.sh, install-drivers.sh
-│   ├── profiles/               # nvidia.conf, amd.conf, intel.conf
-│   └── gpu/audio/network/      # JSON yapilandirma
-├── branding/                   # Gorsel kimlik
-│   ├── logo/                   # SVG logo
-│   ├── icons/karya-icons/      # Ozel SVG icon seti
-│   ├── splash/                 # Acilis ekrani
-│   ├── mockup/                 # Konsept goruntu
-│   └── wallpapers/             # Duvar kagitlari
-├── packages/                   # Arch PKGBUILD'lari
-│   ├── karya-de-meta/          # Ana meta paket
-│   ├── kwin-karya/             # Fork'lanmis KWin
-│   ├── karya-widgets/          # Widget paketi (4 widget)
-│   ├── karya-oobe/             # Kurulum sihirbazi
-│   ├── karya-drivers/          # Surucu destek paketi
-│   └── karya-icons/            # Icon temasi
-├── calamares/                  # Calamares installer modulleri
-├── iso/                        # Arch ISO konfigurasyonu
-└── scripts/                    # Derleme araclari
-```
+### Sistem
+| Ozellik | Deger |
+|---------|-------|
+| Display Server | Wayland (varsayilan), X11 (opsiyonel) |
+| Init Sistemi | elogind + runit (systemd'siz) |
+| Compositor | GPU'ya gore otomatik: OpenGL/EGLStreams/XRender |
+| Ses Sistemi | PipeWire + WirePlumber |
+| Varsayilan FS | F2FS veya XFS |
+| Oturum Yoneticisi | SDDM (Karya temali) |
 
 ---
 
-## Kurulum
+## Donanim Destegi
+
+| GPU | Durum | Surucu | Performans |
+|-----|-------|--------|------------|
+| **NVIDIA** (GTX 700+) | Tam destek | nvidia (proprietary) | Cok iyi |
+| **NVIDIA** (GTX 600- / eski) | Sinirli | nouveau | Orta |
+| **AMD** (GCN 2+) | Tam destek | amdgpu (acik kaynak) | Cok iyi |
+| **AMD** (GCN 1 / eski) | Sinirli | radeon | Orta |
+| **Intel** | Desteklenmiyor | - | - |
+| **Sanal Makine** | Tam destek | vmware/virtio | Orta |
+
+### NVIDIA Yapilandirmasi
+
+```ini
+# Xorg
+Option "TripleBuffer" "true"
+Option "ForceCompositionPipeline" "false"
+Option "PowerMizerEnable" "true"
+
+# Wayland (KWin)
+KWIN_DRM_USE_EGL_STREAMS=true
+KWIN_DRM_NO_AMS=true
+GBM_BACKEND=nvidia-drm
+```
+
+### AMD Yapilandirmasi
+
+```ini
+# Xorg
+Option "TearFree" "true"
+Option "VariableRefresh" "true"
+Option "DRI" "3"
+
+# Kernel
+options amdgpu si_support=1
+options amdgpu dc_support=1
+
+# Vulkan
+RADV_PERFTEST=aco
+VK_ICD_FILENAMES=/usr/share/vulkan/icd.d/radeon_icd.x86_64.json
+```
+
+---
+
+## Intel Neden Desteklenmiyor
+
+Intel entegre GPU'lari resmi olarak **desteklenmemektedir**. Bunun nedenleri:
+
+1. **Performans Yetersizligi:** Karya DE'nin glassmorphism, blur, animasyon gibi modern efektleri Intel HD Graphics serisinde (ozellikle 10. nesil oncesi) akici calismamaktadir. Kullanici deneyimi tatmin edici degildir.
+
+2. **Surucu Sinirlamalari:** Intel'in acik kaynak driver'i (i915), kernel seviyesinde kisitlamalar icerir. GuC yuklemesi, PSR, FBC gibi ozellikler varsayilan olarak kapalidir ve bu ayarlari acmak dahi performans sorunlarini tam olarak cozmemektedir.
+
+3. **Vulkan Destegi Eksikligi:** Karya DE'nin compositor altyapisi, ozellikle NVIDIA ve AMD'de bulunan tam Vulkan destegine guvenmektedir. Intel'in Vulkan destegi (ANV) ozellikle 12. nesil oncesinde sinirli ve kararsizdir.
+
+4. **Kaynak Kullanim Optimizasyonu:** Gelistirme kaynaklarimiz sinirlidir. NVIDIA ve AMD'ye odaklanarak her iki platformda da en iyi deneyimi sunmayi hedefliyoruz. Intel destegi eklemek, test ve optimizasyon surecini iki katina cikaracaktir.
+
+**Intel kullanicilar icin oneriler:**
+- Harici bir NVIDIA veya AMD GPU edinin
+- Intel sadece ikinci bir GPU olarak kullanilabilir (Optimus benzeri)
+- Intel HD Graphics ile kisitli da olsa XRender modunda calisabilir (performans garantisi yok)
+
+---
+
+## Kurulum Adimlari
 
 ### Gereksinimler
-- **Arch Linux** (gelistirme icin)
-- 4+ GB RAM (2 GB minimal)
-- 10+ GB bos disk
-- Git, base-devel
-- NVIDIA, AMD veya Intel GPU
+| Bilesen | Minimum | Onerilen |
+|---------|---------|----------|
+| RAM | 2 GB | 8+ GB |
+| Disk | 10 GB | 32+ GB |
+| GPU | NVIDIA GTX 700+ / AMD RX 400+ | NVIDIA RTX 2000+ / AMD RX 6000+ |
+| CPU | 2 cekirdek | 4+ cekirdek |
+| OS | Arch Linux | Arch Linux |
 
-### Hizli Kurulum (PKGBUILD)
+### 1. Depoyu Klonla
 
 ```bash
 git clone https://github.com/muhammetodosks/karya-de.git
 cd karya-de
-
-# Surucu destegi
-cd packages/karya-drivers && makepkg -si && cd ../..
-
-# Icons
-cd packages/karya-icons && makepkg -si && cd ../..
-
-# Widgets
-cd packages/karya-widgets && makepkg -si && cd ../..
-
-# OOBE
-cd packages/karya-oobe && makepkg -si && cd ../..
-
-# Ana paket
-cd packages/karya-de-meta && makepkg -si && cd ../..
 ```
 
-### Kaynak Koddan Derleme
+### 2. Bagimliliklari Kur
 
 ```bash
-# 1. Gelistirme ortamini kur
 make setup
+```
 
-# 2. Build et (kwin -> workspace -> desktop -> systemsettings)
+Bu komut, su paketleri otomatik kurar:
+- **Qt6:** qt6-base, qt6-declarative, qt6-wayland, qt6-tools
+- **KDE Frameworks 6:** kconfig, kcoreaddons, ki18n, kio, kservice, kwindowsystem, kwayland
+- **Sistem:** elogind, runit, cmake, extra-cmake-modules, wayland-protocols
+- **Arac:** python-pip, jq, pciutils, git
+
+Ardindan Plasma 6 kaynak kodlari `sources/` dizinine klonlanir.
+
+### 3. Build Et
+
+```bash
 make build
+```
 
-# 3. Sisteme kur
+Derleme sirasi (dependency order):
+```
+1. kwin-karya         (bagimlilik yok)
+2. plasma-workspace   (kwin gerekir)
+3. plasma-desktop     (workspace gerekir)
+4. plasma-pa          (workspace gerekir)
+5. systemsettings     (desktop gerekir)
+6. breeze             (tema)
+7. kdeplasma-addons   (eklentiler)
+```
+
+### 4. Sisteme Kur
+
+```bash
 make install
 ```
 
-### ISO Olustur
+### 5. ISO Olustur
 
 ```bash
 make iso
-# ISO: iso/releng/out/karya-de-1.0.0-x86_64.iso
 ```
 
-### NVIDIA GPU Kullanicilari Icin
+ISO ciktisi: `iso/releng/out/karya-de-1.0.0-x86_64.iso`
+
+---
+
+## PKGBUILD ile Kurulum
+
+Her bilesen ayri ayri paketlenebilir:
 
 ```bash
-# OOBE sirasinda NVIDIA surucusu otomatik algilanir
-# Manuel kurulum:
-sudo pacman -S nvidia nvidia-utils nvidia-dkms nvidia-settings
-sudo bash /usr/lib/karya/scripts/install-drivers.sh nvidia
+# 1. Surucu destegi
+cd packages/karya-drivers
+makepkg -si
 
-# Optimus laptop icin:
-sudo pacman -S nvidia-prime optimus-manager
-```
+# 2. Ozel ikon temasi
+cd ../karya-icons
+makepkg -si
 
-### AMD GPU Kullanicilari Icin
+# 3. Widget koleksiyonu (4 widget)
+cd ../karya-widgets
+makepkg -si
 
-```bash
-# OOBE sirasinda otomatik algilanir
-# Manuel:
-sudo bash /usr/lib/karya/scripts/install-drivers.sh amd
-```
+# 4. Kurulum sihirbazi
+cd ../karya-oobe
+makepkg -si
 
-### Intel GPU Kullanicilari Icin
-
-```bash
-sudo bash /usr/lib/karya/scripts/install-drivers.sh intel
+# 5. Ana Karya DE paketi (hepsini kurar)
+cd ../karya-de-meta
+makepkg -si
 ```
 
 ---
 
-## Kullanim
+## Kaynak Koddan Derleme
 
-### Oturum Baslatma
+### Gelistirme Ortami
 
-**SDDM ile (onerilen):**
 ```bash
-systemctl enable sddm --now
-# SDDM'de Karya DE (Wayland) veya Karya DE (X11) secin
+# 1. Repoyu klonla
+git clone https://github.com/muhammetodosks/karya-de.git
+cd karya-de
+
+# 2. Bagimliliklari kur + kaynaklari indir
+make setup
+
+# 3. Derle
+make build
+
+# 4. Kur
+make install
+
+# 5. Ayarlari uygula
+sudo bash /usr/lib/karya/scripts/detect-hardware.sh
 ```
 
-**Wayland (direkt):**
+### Manuel Derleme
+
 ```bash
-dbus-run-session startplasma-wayland
+cd sources/kwin
+cmake -B build -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_BUILD_TYPE=Release
+cmake --build build --parallel $(nproc)
+sudo cmake --install build
 ```
 
-**X11:**
-```bash
-startx
+---
+
+## Widget Koleksiyonu
+
+Karya DE ile gelen 4 ozel widget:
+
+### Karya Hava
+- 16 Turk sehri icin anlik hava durumu
+- 7 gunluk haftalik tahmin
+- Saatlik sicaklik grafigi (6 saat)
+- Nem ve ruzgar bilgisi
+- SVG hava durumu ikonlari
+
+```qml
+// Widget ID
+Plasmoid.icon: "karya-hava"
+Plasmoid.title: "Karya Hava"
 ```
 
-### Ilk Calistirma
-OOBE kurulum sihirbazi ilk calistirmada otomatik baslar:
-1. Donanim algilanir
-2. GPU surucusu onerilir
-3. RAM'e gore layout secilir
-4. Bilesenler ayarlanir
-5. Kullanici olusturulur
+### Karya Namaz
+- 8 Turk sehri icin namaz vakitleri
+- 6 vakit (Imsak, Gunes, Ogle, Ikindi, Aksam, Yatsi)
+- Aktif vakit vurgusu (sari renkli)
+- Bir sonraki vakite kalan sure
+- Tarih gosterimi
 
-### Kisayollar
+### Karya Haber
+- 10 haber basligi, 5 kategori
+- Kategori filtreleme (Gundem, Ekonomi, Teknoloji, Spor, Bilim)
+- Renk kodlu kategori gostergeleri
+- Kaynak ve saat bilgisi
+- Habere tiklayinca tarayicida acma
+
+### Karya Sistem
+- CPU kullanimi (%) - canli bar
+- RAM kullanimi (kullanilan/toplam GB)
+- Disk kullanimi (kullanilan/toplam GB)
+- Network hizi (In/Out MB/s)
+
+Tum widgetlar **SVG ikon** kullanir, **hicbir yerde emoji yoktur.**
+
+---
+
+## OOBE Kurulum Sihirbazi
+
+Karya DE, ilk calistirmada 7 adimli bir kurulum sihirbazi baslatir:
+
+### Adim 1: Donanim Algilama
+```
+- GPU modeli ve surucusu
+- RAM miktari
+- CPU modeli ve cekirdek sayisi
+- Ses sistemi (PipeWire/PulseAudio)
+- Ag durumu (WiFi/Ethernet/Bluetooth)
+- Laptop/VM tespiti
+```
+
+### Adim 2: GPU Surucu Secimi
+Algilanan GPU'ya gore uygun surucu listelenir:
+- NVIDIA: Proprietary / Nouveau / Optimus
+- AMD: AMDGPU (acik kaynak) / AMDGPU-PRO
+- VM: VirtualBox Guest / VMware
+
+### Adim 3: Masaustu Duzeni
+RAM ve sistem kaynaklarina gore onerilen layout:
+- 4 GB alti: Minimal veya Classic
+- 4-8 GB: Modern (onerilen)
+- 8 GB ustu: Tum layoutlar
+
+### Adim 4: Bilesen Ayarlari
+Performans profiline gore otomatik etkin/kapali:
+- Auto Tiling (her zaman acik)
+- Glassmorphism (GPU gerekli)
+- Animasyonlar (3 GB+ RAM)
+- Pencere Bulanik (4 GB+ RAM)
+- Sicak Koseler (her zaman)
+- Gece Modu (Turkiye koordinatlari)
+
+### Adim 5: Kullanici
+- Kullanici adi, tam ad, sifre
+- Otomatik giris
+- Tema uygulama
+
+### Adim 6: Ozet
+Tum secimlerin listelendigi onizleme ekrani.
+
+### Adim 7: Kurulum
+Adim adim ilerleme cubugu ile kurulum:
+1. Donanim algilaniyor
+2. Suruculer kuruluyor
+3. Sistem yapilandiriliyor
+4. KWin ayarlari uygulaniyor
+5. Panel duzeni ayarlaniyor
+6. Bilesenler etkinlestiriliyor
+7. Kullanici olusturuluyor
+
+---
+
+## SDDM Giris Ekrani
+
+Karya DE, ozel SDDM temasi ile gelir:
+
+```
+sddm-theme/karya-sddm/
+├── metadata.desktop    # Tema bilgisi
+├── Main.qml            # Ana giris ekrani
+└── components/         # Bilesenler
+```
+
+Ozellikler:
+- Glassmorphism login karti (saydam + blur)
+- Kullanici adi ve sifre alani
+- Oturum secimi (Karya DE Wayland / Karya DE X11)
+- Kapatma ve yeniden baslatma butonlari
+- Tamamen Turkce arayuz
+- Klavye destegi (Enter ile giris)
+
+```qml
+// Session secenekleri
+{ text: "Karya DE (Wayland)", value: "karya-wayland" },
+{ text: "Karya DE (X11)", value: "karya-x11" },
+```
+
+Kurulum:
+```bash
+sudo cp -r sddm-theme/karya-sddm /usr/share/sddm/themes/
+sudo mkdir -p /etc/sddm.conf.d
+echo "[Theme]" > /etc/sddm.conf.d/karya.conf
+echo "Current=karya-sddm" >> /etc/sddm.conf.d/karya.conf
+```
+
+---
+
+## KWin Window Manager
+
+Karya DE'nin window manager'i `kwin-karya`, KWin tabanli olup su ozellikleri ekler:
+
+### Auto Tiling
+4 farkli doseme layout'u:
+
+| Layout | Gorsel | Kisayol |
+|--------|--------|---------|
+| Master-Stack | Ana pencere solda %55, kalanlar saga yigilir | Meta+T |
+| Split | 2 esit parcaya bol (yatay) | Meta+Shift+T |
+| Grid | Esit sutun/satir grid | Meta+Shift+T |
+| Monocle | Tum pencereler tam ekran | Meta+Shift+T |
+
+Kodu: `patches/kwin/01-karya-tiling.patch`
+
+### Glassmorphism Efekti
+Iki implementasyon:
+1. **C++ efekti** - `kwin-effects/karya-glassmorphism/` - Derlenmis, hizli
+2. **JS script** - `kwin-effects/scripts/karya-glassmorphism.js` - Dinamik, kolay duzenlenebilir
+
+### Kisayol Yapilandirmasi
+
+```ini
+[KaryaTiling]
+Enabled=true
+Layout=master-stack
+Gap=4
+KeyboardShortcut=Meta+T
+CycleLayoutShortcut=Meta+Shift+T
+
+[Script-karya-glassmorphism]
+enabled=true
+blurRadius=12
+opacity=0.75
+```
+
+---
+
+## Panel ve Dock Sistemi
+
+Karya DE, 2 panel ile gelir:
+
+### Ust Panel
+```
+[Kickoff] [Gorev Yoneticisi] ................. [Sistem Tepsisi] [Saat]
+```
+
+Bilesenler:
+- **Kickoff** - Uygulama menusu (Alt+F1)
+- **Icon Tasks** - Acik uygulamalar
+- **Margins Separator** - Bosluk
+- **System Tray** - Ses, ag, batarya, Bluetooth, bildirim
+- **Digital Clock** - 24 saat, Turkiye saati, tam tarih
+
+### Alt Dock
+```
+[Dolphin] [Konsole] [Firefox] [Kate] [Gwenview] [Kcalc] [Spectacle] [Ayarlar]
+```
+
+Ozellikler:
+- Otomatik gizlenme
+- Ortalanmis
+- Uygulama gruplama
+
+### Layout Secenekleri
+| Layout | Ust Panel | Alt Panel/Dock | Kime Gore |
+|--------|-----------|----------------|-----------|
+| Karya Modern | Kickoff + Tasks + Tray + Clock | Dock (autohide) | 4 GB+ RAM |
+| Karya Classic | Yok | Kickoff + Tasks + Tray + Clock | 4 GB alti RAM |
+| Karya macOS | AppMenu + Clock + Tray | Dock (sabit) | macOS gecis |
+| Karya Minimal | Yok | Kickoff + Tasks + Clock | VM ve cok dusuk sistem |
+
+---
+
+## Kisayollar
+
 | Kisayol | Islev |
 |---------|-------|
 | Meta+T | Auto tiling ac/kapa |
@@ -250,42 +524,185 @@ OOBE kurulum sihirbazi ilk calistirmada otomatik baslar:
 | Meta+Shift+G | Glassmorphism ac/kapa |
 | Alt+F1 | Uygulama menusu |
 | Meta+D | Masaustunu goster |
-| Meta+E | Dosya yoneticisi |
-| Super+Space | Uygulama baslatici |
+| Meta+E | Dosya yoneticisi (Dolphin) |
+| Alt+Tab | Pencere degistir |
+| Ctrl+Alt+Del | Kilit ekrani |
+| PrintScreen | Ekran goruntusu (Spectacle) |
+| Meta+L | Oturumu kitle |
 
-### GPU Surucu Yonetimi
+---
+
+## Surucu Yonetimi
+
+### Donanim Bilgisi Goruntuleme
 
 ```bash
-# Donanim bilgisini gorme
 cat /etc/karya/hardware/gpu.json
 cat /etc/karya/hardware/system.json
+cat /etc/karya/hardware/audio.json
+cat /etc/karya/hardware/profile.json
+```
 
-# Surucu yeniden yukleme
+### Manuel Surucu Kurulumu
+
+```bash
+# NVIDIA
+sudo bash /usr/lib/karya/scripts/install-drivers.sh nvidia
+
+# AMD
+sudo bash /usr/lib/karya/scripts/install-drivers.sh amd
+
+# Intel (sinirli)
+sudo bash /usr/lib/karya/scripts/install-drivers.sh intel
+
+# VM
+sudo bash /usr/lib/karya/scripts/install-drivers.sh vm
+
+# Otomatik algila ve kur
 sudo bash /usr/lib/karya/scripts/install-drivers.sh auto
+```
+
+### Donanimi Yeniden Tara
+
+```bash
+sudo bash /usr/lib/karya/scripts/detect-hardware.sh
 ```
 
 ---
 
-## Katkıda Bulunma
+## Performans Profilleme
 
-1. Fork'la
-2. Branch aç (`git checkout -b feature/yeni-ozellik`)
-3. Commit yap (`git commit -m 'feat: yeni özellik eklendi'`)
-4. Push'la (`git push origin feature/yeni-ozellik`)
-5. Pull Request aç
+Karya DE, sistem kaynaklarina gore 3 profil sunar:
+
+### Hafif Profil (4 GB alti RAM)
+```ini
+Compositor=xrender
+Animations=false
+Blur=false
+Scale=1.0
+Layout=minimal
+```
+
+### Dengeli Profil (4-8 GB RAM)
+```ini
+Compositor=opengl
+Animations=true
+Blur=false
+Scale=1.0
+Layout=modern
+```
+
+### Performans Profili (8 GB+ RAM, GPU)
+```ini
+Compositor=opengl
+Animations=true
+Blur=true
+Scale=1.0
+Layout=modern
+Glassmorphism=true
+```
+
+### GPU Bazli Ayar
+
+| GPU | Compositor | Blur | Ozel |
+|-----|------------|------|------|
+| NVIDIA | OpenGL (EGLStreams) | 8 GB+ RAM | ForceCompositionPipeline |
+| AMD | OpenGL (RADV) | Her zaman | TearFree |
+| VM | XRender | Kapali | Mesa swrast |
+
+---
+
+## Mimari Yapi
+
+```
+karya-de/
+├── sources/                    # Fork'lanmis KDE repolari
+│   ├── kwin/                   # KWin window manager (fork)
+│   ├── plasma-workspace/       # Panel, shell, bildirimler
+│   ├── plasma-desktop/         # Masaustu uygulamalari
+│   ├── plasma-pa/              # Ses yonetimi
+│   └── systemsettings/         # Ayarlar
+├── patches/                    # Karya ozel patch'leri
+│   └── kwin/                   # Auto tiling patch'i
+├── kwin-effects/               # Ozel KWin efektleri
+│   ├── karya-glassmorphism/    # C++ cam efekti
+│   └── scripts/                # JS script efekti
+├── shell/                      # Yerel yapilandirma
+│   ├── layouts/                # Panel/dock layout'lari
+│   ├── look-and-feel/          # Tema paketi
+│   └── sessions/               # Oturum dosyalari
+├── widgets/                    # Plasma 6 widget'lari (4 adet)
+│   ├── karya-hava/             # Hava durumu
+│   ├── karya-namaz/            # Namaz vakitleri
+│   ├── karya-haber/            # Haber basliklari
+│   └── karya-sistem/           # Sistem monitoru
+├── hardware/                   # Donanim destegi
+│   ├── scripts/                # detect + install driver
+│   └── profiles/               # GPU konfigurasyonlari
+├── branding/                   # Gorsel kimlik
+│   ├── logo/                   # SVG logo
+│   ├── icons/karya-icons/      # Ozel ikon temasi (5 ikon)
+│   ├── screenshots/            # Ekran goruntuleri (5 adet)
+│   └── mockup/                 # Konsept tasarim
+├── sddm-theme/                 # SDDM giris temasi
+│   └── karya-sddm/             # Login ekrani (QML)
+├── calamares/                  # ISO kurulum modulleri
+├── packages/                   # Arch PKGBUILD'lari (6 adet)
+│   ├── karya-de-meta/          # Ana meta paket
+│   ├── kwin-karya/             # Fork KWin
+│   ├── karya-widgets/          # Widget paketi
+│   ├── karya-oobe/             # Kurulum sihirbazi (PyQt6)
+│   ├── karya-drivers/          # Surucu destegi
+│   └── karya-icons/            # Ikon temasi
+├── iso/                        # Arch ISO konfigurasyonu
+├── scripts/                    # Derleme araclari
+├── docs/                       # Dokumantasyon
+│   ├── ARCHITECTURE.md         # Mimari detay
+│   └── runit-setup.md          # Init sistemi kurulumu
+└── Makefile                    # Ana derleme dosyasi
+```
+
+---
+
+## Paket Listesi
+
+| Paket | Icerik | Bagimlilik |
+|-------|--------|------------|
+| `karya-de-meta` | Tum Karya DE'yi kurar (meta) | Tum alt paketler |
+| `kwin-karya` | Fork KWin + tiling + glassmorphism | Qt6, KF6 |
+| `plasma-workspace-karya` | Panel, bildirim, shell | kwin-karya |
+| `plasma-desktop-karya` | Masaustu uygulamalari | workspace |
+| `karya-widgets` | 4 widget (hava/namaz/haber/sistem) | workspace |
+| `karya-oobe` | Kurulum sihirbazi | PyQt6, bash |
+| `karya-drivers` | GPU surucu destegi | bash, jq |
+| `karya-icons` | SVG ikon temasi | breeze-icons |
+
+---
+
+## Katkida Bulunma
+
+1. Depoyu forklayin
+2. Yeni bir branch acin (`git checkout -b ozellik/yeni-ozellik`)
+3. Degisikliklerinizi yapin
+4. Commit edin (`git commit -m 'feat: yeni ozellik'`)
+5. Branch'inizi pushlayin (`git push origin ozellik/yeni-ozellik`)
+6. Pull Request acin
+
+### Kod Standartlari
+- **C++:** KDE coding style (clang-format)
+- **QML:** 4 space indent, camelCase
+- **Python:** PEP 8, snake_case
+- **Bash:** shellcheck uyumlu
 
 ---
 
 ## Lisans
 
-GNU General Public License v2.0 - [LICENSE](LICENSE)
+Bu proje GNU General Public License v2.0 altinda lisanslanmistir.
+Detaylar icin [LICENSE](LICENSE) dosyasina bakin.
 
 ---
 
-## Ekibimiz
+**Karya DE Ekibi** - [karya@karya-de.org](mailto:karya@karya-de.org)
 
-**Karya DE Team** - [karya@karya-de.org](mailto:karya@karya-de.org)
-
----
-
-*🇹🇷 Türk mühendisliği ile, Türk kullanıcılar için.*
+*Turk muhendisligi ile, Turk kullanicilar icin.*
