@@ -1,54 +1,63 @@
 # Maintainer: Karya DE Team
-# Contributor: Karya DE Team
 
 pkgname=karya-de-meta
 pkgver=1.0.0
-pkgrel=1
-pkgdesc="Karya Desktop Environment - Meta package"
+pkgrel=2
+pkgdesc="Karya Desktop Environment - Complete meta package"
 arch=('x86_64')
-url="https://github.com/karya-de/karya"
+url="https://karya-de.org"
 license=('GPL2')
 depends=(
-    # Core KDE fork packages
     kwin-karya
     plasma-workspace-karya
     plasma-desktop-karya
-    # Display
+    plasma-pa-karya
+    systemsettings-karya
+    kdeplasma-addons
     xorg-server
     xorg-xinit
+    xorg-xrandr
     wayland
-    # Session
+    mesa
+    mesa-utils
+    lib32-mesa
     elogind
     runit
-    # Sound
     pipewire
     pipewire-pulse
     wireplumber
-    # Network
     networkmanager
     modemmanager
-    # Apps
     firefox
     dolphin
     konsole
+    kate
     gwenview
     kcalc
     spectacle
-    # Karya widgets
-    karya-widgets
-    # Setup
-    karya-oobe
-    # Fonts
+    ark
+    filelight
+    partitionmanager
     noto-fonts
     noto-fonts-emoji
     ttf-dejavu
     ttf-liberation
-    # Theming
+    ttf-hack
     breeze-icons
-    # Utils
-    ark
-    kate
+    karya-icons
+    karya-widgets
+    karya-oobe
+    karya-drivers
+    sddm
+    sddm-kcm
 )
-makedepends=()
+optdepends=(
+    'nvidia: NVIDIA GPU support'
+    'xf86-video-amdgpu: AMD GPU support'
+    'xf86-video-intel: Intel GPU support'
+    'bluedevil: Bluetooth support'
+    'print-manager: Printer support'
+    'calamares: System installer'
+)
 provides=('karya-desktop')
 conflicts=('plasma-desktop' 'plasma-workspace' 'kwin')

@@ -1,0 +1,6 @@
+---
+name: karya-welcome
+type: view
+interface: python
+script: main.py
+emergency: false

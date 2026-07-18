@@ -1,0 +1,21 @@
+{
+    "KPlugin": {
+        "Authors": [{"Email": "karya@karya-de.org", "Name": "Karya DE Team"}],
+        "Category": "System",
+        "Description": "Karya Sistem - System monitor and hardware info",
+        "Description[tr]": "Karya Sistem - Sistem izleme ve donanim bilgisi",
+        "EnabledByDefault": true,
+        "FormFactors": ["desktop"],
+        "Icon": "karya-sistem",
+        "Id": "org.karya.sistem",
+        "License": "GPL-2.0+",
+        "Name": "Karya Sistem",
+        "Name[tr]": "Karya Sistem",
+        "ServiceTypes": ["Plasma/Applet"],
+        "Version": "1.0.0",
+        "Website": "https://karya-de.org"
+    },
+    "X-Plasma-API": "declarativeappletscript",
+    "X-Plasma-MainScript": "ui/main.qml",
+    "X-Plasma-StandAlone": true
+}

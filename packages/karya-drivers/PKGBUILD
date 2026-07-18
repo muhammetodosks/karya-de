@@ -1,0 +1,65 @@
+# Maintainer: Karya DE Team
+
+pkgname=karya-drivers
+pkgver=1.0.0
+pkgrel=1
+pkgdesc="Karya DE Hardware driver support - NVIDIA, AMD, Intel auto-detection"
+arch=('x86_64')
+url="https://karya-de.org"
+license=('GPL2')
+depends=('bash' 'jq' 'pciutils')
+optdepends=(
+    'nvidia: NVIDIA proprietary driver support'
+    'xf86-video-amdgpu: AMD GPU support'
+    'xf86-video-intel: Intel GPU support'
+    'pipewire: Audio support'
+)
+
+package() {
+    install -dm755 "$pkgdir/usr/lib/karya/scripts"
+    install -Dm755 ../../hardware/scripts/detect-hardware.sh \
+        "$pkgdir/usr/lib/karya/scripts/detect-hardware.sh"
+    install -Dm755 ../../hardware/scripts/install-drivers.sh \
+        "$pkgdir/usr/lib/karya/scripts/install-drivers.sh"
+
+    install -dm755 "$pkgdir/usr/share/karya/hardware/profiles"
+    install -Dm644 ../../hardware/profiles/nvidia.conf \
+        "$pkgdir/usr/share/karya/hardware/profiles/nvidia.conf"
+    install -Dm644 ../../hardware/profiles/amd.conf \
+        "$pkgdir/usr/share/karya/hardware/profiles/amd.conf"
+    install -Dm644 ../../hardware/profiles/intel.conf \
+        "$pkgdir/usr/share/karya/hardware/profiles/intel.conf"
+
+    install -dm755 "$pkgdir/etc/X11/xorg.conf.d"
+    cat > "$pkgdir/etc/X11/xorg.conf.d/00-karya-touchpad.conf" << 'XEOF'
+Section "InputClass"
+    Identifier "Karya Touchpad"
+    MatchIsTouchpad "on"
+    Driver "libinput"
+    Option "Tapping" "on"
+    Option "NaturalScrolling" "on"
+    Option "ScrollMethod" "twofinger"
+EndSection
+XEOF
+
+    install -dm755 "$pkgdir/etc/modprobe.d"
+    cat > "$pkgdir/etc/modprobe.d/karya-nvidia.conf" << 'NEOF'
+options nvidia_drm modeset=1 fbdev=1
+options nvidia NVreg_PreserveVideoMemoryAllocations=1
+NEOF
+
+    cat > "$pkgdir/etc/modprobe.d/karya-amd.conf" << 'AEOF'
+options amdgpu si_support=1
+options amdgpu dc_support=1
+options amdgpu gpu_recovery=1
+AEOF
+
+    cat > "$pkgdir/etc/modprobe.d/karya-intel.conf" << 'IEOF'
+options i915 enable_guc=2
+options i915 enable_psr=1
+options i915 enable_fbc=1
+options i915 fastboot=1
+IEOF
+
+    install -dm755 "$pkgdir/etc/karya/hardware"
+}

@@ -1,0 +1,11 @@
+[Icon Theme]
+Name=Karya Icons
+Name[tr]=Karya Simgeleri
+Comment=Karya Desktop Environment icon theme
+Comment[tr]=Karya Masaüstü Ortamı simge teması
+Inherits=breeze
+DisplayDepth=32
+MinDisplayDepth=16
+Example=folder
+FollowsColorScheme=true
+KDE-Extensions=.svg

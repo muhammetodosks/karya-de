@@ -1,0 +1,9 @@
+[SddmGreeterTheme]
+Name=Karya SDDM
+Name[tr]=Karya SDDM
+Comment=Karya Desktop Environment login screen
+Comment[tr]=Karya Masaustu Ortami giris ekrani
+Type=SddmGreeterTheme
+Author=Karya DE Team
+Email=karya@karya-de.org
+Version=1.0.0

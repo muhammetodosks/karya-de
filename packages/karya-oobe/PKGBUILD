@@ -2,12 +2,39 @@
 
 pkgname=karya-oobe
 pkgver=1.0.0
-pkgrel=1
-pkgdesc="Karya DE First Run Setup Wizard"
+pkgrel=2
+pkgdesc="Karya DE First Run Setup Wizard - Hardware-aware installer"
 arch=('x86_64')
 url="https://karya-de.org"
 license=('GPL2')
-depends=('qt6-base' 'qt6-declarative' 'kirigami2')
+depends=(
+    'qt6-base' 'qt6-declarative' 'kirigami2' 'pyqt6'
+    'python' 'bash' 'jq' 'pciutils'
+)
 makedepends=('cmake' 'extra-cmake-modules')
-source=("karya-oobe-$pkgver.tar.gz")
-sha256sums=('SKIP')
+
+package() {
+    install -dm755 "$pkgdir/usr/bin"
+    install -Dm755 src/karya-oobe.py "$pkgdir/usr/bin/karya-oobe"
+
+    install -dm755 "$pkgdir/usr/lib/karya/oobe"
+    cp -r src/services "$pkgdir/usr/lib/karya/oobe/"
+    cp -r src/pages "$pkgdir/usr/lib/karya/oobe/"
+
+    install -dm755 "$pkgdir/etc/xdg/autostart"
+    cat > "$pkgdir/etc/xdg/autostart/karya-first-run.desktop" << 'EOF'
+[Desktop Entry]
+Type=Application
+Name=Karya First Run
+Name[tr]=Karya Ilk Calistirma
+Comment=Karya DE first run setup wizard
+Comment[tr]=Karya DE ilk calistirma kurulum sihirbazi
+Exec=/usr/bin/karya-oobe
+OnlyShowIn=Karya
+X-KDE-autostart-phase=2
+NoDisplay=true
+EOF
+
+    install -Dm755 scripts/karya-first-run.sh \
+        "$pkgdir/usr/lib/karya/scripts/karya-first-run.sh"
+}

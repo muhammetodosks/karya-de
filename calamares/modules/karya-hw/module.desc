@@ -1,0 +1,6 @@
+---
+name: karya-hw
+type: job
+interface: python
+script: main.py
+emergency: false
