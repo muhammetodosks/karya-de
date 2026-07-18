@@ -2,14 +2,14 @@
 
 pkgname=karya-de-meta
 pkgver=1.0.0
-pkgrel=2
-pkgdesc="Karya Desktop Environment - Complete meta package"
+pkgrel=3
+pkgdesc="Karya Desktop Environment - Complete meta package (tek komutla kurulum)"
 arch=('x86_64')
 url="https://karya-de.org"
 license=('GPL2')
+install=karya-de-meta.install
 depends=(
-    kwin
-    plasma-workspace
+    kwin-karya
     xorg-server
     xorg-xinit
     xorg-xrandr
@@ -45,7 +45,6 @@ depends=(
     karya-oobe
     karya-drivers
     sddm
-    sddm-kcm
 )
 optdepends=(
     'nvidia: NVIDIA GPU support'
@@ -53,8 +52,8 @@ optdepends=(
     'xf86-video-intel: Intel GPU support'
     'bluedevil: Bluetooth support'
     'print-manager: Printer support'
-    'calamares: System installer'
-    'kdeplasma-addons: Additional Plasma applets'
 )
 provides=('karya-desktop')
 conflicts=('plasma-desktop')
+source=("$pkgname-$pkgver.tar.gz::https://github.com/muhammetodosks/karya-de/archive/refs/tags/v$pkgver.tar.gz")
+sha256sums=('SKIP')

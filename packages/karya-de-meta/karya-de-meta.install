@@ -1,0 +1,23 @@
+post_install() {
+    echo ""
+    echo "╔══════════════════════════════════════╗"
+    echo "║     Karya DE v1.0.0 KURULDU!         ║"
+    echo "╚══════════════════════════════════════╝"
+    echo ""
+    echo "  SDDM'i aktif et:"
+    echo "    sudo systemctl enable sddm --now"
+    echo ""
+    echo "  Yeniden baslat:"
+    echo "    sudo reboot"
+    echo ""
+    echo "  Yardim: https://github.com/muhammetodosks/karya-de"
+    echo ""
+}
+
+post_upgrade() {
+    post_install
+}
+
+pre_remove() {
+    echo "Karya DE kaldiriliyor..."
+}

@@ -19,15 +19,36 @@ Qt6 ve KDE teknolojileri üzerine inşa edilmiştir ancak **KDE Plasma değildir
 
 ---
 
+## Tek Komutla Kurulum
+
+```bash
+# Arch Linux
+sudo pacman -Syu
+curl -sL https://github.com/muhammetodosks/karya-de/raw/master/install.sh | sudo bash
+sudo reboot
+```
+
+Ya da kaynaktan derlemek için:
+
+```bash
+git clone https://github.com/muhammetodosks/karya-de.git
+cd karya-de
+make setup
+make build
+make install
+```
+
+---
+
 ## Ekran Görüntüleri
 
 | Masaüstü Genel | OOBE Kurulum Sihirbazı | SDDM Giriş Ekranı |
 |---|---|---|
-| ![Masaüstü](branding/screenshots/desktop-overview.svg) | ![OOBE](branding/screenshots/oobe-wizard.svg) | ![SDDM](branding/screenshots/sddm-login.svg) |
+| ![Masaüstü](branding/screenshots/desktop-overview.png) | ![OOBE](branding/screenshots/oobe-wizard.png) | ![SDDM](branding/screenshots/sddm-login.png) |
 
 | Widget Koleksiyonu | Kurulum Akışı | Pencere Yönetimi |
 |---|---|---|
-| ![Widgets](branding/screenshots/widgets-showcase.svg) | ![Kurulum](branding/screenshots/installation-flow.svg) | ![Pencere Yönetimi](branding/screenshots/windowing.svg) |
+| ![Widgets](branding/screenshots/widgets-showcase.png) | ![Kurulum](branding/screenshots/installation-flow.png) | ![Pencere Yönetimi](branding/screenshots/windowing.png) |
 
 ---
 
