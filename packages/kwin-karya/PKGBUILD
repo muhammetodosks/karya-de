@@ -31,6 +31,9 @@ source=("https://github.com/muhammetodosks/kwin/archive/v$pkgver.tar.gz")
 sha256sums=('SKIP')
 
 build() {
+    cd "$srcdir"
+    # GitHub archive creates a subdirectory; find and enter it
+    cd "$(find . -maxdepth 1 -type d | grep -v '^\.$' | head -1)"
     cmake -B build -S . \
         -DCMAKE_INSTALL_PREFIX=/usr \
         -DCMAKE_BUILD_TYPE=Release \
@@ -38,6 +41,11 @@ build() {
         -DKWIN_BUILD_DECORATIONS=ON \
         -DKWIN_BUILD_TABBOX=ON
     cmake --build build --parallel "$(nproc)"
+}
+
+package() {
+    cd "$srcdir/$(find . -maxdepth 1 -type d | grep -v '^\.$' | head -1)"
+    DESTDIR="$pkgdir" cmake --install build
 }
 
 package() {
