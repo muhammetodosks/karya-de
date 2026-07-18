@@ -2,7 +2,7 @@
 
 pkgname=kwin-karya
 pkgver=6.0.0
-pkgrel=2
+pkgrel=3
 pkgdesc="Karya DE - Fork of KWin with custom tiling, gestures, glassmorphism"
 arch=('x86_64')
 url="https://github.com/muhammetodosks/kwin"
