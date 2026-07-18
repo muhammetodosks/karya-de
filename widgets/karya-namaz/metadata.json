@@ -1,0 +1,26 @@
+{
+    "KPlugin": {
+        "Authors": [
+            {
+                "Email": "karya@karya-de.org",
+                "Name": "Karya DE Team"
+            }
+        ],
+        "Category": "Utilities",
+        "Description": "Karya Namaz - Türkiye namaz vakitleri",
+        "Description[tr]": "Karya Namaz - Diyanet bazlı namaz vakitleri",
+        "EnabledByDefault": true,
+        "FormFactors": ["desktop"],
+        "Icon": "karya-namaz",
+        "Id": "org.karya.namaz",
+        "License": "GPL-2.0+",
+        "Name": "Karya Namaz",
+        "Name[tr]": "Karya Namaz",
+        "ServiceTypes": ["Plasma/Applet"],
+        "Version": "1.0.0",
+        "Website": "https://karya-de.org"
+    },
+    "X-Plasma-API": "declarativeappletscript",
+    "X-Plasma-MainScript": "ui/main.qml",
+    "X-Plasma-StandAlone": true
+}

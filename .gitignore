@@ -1,0 +1,30 @@
+# Build
+build/
+sources/*/build/
+__pycache__/
+*.pyc
+*.pyo
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Packages
+packages/*/*.pkg.tar.zst
+packages/*/src/
+packages/*/pkg/
+
+# ISO
+iso/releng/work/
+iso/releng/out/
+
+# Temp
+*.log
+*.tmp
+/tmp/

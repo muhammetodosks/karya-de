@@ -1,0 +1,42 @@
+# Maintainer: Karya DE Team
+
+pkgname=kwin-karya
+pkgver=6.0.0
+pkgrel=1
+pkgdesc="Karya DE - Fork of KWin with custom tiling, gestures, glassmorphism"
+arch=('x86_64')
+url="https://github.com/karya-de/kwin"
+license=('GPL2')
+depends=(
+    qt6-base qt6-declarative qt6-wayland
+    kconfig kcoreaddons kcrash kdbusaddons kdeclarative
+    kglobalaccel kguiaddons ki18n kiconthemes kio
+    kitemmodels kitemviews kpackage kservice kwidgetsaddons
+    kwindowsystem kxmlgui kwayland
+    libepoxy libxcb xcb-util-cursor xcb-util-keysyms
+    xcb-util-wm xcb-util-xrm
+    libdrm mesa wayland
+    elogind
+)
+makedepends=(
+    cmake extra-cmake-modules
+    wayland-protocols plasma-wayland-protocols
+)
+provides=('kwin')
+conflicts=('kwin')
+source=("https://github.com/karya-de/kwin/archive/v$pkgver.tar.gz")
+sha256sums=('SKIP')
+
+build() {
+    cmake -B build \
+        -DCMAKE_INSTALL_PREFIX=/usr \
+        -DCMAKE_BUILD_TYPE=Release \
+        -DBUILD_TESTING=OFF \
+        -DKWIN_BUILD_DECORATIONS=ON \
+        -DKWIN_BUILD_TABBOX=ON
+    cmake --build build --parallel "$(nproc)"
+}
+
+package() {
+    DESTDIR="$pkgdir" cmake --install build
+}

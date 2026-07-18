@@ -1,0 +1,37 @@
+[kdeglobals]
+General=ColorScheme=karya-dark
+General=Font=Noto Sans,10,-1,5,50,0,0,0,0,0
+General=shadeSortColumn=true
+General=activeFont=Noto Sans,10,-1,5,50,0,0,0,0,0
+General=fixedFont=Hack,9,-1,5,50,0,0,0,0,0
+General=smallestReadableFont=Noto Sans,8,-1,5,50,0,0,0,0,0
+General=toolBarFont=Noto Sans,9,-1,5,50,0,0,0,0,0
+General=menuFont=Noto Sans,10,-1,5,50,0,0,0,0,0
+
+[PlasmaTheme]
+name=karya-de
+
+[KDE]
+widgetStyle=Breeze
+Style=SelectionBackground=50,130,200
+Style=SelectionForeground=255,255,255
+
+[Icons]
+Theme=karya-icons
+
+[cursor]
+Theme=karya-cursors
+
+[Compositing]
+Enabled=true
+OpenGLIsUnsafe=false
+Backend=OpenGL
+
+[KWin]
+WindowDecoration=karya-decoration
+BorderColor=100,140,200
+TitleColor=50,50,50
+TitleTextColor=255,255,255
+
+[wallpaper]
+org.kde.color=0,0,0,255

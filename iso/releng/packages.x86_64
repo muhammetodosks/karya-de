@@ -1,0 +1,27 @@
+# Karya DE ISO Packages
+karya-de-meta
+xorg-server
+xorg-xinit
+wayland
+elogind
+runit
+pipewire
+pipewire-pulse
+wireplumber
+networkmanager
+firefox
+dolphin
+konsole
+kate
+gwenview
+kalc
+spectacle
+noto-fonts
+noto-fonts-emoji
+ttf-dejavu
+ttf-liberation
+breeze-icons
+ark
+kate
+xdg-user-dirs
+xdg-utils

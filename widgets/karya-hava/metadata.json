@@ -1,0 +1,30 @@
+{
+    "KPlugin": {
+        "Authors": [
+            {
+                "Email": "karya@karya-de.org",
+                "Name": "Karya DE Team"
+            }
+        ],
+        "Category": "Utilities",
+        "Description": "Karya Hava - Türkiye hava durumu",
+        "Description[tr]": "Karya Hava - Türkiye için güncel hava durumu",
+        "EnabledByDefault": true,
+        "FormFactors": [
+            "desktop"
+        ],
+        "Icon": "karya-hava",
+        "Id": "org.karya.hava",
+        "License": "GPL-2.0+",
+        "Name": "Karya Hava",
+        "Name[tr]": "Karya Hava",
+        "ServiceTypes": [
+            "Plasma/Applet"
+        ],
+        "Version": "1.0.0",
+        "Website": "https://karya-de.org"
+    },
+    "X-Plasma-API": "declarativeappletscript",
+    "X-Plasma-MainScript": "ui/main.qml",
+    "X-Plasma-StandAlone": true
+}

@@ -1,0 +1,23 @@
+# Maintainer: Karya DE Team
+
+pkgname=karya-widgets
+pkgver=1.0.0
+pkgrel=1
+pkgdesc="Karya DE custom widgets - Weather, Prayer Times, News"
+arch=('x86_64')
+url="https://karya-de.org"
+license=('GPL2')
+depends=('plasma-workspace-karya' 'qt6-base' 'qt6-declarative')
+makedepends=('cmake' 'extra-cmake-modules')
+provides=('karya-widgets')
+
+package() {
+    install -dm755 "$pkgdir/usr/share/plasma/plasmoids/org.karya.hava"
+    cp -r "$srcdir/karya-hava/"* "$pkgdir/usr/share/plasma/plasmoids/org.karya.hava/"
+
+    install -dm755 "$pkgdir/usr/share/plasma/plasmoids/org.karya.namaz"
+    cp -r "$srcdir/karya-namaz/"* "$pkgdir/usr/share/plasma/plasmoids/org.karya.namaz/"
+
+    install -dm755 "$pkgdir/usr/share/plasma/plasmoids/org.karya.haber"
+    cp -r "$srcdir/karya-haber/"* "$pkgdir/usr/share/plasma/plasmoids/org.karya.haber/"
+}

@@ -1,0 +1,21 @@
+{
+    "KPlugin": {
+        "Authors": [{"Email": "karya@karya-de.org", "Name": "Karya DE Team"}],
+        "Category": "News",
+        "Description": "Karya Haber - Türkiye haber başlıkları",
+        "Description[tr]": "Karya Haber - Son dakika haberleri",
+        "EnabledByDefault": true,
+        "FormFactors": ["desktop"],
+        "Icon": "karya-haber",
+        "Id": "org.karya.haber",
+        "License": "GPL-2.0+",
+        "Name": "Karya Haber",
+        "Name[tr]": "Karya Haber",
+        "ServiceTypes": ["Plasma/Applet"],
+        "Version": "1.0.0",
+        "Website": "https://karya-de.org"
+    },
+    "X-Plasma-API": "declarativeappletscript",
+    "X-Plasma-MainScript": "ui/main.qml",
+    "X-Plasma-StandAlone": true
+}

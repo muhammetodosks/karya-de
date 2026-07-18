@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=Karya DE (Wayland)
+Name[tr]=Karya Masaüstü (Wayland)
+Comment=Karya Desktop Environment on Wayland
+Comment[tr]=Karya Masaüstü Ortamı (Wayland)
+Exec=/usr/bin/startplasma-wayland
+TryExec=/usr/bin/startplasma-wayland
+Type=Application
+DesktopNames=Karya
+X-GDM-SessionRegisters=true

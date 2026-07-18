@@ -1,0 +1,221 @@
+From: Karya DE Team <karya@karya-de.org>
+Date: Mon, 1 Jan 2026 12:00:00 +0000
+Subject: [PATCH 01] Karya Tiling - Custom tiling window manager for KWin
+
+Adds auto-tiling support to KWin:
+- Master-stack layout
+- Split layout
+- Custom gap configuration
+- Keyboard shortcuts: Meta+T toggle, Meta+Shift+T cycle layout
+
+diff --git a/src/tiling/karyatilemanager.h b/src/tiling/karyatilemanager.h
+new file mode 100644
+index 0000000..e69de29
+--- /dev/null
++++ b/src/tiling/karyatilemanager.h
+@@ -0,0 +1,52 @@
++#ifndef KARYATILEMANAGER_H
++#define KARYATILEMANAGER_H
++
++#include <QObject>
++#include <QList>
++#include <QRect>
++#include <QKeyEvent>
++
++namespace KWin
++{
++
++class AbstractClient;
++
++enum TileLayout {
++    TileLayoutMasterStack,  // Master + stack sağda
++    TileLayoutSplit,        // Eşit bölünmüş
++    TileLayoutGrid,         // Grid layout
++    TileLayoutMonocle       // Tek pencere tam ekran
++};
++
++class KaryaTileManager : public QObject
++{
++    Q_OBJECT
++public:
++    explicit KaryaTileManager(QObject* parent = nullptr);
++    ~KaryaTileManager() override;
++
++    void toggleTiling();
++    void cycleLayout();
++    void tileWindows();
++    void setGap(int gap);
++    int gap() const { return m_gap; }
++    bool isEnabled() const { return m_enabled; }
++    TileLayout layout() const { return m_layout; }
++
++protected:
++    bool keyEvent(QKeyEvent* event);
++
++private:
++    void layoutMasterStack(QList<AbstractClient*> windows, QRect area);
++    void layoutSplit(QList<AbstractClient*> windows, QRect area);
++    void layoutGrid(QList<AbstractClient*> windows, QRect area);
++    void layoutMonocle(QList<AbstractClient*> windows, QRect area);
++    void applyGeometry(AbstractClient* client, QRect geo);
++
++    bool m_enabled;
++    int m_gap;
++    TileLayout m_layout;
++};
++
++} // namespace KWin
++
++#endif // KARYATILEMANAGER_H
+diff --git a/src/tiling/karyatilemanager.cpp b/src/tiling/karyatilemanager.cpp
+new file mode 100644
+index 0000000..e69de29
+--- /dev/null
++++ b/src/tiling/karyatilemanager.cpp
+@@ -0,0 +1,143 @@
++#include "karyatilemanager.h"
++#include "abstract_client.h"
++#include "workspace.h"
++#include "utils.h"
++
++namespace KWin
++{
++
++KaryaTileManager::KaryaTileManager(QObject* parent)
++    : QObject(parent)
++    , m_enabled(false)
++    , m_gap(4)
++    , m_layout(TileLayoutMasterStack)
++{
++}
++
++KaryaTileManager::~KaryaTileManager()
++{
++}
++
++void KaryaTileManager::toggleTiling()
++{
++    m_enabled = !m_enabled;
++    if (m_enabled) {
++        tileWindows();
++    }
++}
++
++void KaryaTileManager::cycleLayout()
++{
++    m_layout = static_cast<TileLayout>((m_layout + 1) % 4);
++    if (m_enabled) {
++        tileWindows();
++    }
++}
++
++void KaryaTileManager::tileWindows()
++{
++    Workspace* ws = Workspace::self();
++    if (!ws) return;
++
++    QList<AbstractClient*> windows;
++    const auto clients = ws->clientList();
++    for (auto* c : clients) {
++        if (c->isNormalWindow() && !c->isMinimized() && !c->isSpecialWindow()) {
++            windows.append(c);
++        }
++    }
++
++    if (windows.isEmpty()) return;
++
++    QRect area = ws->geometry();
++    area.adjust(m_gap, m_gap, -m_gap, -m_gap);
++
++    switch (m_layout) {
++    case TileLayoutMasterStack:
++        layoutMasterStack(windows, area);
++        break;
++    case TileLayoutSplit:
++        layoutSplit(windows, area);
++        break;
++    case TileLayoutGrid:
++        layoutGrid(windows, area);
++        break;
++    case TileLayoutMonocle:
++        layoutMonocle(windows, area);
++        break;
++    }
++}
++
++void KaryaTileManager::layoutMasterStack(QList<AbstractClient*> windows, QRect area)
++{
++    if (windows.isEmpty()) return;
++    AbstractClient* master = windows.takeFirst();
++    int masterWidth = area.width() * 0.55;
++    applyGeometry(master, QRect(area.x(), area.y(), masterWidth, area.height()));
++
++    if (windows.isEmpty()) return;
++    int stackWidth = area.width() - masterWidth - m_gap;
++    int stackY = area.y();
++    int stackHeight = (area.height() - m_gap * (windows.size() - 1)) / windows.size();
++    for (auto* w : windows) {
++        applyGeometry(w, QRect(area.x() + masterWidth + m_gap, stackY, stackWidth, stackHeight));
++        stackY += stackHeight + m_gap;
++    }
++}
++
++void KaryaTileManager::layoutSplit(QList<AbstractClient*> windows, QRect area)
++{
++    if (windows.isEmpty()) return;
++    int count = qMin(windows.size(), 2);
++    for (int i = 0; i < count; i++) {
++        int w = area.width() / count;
++        applyGeometry(windows[i], QRect(area.x() + i * w, area.y(), w - m_gap/2, area.height()));
++    }
++}
++
++void KaryaTileManager::layoutGrid(QList<AbstractClient*> windows, QRect area)
++{
++    int count = windows.size();
++    if (count == 0) return;
++    int cols = qCeil(qSqrt(count));
++    int rows = qCeil((double)count / cols);
++    int cellW = area.width() / cols;
++    int cellH = area.height() / rows;
++    for (int i = 0; i < count; i++) {
++        int x = area.x() + (i % cols) * cellW;
++        int y = area.y() + (i / cols) * cellH;
++        applyGeometry(windows[i], QRect(x, y, cellW - m_gap/2, cellH - m_gap/2));
++    }
++}
++
++void KaryaTileManager::layoutMonocle(QList<AbstractClient*> windows, QRect area)
++{
++    for (auto* w : windows) {
++        applyGeometry(w, area);
++    }
++}
++
++void KaryaTileManager::applyGeometry(AbstractClient* client, QRect geo)
++{
++    if (!client) return;
++    client->setGeometry(geo);
++    client->setKeepAbove(false);
++}
++
++bool KaryaTileManager::keyEvent(QKeyEvent* event)
++{
++    if (event->key() == Qt::Key_T && (event->modifiers() & Qt::MetaModifier)) {
++        if (event->modifiers() & Qt::ShiftModifier) {
++            cycleLayout();
++        } else {
++            toggleTiling();
++        }
++        return true;
++    }
++    return false;
++}
++
++void KaryaTileManager::setGap(int gap)
++{
++    m_gap = qBound(0, gap, 32);
++    if (m_enabled) tileWindows();
++}
++
++} // namespace KWin

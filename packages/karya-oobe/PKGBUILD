@@ -1,0 +1,13 @@
+# Maintainer: Karya DE Team
+
+pkgname=karya-oobe
+pkgver=1.0.0
+pkgrel=1
+pkgdesc="Karya DE First Run Setup Wizard"
+arch=('x86_64')
+url="https://karya-de.org"
+license=('GPL2')
+depends=('qt6-base' 'qt6-declarative' 'kirigami2')
+makedepends=('cmake' 'extra-cmake-modules')
+source=("karya-oobe-$pkgver.tar.gz")
+sha256sums=('SKIP')

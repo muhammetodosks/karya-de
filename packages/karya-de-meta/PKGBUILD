@@ -1,0 +1,54 @@
+# Maintainer: Karya DE Team
+# Contributor: Karya DE Team
+
+pkgname=karya-de-meta
+pkgver=1.0.0
+pkgrel=1
+pkgdesc="Karya Desktop Environment - Meta package"
+arch=('x86_64')
+url="https://github.com/karya-de/karya"
+license=('GPL2')
+depends=(
+    # Core KDE fork packages
+    kwin-karya
+    plasma-workspace-karya
+    plasma-desktop-karya
+    # Display
+    xorg-server
+    xorg-xinit
+    wayland
+    # Session
+    elogind
+    runit
+    # Sound
+    pipewire
+    pipewire-pulse
+    wireplumber
+    # Network
+    networkmanager
+    modemmanager
+    # Apps
+    firefox
+    dolphin
+    konsole
+    gwenview
+    kcalc
+    spectacle
+    # Karya widgets
+    karya-widgets
+    # Setup
+    karya-oobe
+    # Fonts
+    noto-fonts
+    noto-fonts-emoji
+    ttf-dejavu
+    ttf-liberation
+    # Theming
+    breeze-icons
+    # Utils
+    ark
+    kate
+)
+makedepends=()
+provides=('karya-desktop')
+conflicts=('plasma-desktop' 'plasma-workspace' 'kwin')
