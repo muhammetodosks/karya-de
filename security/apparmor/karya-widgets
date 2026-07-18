@@ -1,0 +1,37 @@
+# Karya DE - Widget Koleksiyonu AppArmor Profili
+# Hava, Namaz, Haber, Sistem widget'lari icin
+# servis bazli erisim kontrolleri.
+
+#include <tunables/global>
+
+/usr/lib/qt6/qml/org/karya/** {
+    #include <abstractions/base>
+    #include <abstractions/qt6>
+
+    # Karya yapilandirma
+    /etc/karya/config/*.conf            r,
+
+    # Ag erisimi (hava durumu, haber)
+    /etc/resolv.conf                    r,
+    /etc/hosts                          r,
+    /etc/nsswitch.conf                  r,
+
+    # Sistem bilgisi (sistem widget)
+    /proc/cpuinfo                       r,
+    /proc/meminfo                       r,
+    /proc/diskstats                     r,
+    /proc/net/dev                       r,
+    /sys/class/net/**/statistics/**     r,
+
+    # Zaman dilimi
+    /etc/timezone                       r,
+    /etc/localtime                      r,
+    /usr/share/zoneinfo/**              r,
+
+    # Karya ikonlari
+    /usr/share/icons/karya-icons/**     r,
+
+    # SSL sertifikalari (API cagrilari)
+    /etc/ssl/**                         r,
+    /etc/ca-certificates/**             r,
+}

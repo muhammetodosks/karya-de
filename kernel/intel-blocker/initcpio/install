@@ -1,0 +1,27 @@
+# Karya DE - Intel GPU Blocker initramfs install script
+# Bu script, mkinitcpio'ya hook'un nasil kurulacagini belirtir.
+
+build() {
+    add_checked_modules_for_pci 0x0300 0x8086
+    add_checked_modules_for_pci 0x0380 0x8086
+    add_module "karya-intel-block"
+    add_binary "sleep" "/usr/bin/sleep"
+    add_binary "cat" "/usr/bin/cat"
+    add_binary "cut" "/usr/bin/cut"
+    add_binary "head" "/usr/bin/head"
+}
+
+help() {
+    cat << HELPEOF
+  Karya DE Intel Blocker Hook
+  --------------------------
+  Bu hook, initramfs asamasinda Intel GPU tespit eder
+  ve sistemi baslatmadan bloklar.
+
+  Hook sirasi: bu hook, udev'den ONCE calismalidir.
+  /etc/mkinitcpio.conf -> hooks dizisinde (udev) oncesine ekleyin:
+    HOOKS=(... karya-intel-block udev ...)
+
+  Pasif gecmek icin: KARYA_SKIP_INTEL_CHECK=1
+HELPEOF
+}

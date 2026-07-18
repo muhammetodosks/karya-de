@@ -1,0 +1,49 @@
+# Karya DE - KWin Window Manager AppArmor Profili
+# kwin_karya icin sikilastirilmis erisim profili.
+
+#include <tunables/global>
+
+/usr/bin/kwin_karya {
+    #include <abstractions/base>
+    #include <abstractions/qt6>
+    #include <abstractions/X>
+
+    # KWin yapilandirma
+    /etc/xdg/kwin/kwinrc               r,
+    /etc/xdg/kwin/kwinrulesrc           r,
+    ~/.config/kwinrc                     rw,
+    ~/.config/kwinrulesrc                rw,
+
+    # KWin scriptleri
+    /usr/share/kwin/scripts/**          r,
+    ~/.local/share/kwin/scripts/**       r,
+
+    # KWin efektleri
+    /usr/lib/qt6/plugins/kwin/effects/* r,
+
+    # Kwin tiling
+    /etc/karya/config/tiling.conf       r,
+
+    # DRM (Wayland)
+    /dev/dri/*                          rw,
+
+    # GPU bilgisi
+    /proc/driver/nvidia/**              r,
+    /sys/class/drm/**                   r,
+    /sys/devices/**/drm/**              r,
+
+    # Session
+    /run/user/*/wayland-*               rw,
+    /tmp/.X11-unix/X*                   rw,
+
+    # Input
+    /dev/input/*                        r,
+    /run/udev/data/*                    r,
+
+    # Process
+    /proc/*/maps                        r,
+    /proc/*/status                      r,
+    /proc/*/comm                        r,
+    /proc/*/cmdline                     r,
+}
+

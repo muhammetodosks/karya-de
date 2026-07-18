@@ -51,11 +51,15 @@ detect_gpu() {
         gpu_vendor="intel"
         gpu_is_intel=true
         gpu_model=$(echo "$gpu_info" | grep -i 'intel.*graphics\|intel.*hd\|intel.*iris' | head -1 | sed 's/.*: //' | sed 's/ \[.*//' | cut -c1-80)
-        if modinfo i915 &>/dev/null; then
-            gpu_driver="i915"
-        else
-            gpu_driver="modesetting"
-        fi
+        gpu_driver="BLOCKED"
+        echo ""
+        echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+        echo "  UYARI: Intel GPU algilandi!"
+        echo "  Karya DE Intel GPU DESTEKLEMEZ."
+        echo "  Kernel seviyesinde bloklanacak."
+        echo "  NVIDIA veya AMD GPU kullanin."
+        echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+        echo ""
 
     elif echo "$gpu_info" | grep -qi 'vmware\|virtualbox\|qemu\|vm'; then
         gpu_vendor="virtual"
@@ -72,6 +76,8 @@ detect_gpu() {
     "is_nvidia": $gpu_is_nvidia,
     "is_amd": $gpu_is_amd,
     "is_intel": $gpu_is_intel,
+    "is_blocked": $( [[ "$gpu_vendor" == "intel" ]] && echo "true" || echo "false" ),
+    "block_reason": $( [[ "$gpu_vendor" == "intel" ]] && echo "\"Intel GPU'lar Karya DE tarafindan desteklenmemektedir. Sebep: Performans yetersizligi, Vulkan eksikligi, surucu kisitlamalari.\"" || echo "\"\"" ),
     "has_proprietary_driver": $( [[ "$gpu_driver" == "nvidia" || "$gpu_driver" == "amdgpu-pro" ]] && echo "true" || echo "false" ),
     "needs_proprietary_driver": $( [[ "$gpu_vendor" == "nvidia" ]] && echo "true" || echo "false" )
 }
@@ -226,8 +232,15 @@ generate_profile() {
             blur=true
             ;;
         intel)
-            compositor="opengl"
-            blur=$([[ $ram -ge 8192 ]] && echo "true" || echo "false")
+            echo ""
+            echo "Karya DE: Intel GPU desteklenmiyor - profil olusturulamadi."
+            echo "NVIDIA veya AMD GPU'ya gecis yapin."
+            echo "VM kullaniyorsaniz VM profili kullanin."
+            echo ""
+            profile="blocked"
+            compositor="xrender"
+            animations=false
+            blur=false
             ;;
         virtual)
             compositor="xrender"

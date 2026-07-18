@@ -1,0 +1,63 @@
+# Karya DE - Surucu Yonetimi AppArmor Profili
+# install-drivers.sh ve detect-hardware.sh icin.
+
+#include <tunables/global>
+
+/usr/lib/karya/scripts/install-drivers.sh {
+    #include <abstractions/base>
+    #include <abstractions/bash>
+
+    # Karya hardware bilgisi
+    /etc/karya/hardware/**              rw,
+    /etc/karya/hardware/                rw,
+
+    # Pacman
+    /usr/bin/pacman                     ix,
+    /etc/pacman.conf                    r,
+    /etc/pacman.d/**                    r,
+    /var/lib/pacman/**                  rw,
+    /var/cache/pacman/pkg/**            rw,
+
+    # Kernel modulleri
+    /sbin/modprobe                      ix,
+    /usr/bin/modprobe                   ix,
+    /etc/modprobe.d/**                  rw,
+    /lib/modules/**                     r,
+
+    # Xorg yapilandirma
+    /etc/X11/xorg.conf.d/**             rw,
+
+    # Log
+    /var/log/karya-driver-install.log   rw,
+
+    # Proc
+    /proc/modules                       r,
+    /proc/cpuinfo                       r,
+}
+
+/usr/lib/karya/scripts/detect-hardware.sh {
+    #include <abstractions/base>
+    #include <abstractions/bash>
+
+    # Sistem bilgisi
+    /etc/karya/hardware/                rw,
+    /etc/karya/hardware/**              rw,
+    /proc/cpuinfo                       r,
+    /proc/meminfo                       r,
+    /proc/modules                       r,
+
+    # Donanim
+    /sys/class/**                       r,
+    /sys/bus/pci/**                     r,
+    /sys/devices/**                     r,
+
+    # Ag
+    /sys/class/net/**                   r,
+
+    # Ses
+    /sys/class/sound/**                 r,
+
+    # PCI
+    /usr/bin/lspci                      ix,
+}
+

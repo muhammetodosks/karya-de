@@ -1,0 +1,76 @@
+# Karya DE - OOBE Kurulum Sihirbazi AppArmor Profili
+# Bu profil, karya-oobe.py'nin sistem uzerinde
+# sadece gerekli dosyalara erismesini saglar.
+
+#include <tunables/global>
+
+/usr/bin/karya-oobe {
+    #include <abstractions/base>
+    #include <abstractions/python>
+    #include <abstractions/qt6>
+
+    # Karya sistem dosyalari - OKUMA
+    /etc/karya/hardware/*.json          r,
+    /etc/karya/hardware/driver.txt      r,
+    /etc/karya/hardware/profile.json    r,
+    /etc/karya/config/*.conf            r,
+
+    # Karya sistem dosyalari - YAZMA
+    /etc/karya/config/*.conf            w,
+    /etc/karya/hardware/profile.json    w,
+    /etc/karya/hardware/driver.txt      w,
+
+    # Kullanici olusturma
+    /etc/passwd                         r,
+    /etc/shadow                         r,
+    /etc/group                          r,
+    /etc/gshadow                        r,
+
+    # Sistem servisleri
+    /etc/runit/sv/karya-*               r,
+    /etc/runit/runsvdir/current/karya-* r,
+
+    # Kernel bilgisi
+    /proc/cpuinfo                       r,
+    /proc/meminfo                       r,
+    /proc/modules                       r,
+    /sys/devices/**                     r,
+    /sys/class/**                       r,
+
+    # PCI (GPU tespiti)
+    /sys/bus/pci/devices/**             r,
+    /proc/bus/pci/**                    r,
+
+    # GPU bilgisi
+    /proc/driver/nvidia/**              r,
+    /sys/class/drm/**                   r,
+
+    # Donanim bilgisi
+    /sys/class/power_supply/**          r,
+    /sys/class/net/**                   r,
+    /sys/class/sound/**                 r,
+
+    # Log dosyasi
+    /var/log/karya-oobe.log             rw,
+
+    # Paket yoneticisi
+    /usr/bin/pacman                     ix,
+    /etc/pacman.conf                    r,
+    /var/lib/pacman/**                  r,
+    /var/cache/pacman/**                r,
+
+    # Shell
+    /usr/bin/bash                       ix,
+
+    # Gecici dosyalar
+    /tmp/karya-*                        rw,
+    /var/tmp/karya-*                    rw,
+
+    # Karya ikonlari
+    /usr/share/icons/karya-icons/**     r,
+    /usr/share/pixmaps/karya/**         r,
+
+    # Qt pluginleri
+    /usr/lib/qt6/**                     r,
+    /usr/lib/python3*/**                r,
+}

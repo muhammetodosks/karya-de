@@ -1,0 +1,81 @@
+# Karya DE - SELinux Politika Dosyasi
+# Bu dosya, Karya DE bilesenleri icin SELinux
+# guvenlik politikalarini tanimlar.
+
+# ============================================================
+# KAYNAK TANIMLARI
+# ============================================================
+
+# Karya system type
+type karya_t;
+type karya_oobe_t;
+type karya_widgets_t;
+type karya_kwin_t;
+type karya_drivers_t;
+type karya_hardware_t;
+
+# ============================================================
+# DOMAIN TANIMLARI
+# ============================================================
+
+# OOBE kurulum sihirbazi
+domain_type(karya_oobe_t)
+domain_obj(karya_oobe_t)
+
+allow karya_oobe_t self:process { execmem execstack };
+allow karya_oobe_t karya_hardware_t:dir { read search };
+allow karya_oobe_t karya_hardware_t:file { read write open };
+allow karya_oobe_t self:unix_stream_socket create_stream_socket_perms;
+allow karya_oobe_t self:tcp_socket { create connect };
+corenet_tcp_connect_all_ports(karya_oobe_t)
+
+# KWin window manager
+domain_type(karya_kwin_t)
+domain_obj(karya_kwin_t)
+
+allow karya_kwin_t self:process { execmem };
+allow karya_kwin_t self:capability { sys_admin dac_override };
+allow karya_kwin_t self:unix_stream_socket { create listen accept };
+allow karya_kwin_t self:unix_dgram_socket { create send };
+dev_read_urand(karya_kwin_t)
+dev_rw_dri(karya_kwin_t)
+
+# Karya widget'lari
+domain_type(karya_widgets_t)
+domain_obj(karya_widgets_t)
+
+allow karya_widgets_t self:process { execmem };
+allow karya_widgets_t self:unix_stream_socket create_stream_socket_perms;
+allow karya_widgets_t karya_hardware_t:file { read open getattr };
+
+# Surucu yonetimi
+domain_type(karya_drivers_t)
+domain_obj(karya_drivers_t)
+
+allow karya_drivers_t self:process { execmem };
+allow karya_drivers_t self:capability { sys_module sys_admin };
+allow karya_drivers_t self:unix_stream_socket create_stream_socket_perms;
+allow karya_drivers_t self:tcp_socket { create connect };
+corenet_tcp_connect_all_ports(karya_drivers_t)
+
+# ============================================================
+# DOSYA ETIKETLEME
+# ============================================================
+
+# /etc/karya altindaki her sey
+file_type_auto_trans(karya_t, karya_hardware_t, dir, /etc/karya)
+file_type_auto_trans(karya_t, karya_hardware_t, file, /etc/karya(/.*)?)
+
+# Karya ikonlari
+file_type_auto_trans(karya_t, karya_hardware_t, file, /usr/share/icons/karya-icons(/.*)?)
+
+# Karya logolari
+file_type_auto_trans(karya_t, karya_hardware_t, file, /usr/share/pixmaps/karya(/.*)?)
+
+# ============================================================
+# AG ETIKETLEME
+# ============================================================
+
+# Karya servisleri icin ag portlari
+corenet_port(karya_oobe_t)
+corenet_port(karya_kwin_t)

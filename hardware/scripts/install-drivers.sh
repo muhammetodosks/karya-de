@@ -50,16 +50,30 @@ install_amd_amdgpu() {
 }
 
 install_intel() {
-    log "Intel sürücüleri kuruluyor..."
-    if command -v pacman &>/dev/null; then
-        pacman -S --noconfirm xf86-video-intel mesa-utils \
-            vulkan-intel lib32-vulkan-intel 2>&1 | tee -a "$LOG"
-    elif command -v apt &>/dev/null; then
-        apt install -y xserver-xorg-video-intel mesa-utils \
-            mesa-vulkan-drivers 2>&1 | tee -a "$LOG"
-    fi
+    log "HATA: Intel GPU suruculeri kurulamaz!"
+    echo ""
+    echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+    echo "  Karya DE Intel GPU DESTEKLEMEZ!"
+    echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+    echo ""
+    echo "Intel GPU'lar icin surucu kurulumu engellendi."
+    echo ""
+    echo "Sebep:"
+    echo "  1. Performans: Intel iGPU'lar glassmorphism, blur,"
+    echo "     ve modern compositor efektlerini kaldiramaz."
+    echo "  2. Vulkan: Intel Vulkan (ANV) destegi ozellikle"
+    echo "     12. nesil oncesi kararsiz ve eksiktir."
+    echo "  3. Surucu: i915 driver'i kernel seviyesinde"
+    echo "     kisitlamalar icerir."
+    echo "  4. Kaynak: Gelistirme NVIDIA ve AMD'ye odaklanmistir."
+    echo ""
+    echo "Cozum: NVIDIA veya AMD GPU kullanin."
+    echo "VM'de calisiyorsaniz VM profili kullanin."
+    echo ""
+    log "Intel kurulumu REDDEDILDI."
     echo "intel" > "$KARYA_HARDWARE_DIR/driver.txt"
-    log "Intel sürücüleri kuruldu."
+    echo "BLOCKED" >> "$KARYA_HARDWARE_DIR/driver.txt"
+    return 1
 }
 
 install_vm_drivers() {

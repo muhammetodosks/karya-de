@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" font-family="'Courier New', 'DejaVu Sans Mono', monospace">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#0a0e14"/>
+      <stop offset="100%" stop-color="#141b24"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="800" height="500" fill="url(#bg)"/>
+
+  <!-- Ust baslik -->
+  <text x="30" y="35" fill="#ffcc00" font-size="13" font-weight="bold">karya-firewall.nft</text>
+  <text x="700" y="35" fill="#666" font-size="11" text-anchor="end">Karya DE v1.0</text>
+
+  <!-- nftables kodu -->
+  <text x="30" y="70" fill="#888" font-size="13"># /etc/nftables.d/karya-firewall.nft</text>
+  <text x="30" y="92" fill="#888" font-size="13"># Karya DE Varsayilan Firewall Kural Seti</text>
+
+  <text x="30" y="120" fill="#00d648" font-size="13" font-weight="bold">table inet karya_firewall</text>
+  <text x="30" y="142" fill="#888" font-size="13">{</text>
+
+  <text x="50" y="164" fill="#ffcc00" font-size="13" font-weight="bold">chain input</text>
+  <text x="50" y="182" fill="#888" font-size="13">{</text>
+  <text x="70" y="200" fill="#888" font-size="13">type filter hook input priority 0; policy drop;</text>
+  <text x="70" y="218" fill="#aaa" font-size="13">iif "lo" accept</text>
+  <text x="70" y="236" fill="#aaa" font-size="13">ct state established,related accept</text>
+  <text x="70" y="254" fill="#aaa" font-size="13">tcp dport { 22, 443 } accept</text>
+  <text x="70" y="272" fill="#aaa" font-size="13">ip protocol icmp accept</text>
+  <text x="70" y="290" fill="#ff5555" font-size="13">log prefix "[KARYA-FW-BLOCK] " drop</text>
+  <text x="50" y="308" fill="#888" font-size="13">}</text>
+
+  <text x="50" y="330" fill="#ffcc00" font-size="13" font-weight="bold">chain forward</text>
+  <text x="50" y="348" fill="#888" font-size="13">{</text>
+  <text x="70" y="366" fill="#888" font-size="13">type filter hook forward priority 0; policy drop;</text>
+  <text x="50" y="384" fill="#888" font-size="13">}</text>
+
+  <text x="50" y="406" fill="#ffcc00" font-size="13" font-weight="bold">chain output</text>
+  <text x="50" y="424" fill="#888" font-size="13">{</text>
+  <text x="70" y="442" fill="#888" font-size="13">type filter hook output priority 0; policy accept;</text>
+  <text x="50" y="460" fill="#888" font-size="13">}</text>
+
+  <text x="30" y="482" fill="#888" font-size="13">}</text>
+</svg>

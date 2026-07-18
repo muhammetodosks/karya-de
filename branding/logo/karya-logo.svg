@@ -1,32 +1,92 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="none">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
   <defs>
-    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#1a1a2e"/>
-      <stop offset="100%" stop-color="#16213e"/>
+    <linearGradient id="pr" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#667eea"/>
+      <stop offset="100%" stop-color="#764ba2"/>
     </linearGradient>
-    <linearGradient id="k" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#4a90d9"/>
-      <stop offset="100%" stop-color="#6c5ce7"/>
+    <linearGradient id="pr2" x1="0" y1="1" x2="1" y2="0">
+      <stop offset="0%" stop-color="#f093fb"/>
+      <stop offset="100%" stop-color="#f5576c"/>
     </linearGradient>
+    <linearGradient id="k1" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#e0e0ff"/>
+    </linearGradient>
+    <linearGradient id="k2" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#c0c0ff"/>
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <filter id="shadow">
+      <feDropShadow dx="0" dy="4" stdDeviation="8" flood-color="#000" flood-opacity="0.3"/>
+    </filter>
   </defs>
 
-  <!-- Background circle -->
-  <circle cx="128" cy="128" r="120" fill="url(#bg)" stroke="#4a90d9" stroke-width="2"/>
+  <!-- Arka plan gradient dairesi -->
+  <circle cx="256" cy="256" r="240" fill="#0f0f1a"/>
+  <circle cx="256" cy="256" r="230" fill="url(#pr)" opacity="0.15"/>
 
-  <!-- K letter (stylized) -->
-  <g transform="translate(64, 44)">
-    <!-- Vertical line -->
-    <rect x="20" y="20" width="18" height="128" rx="9" fill="url(#k)"/>
-    <!-- Upper diagonal -->
-    <path d="M38 84 L38 40 L110 40 Z" fill="url(#k)" opacity="0.9"/>
-    <!-- Lower diagonal -->
-    <path d="M38 84 L38 148 L110 148 Z" fill="url(#k)" opacity="0.7"/>
-    <!-- Middle accent -->
-    <circle cx="80" cy="84" r="12" fill="#FFD700" opacity="0.8"/>
+  <!-- Dis halka -->
+  <circle cx="256" cy="256" r="220" fill="none" stroke="url(#pr)" stroke-width="3" opacity="0.4"/>
+  <circle cx="256" cy="256" r="200" fill="none" stroke="url(#pr2)" stroke-width="1.5" opacity="0.3"/>
+
+  <!-- Yonlendirme cubugu (ustte parlak isaret) -->
+  <rect x="248" y="36" width="16" height="40" rx="8" fill="url(#pr)" filter="url(#glow)" opacity="0.6"/>
+
+  <!-- K HARFI (ana geometrik form) -->
+  <g transform="translate(146, 96)" filter="url(#shadow)">
+
+    <!-- Sol dikey cubuk -->
+    <rect x="20" y="20" width="32" height="280" rx="16" fill="url(#k1)"/>
+
+    <!-- Sol dikey cubuk (parlak kenar) -->
+    <rect x="20" y="20" width="8" height="280" rx="4" fill="#ffffff" opacity="0.5"/>
+
+    <!-- Ust capraz kol (K'nin ust bacagi) -->
+    <path d="M52 160 L52 60 L224 60 Z" fill="url(#k2)" opacity="0.95"/>
+
+    <!-- Ust capraz kolda parlak fillet -->
+    <path d="M52 160 L52 90 L150 90 Z" fill="#ffffff" opacity="0.15"/>
+
+    <!-- Alt capraz kol (K'nin alt bacagi) -->
+    <path d="M52 160 L52 260 L224 260 Z" fill="url(#k2)" opacity="0.8"/>
+
+    <!-- Alt capraz kol parlak fillet -->
+    <path d="M52 160 L52 230 L140 230 Z" fill="#ffffff" opacity="0.1"/>
+
+    <!-- Orta vurgu: parlak altigen -->
+    <circle cx="138" cy="160" r="32" fill="url(#pr)" opacity="0.9"/>
+    <circle cx="138" cy="160" r="28" fill="none" stroke="#ffffff" stroke-width="3" opacity="0.4"/>
+    <circle cx="138" cy="160" r="12" fill="#ffffff" opacity="0.8"/>
+
+    <!-- Orta vurgu isigi -->
+    <circle cx="138" cy="160" r="4" fill="#ffffff" opacity="1"/>
   </g>
 
-  <!-- Small decorative dots -->
-  <circle cx="192" cy="48" r="4" fill="#4a90d9" opacity="0.5"/>
-  <circle cx="208" cy="96" r="3" fill="#6c5ce7" opacity="0.4"/>
-  <circle cx="48" cy="192" r="3" fill="#4a90d9" opacity="0.3"/>
+  <!-- K HARFININ ALTI - yazi (KARYA) -->
+  <g transform="translate(256, 430)" text-anchor="middle">
+    <!-- KARYA yazisi -->
+    <text x="0" y="0" font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif"
+          font-size="36" font-weight="700" letter-spacing="18" fill="url(#pr)" opacity="0.9">
+      KARYA
+    </text>
+    <!-- Alt cizgi -->
+    <rect x="-80" y="12" width="160" height="3" rx="1.5" fill="url(#pr)" opacity="0.5"/>
+  </g>
+
+  <!-- Koselerde dekoratif noktalar -->
+  <circle cx="80" cy="80" r="6" fill="url(#pr)" opacity="0.4"/>
+  <circle cx="432" cy="80" r="5" fill="url(#pr2)" opacity="0.3"/>
+  <circle cx="80" cy="432" r="5" fill="url(#pr2)" opacity="0.3"/>
+  <circle cx="432" cy="432" r="6" fill="url(#pr)" opacity="0.4"/>
+
+  <!-- Ek dekoratif elementler -->
+  <line x1="120" y1="56" x2="180" y2="56" stroke="url(#pr)" stroke-width="1" opacity="0.2"/>
+  <line x1="332" y1="56" x2="392" y2="56" stroke="url(#pr)" stroke-width="1" opacity="0.2"/>
 </svg>

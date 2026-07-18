@@ -1,0 +1,85 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" font-family="'Segoe UI', 'Helvetica Neue', sans-serif">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#0f0f1a"/>
+      <stop offset="100%" stop-color="#1a1a2e"/>
+    </linearGradient>
+    <linearGradient id="ok" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#00d648"/>
+      <stop offset="100%" stop-color="#00a83b"/>
+    </linearGradient>
+    <linearGradient id="warn" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#ffb700"/>
+      <stop offset="100%" stop-color="#ff9500"/>
+    </linearGradient>
+    <linearGradient id="critical" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#ff3b47"/>
+      <stop offset="100%" stop-color="#cc0033"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="800" height="500" fill="url(#bg)"/>
+
+  <!-- Ust baslik -->
+  <text x="30" y="40" fill="#fff" font-size="24" font-weight="bold">Karya DE Guvenlik Paneli</text>
+  <text x="30" y="62" fill="#888" font-size="13">Guvenlik Durumu: TUM KATMANLAR AKTIF</text>
+
+  <!-- Ust durum cubugu -->
+  <rect x="30" y="80" width="740" height="50" rx="8" fill="url(#ok)" opacity="0.15"/>
+  <circle cx="60" cy="105" r="10" fill="url(#ok)"/>
+  <text x="80" y="110" fill="#00d648" font-size="16" font-weight="bold">Guvenlik Skoru: %100 - Tehdit Yok</text>
+
+  <!-- Katman 1: Intel Blocker -->
+  <rect x="30" y="150" width="360" height="70" rx="6" fill="#1a1a2e" stroke="#333" stroke-width="1"/>
+  <text x="50" y="178" fill="#fff" font-size="15" font-weight="bold">Katman 1: Intel GPU Bloklama</text>
+  <circle cx="50" cy="198" r="5" fill="#00d648"/>
+  <text x="65" y="202" fill="#aaa" font-size="12">DKMS modul aktif - kernel seviyesinde bloklama</text>
+  <rect x="300" y="160" width="70" height="24" rx="4" fill="#00d648" opacity="0.2"/>
+  <text x="314" y="177" fill="#00d648" font-size="14" font-weight="bold">AKTIF</text>
+
+  <!-- Katman 2: Boot Hardening -->
+  <rect x="410" y="150" width="360" height="70" rx="6" fill="#1a1a2e" stroke="#333" stroke-width="1"/>
+  <text x="430" y="178" fill="#fff" font-size="15" font-weight="bold">Katman 2: Boot Sertlestirme</text>
+  <circle cx="430" cy="198" r="5" fill="#00d648"/>
+  <text x="445" y="202" fill="#aaa" font-size="12">12 CPU mitigasyonu + lockdown aktif</text>
+  <rect x="680" y="160" width="70" height="24" rx="4" fill="#00d648" opacity="0.2"/>
+  <text x="694" y="177" fill="#00d648" font-size="14" font-weight="bold">AKTIF</text>
+
+  <!-- Katman 3: Kernel LSM -->
+  <rect x="30" y="235" width="360" height="70" rx="6" fill="#1a1a2e" stroke="#333" stroke-width="1"/>
+  <text x="50" y="263" fill="#fff" font-size="15" font-weight="bold">Katman 3: Kernel Security LSM</text>
+  <circle cx="50" cy="283" r="5" fill="#00d648"/>
+  <text x="65" y="287" fill="#aaa" font-size="12">karya-security.ko - exec korumasi, procFS</text>
+  <rect x="300" y="245" width="70" height="24" rx="4" fill="#00d648" opacity="0.2"/>
+  <text x="314" y="262" fill="#00d648" font-size="14" font-weight="bold">AKTIF</text>
+
+  <!-- Katman 4: Sysctl Hardening -->
+  <rect x="410" y="235" width="360" height="70" rx="6" fill="#1a1a2e" stroke="#333" stroke-width="1"/>
+  <text x="430" y="263" fill="#fff" font-size="15" font-weight="bold">Katman 4: Sysctl Sertlestirme</text>
+  <circle cx="430" cy="283" r="5" fill="#00d648"/>
+  <text x="445" y="287" fill="#aaa" font-size="12">ASLR, kptr, dmesg, ag korumalari aktif</text>
+  <rect x="680" y="245" width="70" height="24" rx="4" fill="#00d648" opacity="0.2"/>
+  <text x="694" y="262" fill="#00d648" font-size="14" font-weight="bold">AKTIF</text>
+
+  <!-- Katman 5: AppArmor -->
+  <rect x="30" y="320" width="360" height="70" rx="6" fill="#1a1a2e" stroke="#333" stroke-width="1"/>
+  <text x="50" y="348" fill="#fff" font-size="15" font-weight="bold">Katman 5: AppArmor Profilleri</text>
+  <circle cx="50" cy="368" r="5" fill="#00d648"/>
+  <text x="65" y="372" fill="#aaa" font-size="12">4 profil yuklu (oobe, widgets, kwin, drivers)</text>
+  <rect x="300" y="330" width="70" height="24" rx="4" fill="#00d648" opacity="0.2"/>
+  <text x="314" y="347" fill="#00d648" font-size="14" font-weight="bold">AKTIF</text>
+
+  <!-- Katman 6: FW + IOMMU -->
+  <rect x="410" y="320" width="360" height="70" rx="6" fill="#1a1a2e" stroke="#333" stroke-width="1"/>
+  <text x="430" y="348" fill="#fff" font-size="15" font-weight="bold">Katman 6: Firewall + IOMMU</text>
+  <circle cx="430" cy="368" r="5" fill="#00d648"/>
+  <text x="445" y="372" fill="#aaa" font-size="12">nftables + zorunlu IOMMU + Thunderbolt kapali</text>
+  <rect x="680" y="330" width="70" height="24" rx="4" fill="#00d648" opacity="0.2"/>
+  <text x="694" y="347" fill="#00d648" font-size="14" font-weight="bold">AKTIF</text>
+
+  <!-- Alt istatistik cubugu -->
+  <rect x="30" y="410" width="740" height="70" rx="8" fill="#1a1a2e" stroke="#333" stroke-width="1"/>
+  <text x="50" y="438" fill="#888" font-size="13">Karya DE Security Module v1.0.0</text>
+  <text x="50" y="460" fill="#00d648" font-size="12">Toplam Ihlal: 0 | Intel Blok: 0 | /tmp Exec: 0 | SUID Degisim: 0</text>
+  <text x="500" y="460" fill="#555" font-size="12">/proc/karya/sec/status</text>
+</svg>
