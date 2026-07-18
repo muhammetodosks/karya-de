@@ -23,8 +23,9 @@ source=(
     "hardware/profiles/intel.conf"
     "security/sentinel/karya-sentinel.sh"
     "security/sentinel/karya-sentinel.conf"
+    "security/sentinel/karya-sentinel.service"
 )
-sha256sums=('SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP')
+sha256sums=('SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP')
 
 package() {
     install -dm755 "$pkgdir/usr/lib/karya/scripts"
@@ -79,6 +80,8 @@ IEOF
         "$pkgdir/usr/lib/karya/scripts/karya-sentinel.sh"
     install -Dm644 "$srcdir/../../security/sentinel/karya-sentinel.conf" \
         "$pkgdir/etc/karya/sentinel.conf"
+    install -Dm644 "$srcdir/../../security/sentinel/karya-sentinel.service" \
+        "$pkgdir/usr/lib/systemd/system/karya-sentinel.service"
 
     # Runit service
     install -dm755 "$pkgdir/etc/runit/sv/karya-sentinel"

@@ -78,7 +78,7 @@ sudo cp security/sentinel/karya-sentinel.service /etc/systemd/system/
 sudo systemctl enable --now karya-sentinel
 ```
 
-### 4. Veya manuel calistir
+### 4. Veya manuel çalıştır
 
 ```bash
 sudo /usr/lib/karya/scripts/karya-sentinel.sh start

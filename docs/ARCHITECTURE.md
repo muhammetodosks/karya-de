@@ -76,7 +76,7 @@ Karya DE, KDE Plasma 6'nın tam fork'udur. Aşağıdaki bileşenlerden oluşur:
 ## ISO Yapısı
 
 Arch Linux tabanlı, archiso ile oluşturulur.
-- Kernel: Stock Arch Linux
+- Kernel: **Karya DE özel kernel** (karya-de-perf veya karya-de-hardened)
 - Init: runit + elogind
 - Display: X11 + Wayland
 - Varsayılan: Wayland oturumu

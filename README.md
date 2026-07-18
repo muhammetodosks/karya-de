@@ -38,7 +38,6 @@ Qt6 ve KDE teknolojileri üzerine inşa edilmiştir ancak **KDE Plasma değildir
 - [Donanım Desteği](#donanım-desteği)
 - [Intel Neden Desteklenmiyor](#intel-neden-desteklenmiyor)
 - [Kernel Yapılandırması](#kernel-yapılandırması)
-- [Kernel Yapılandırması](#kernel-yapılandırması)
 - [Güvenlik](#güvenlik)
 - [Diğer Masaüstü Ortamlarıyla Karşılaştırma](#diğer-masaüstü-ortamlarıyla-karşılaştırma)
 - [Kurulum Adımları](#kurulum-adımları)
@@ -55,6 +54,7 @@ Qt6 ve KDE teknolojileri üzerine inşa edilmiştir ancak **KDE Plasma değildir
 - [Mimari Yapı](#mimari-yapı)
 - [Paket Listesi](#paket-listesi)
 - [Katkıda Bulunma](#katkıda-bulunma)
+- [Sıkça Sorulan Sorular](#sıkça-sorulan-sorular-sss)
 - [Lisans](#lisans)
 
 ---
@@ -189,6 +189,147 @@ Intel entegre GPU'ları resmi olarak **desteklenmemektedir**. Bunun nedenleri:
 - Harici bir NVIDIA veya AMD GPU edinin
 - Intel sadece ikinci bir GPU olarak kullanılabilir (Optimus benzeri)
 - Intel HD Graphics ile kısıtlı da olsa XRender modunda çalışabilir (performans garantisi yok)
+
+---
+
+## Kernel Yapılandırması
+
+Karya DE, kendi performans ve güvenlik odaklı **özel Linux kernel** yapılandırmalarıyla gelir.
+Stok Arch Linux kernel'inden farklı olarak **masaüstü kullanımı** ve **güvenlik** için optimize edilmiştir.
+
+### Neden Özel Kernel?
+
+| Stok Arch (linux) | Karya DE Kernel |
+|------------------|-----------------|
+| CONFIG_PREEMPT (server) | **PREEMPT** (masaüstü, düşük gecikme) |
+| HZ=300 | **HZ=1000** (akıcı animasyon, düşük input lag) |
+| CUBIC TCP (varsayılan) | **BBR TCP** (yüksek hızlı, düşük gecikme) |
+| Zswap opsiyonel | **ZSTD + zswap** (bellek sıkıştırma) |
+| Modüller açık | **Staçik veya kontrollü modül** |
+| Tüm GPU'lar eşit | **NVIDIA/AMD optimize**, Intel uyarılı |
+| KASLR var | **KASLR + modül rastgeleleştirme** |
+| Standart mitigasyon | **Tüm mitigasyonlar zorunlu** |
+
+### Karya DE Config 1: `config-6.17-x86_64` (Performans)
+
+**Hedef:** Günlük masaüstü kullanımı — maksimum akıcılık, düşük gecikme, tam donanım desteği.
+
+```
+Dosya: kernel/config-6.17-x86_64
+Amaç:  Performans masaüstü
+Tür:   Modüler (ihtiyaca göre yüklenebilir)
+```
+
+| Alan | Değer | Açıklama |
+|------|-------|----------|
+| **Zamanlayıcı** | `PREEMPT` | Düşük gecikmeli masaüstü zamanlayıcı. Stok Arch (CONFIG_PREEMPT_VOLUNTARY) yerine interaktif uygulamalar için optimize edilmiştir. |
+| **Hz** | `HZ=1000` | Saniyede 1000 kesme. Fare hareketleri, animasyonlar, oyunlar için gerekli. Stok Arch HZ=300 ile karşılaştırıldığında 3.3x daha sık güncelleme. |
+| **TCP** | `BBR` | Google's congestion control. Düşük gecikme, yüksek throughput. Özellikle Türkiye'deki yavaş/kararsız bağlantılarda CUBIC'e göre ~3x daha iyi performans. |
+| **Bellek** | `ZSWAP+ZSTD` | RAM baskı altındayken sayfaları ZSTD ile sıkıştırır. Swap'e gitmeden önce bellek kazandırır. |
+| **GPU/NVIDIA** | `nvidia-drm fbdev=1` | NVIDIA DRM + framebuffer. ForceCompositionPipeline ile yırtılmasız render. |
+| **GPU/AMD** | `amdgpu SI/CIK` | GCN 1. nesil (Southern Islands) ve 2. nesil (Sea Islands) desteği. |
+| **GPU/Intel** | `i915` | Açık ama `CONFIG_DRM_I915` **kapalı**. Kullanıcı kendi sorumluluğunda açar. |
+| **Güvenlik** | `PTI+IBRS+SRSO+Retpoline` | Tüm CPU mitigasyonları açık. |
+| **Sanal** | `KVM+VirtualBox+VMware` | Tam sanallaştırma desteği. |
+
+Bu config, günlük masaüstü kullanımı için **önerilen** config'dir. NVIDIA/AMD kullanıcıları için optimize edilmiştir.
+
+### Karya DE Config 2: `config-6.17-x86_64-hardened` (Güvenlik/Sızma)
+
+**Hedef:** Maksimum güvenlik, minimum saldırı yüzeyi. Sunucu, güvenlik araştırması, sızma testi ve yüksek güvenlik gerektiren ortamlar için.
+
+```
+Dosya: kernel/config-6.17-x86_64-hardened
+Amaç:  Güvenlik sertleştirilmiş
+Tür:   Statik (modül YOK)
+```
+
+| Alan | Performans Config | Hardened Config | Neden? |
+|------|------------------|-----------------|--------|
+| **Modüller** | `CONFIG_MODULES=y` | **`CONFIG_MODULES=n`** | Çekirdek modülleri saldırı yüzeyini artırır. Statik kernel'de modül yükleme saldırısı imkansız. |
+| **KULLANICI_NS** | `sınırlı` | **`USER_NS_UNPRIVILEGED=n`** | Yetkisiz kullanıcı namespace saldırılarını engeller (CVE-2022-0492, CVE-2023-0386). |
+| **Cross Memory** | `CROSS_MEMORY_ATTACH=y` | **`CROSS_MEMORY_ATTACH=n`** | `process_vm_readv/writev` saldırı vektörünü kapatır. |
+| **BPF** | ayrıcalıklı | **`BPF_UNPRIV_DEFAULT_OFF=y`** | Yetkisiz BPF program yüklemeyi engeller. |
+| **IMA** | Kapalı | **`IMA_AUDIT=y`** | Integrity Measurement Architecture ile dosya bütünlüğü denetimi. |
+| **HARDENED_USERCOPY** | Kapalı | **`HARDENED_USERCOPY=y`** | Kullanıcı/kernel bellek kopyalamalarında sıkı denetim. |
+| **SLAB_FREELIST_HARDENED** | Kapalı | **`HARDENED=y`** | Heap exploitation'u zorlaştırır. |
+| **PAGE_TABLE_CHECK** | Kapalı | **`ENFORCED=y`** | Sayfa tablosu müdahalelerini tespit eder. |
+| **LOCKDOWN** | Kapalı | **`LSM_EARLY=y`** | Kernel erken başlangıçta kilitlenir, modül/efi değişikliği engellenir. |
+| **IOMMU** | isteğe bağlı | **`DEFAULT_ON=y`** | DMA saldırılarına karşı zorunlu koruma. |
+| **KALLSYMS** | Açık | **`KALLSYMS=n`** | Kernel sembolleri gizlenir, exploit geliştirme zorlaşır. |
+| **PROC_KCORE** | Açık | **`PROC_KCORE=n`** | `/proc/kcore` gizlenir, bellek dökümü saldırıları engellenir. |
+| **DEBUG_FS** | Açık | **`DEBUG_FS=n`** | DebugFS kapatılır (CVE-2023-3269). |
+| **CORE_DUMP** | Açık | **`COREDUMP=n`** | Core dump kapatılır, hassas veri sızıntısı engellenir. |
+| **USERMODEHELPER** | normal | **`STATIC_PATH`** | Statik usermode-helper yolu, PATH hijacking engellenir. |
+
+### Kernel Derleme
+
+```bash
+# 1. Linux 6.17 kaynağını indir
+wget https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-6.17.tar.xz
+tar xf linux-6.17.tar.xz
+cd linux-6.17
+
+# 2. Karya DE config'ini uygula (Performans - önerilen)
+cp /path/to/kernel/config-6.17-x86_64 .config
+
+# Veya güvenlik config'ini uygula
+cp /path/to/kernel/config-6.17-x86_64-hardened .config
+
+# 3. Derle
+make olddefconfig    # Eksik ayarları default yap
+make -j$(nproc)      # Derle (tüm çekirdekler)
+make modules_install # Modülleri kur (sadece performans config)
+make install         # Kernel ve initramfs'i kur
+
+# 4. Bootloader'a ekle (GRUB)
+# /etc/default/grub:
+# GRUB_CMDLINE_LINUX_DEFAULT="mitigations=auto ...."
+sudo update-grub
+
+# 5. Yeniden başlat
+sudo reboot
+```
+
+### Kernel Boot Parametreleri
+
+Karya DE, özel kernel ile birlikte aşağıdaki boot parametrelerini kullanır:
+
+```
+# /etc/default/grub - Karya DE önerilen boot parametreleri
+GRUB_CMDLINE_LINUX_DEFAULT="
+  mitigations=auto                          # Tüm CPU mitigasyonları
+  lsm=landlock,lockdown,yama,integrity,apparmor,bpf  # LSM sıralaması
+  init_on_alloc=1                           # Bellek tahsisinde sıfırla
+  init_on_free=1                            # Bellek serbest bırakırken sıfırla
+  page_alloc.shuffle=1                      # Sayfa tahsisini rastgeleleştir
+  slab_nomerge                              # SLAB nesnelerini birleştirme
+  module.sig_enforce=1                      # Modül imzası zorunlu
+  lockdown=confidentiality                  # Kernel kilidi (gizlilik)
+  iommu.passthrough=0                       # IOMMU zorunlu
+"
+```
+
+### Kernel Karşılaştırması
+
+| Özellik | Arch linux stock | Karya Perf | Karya Hardened |
+|---------|-----------------|------------|----------------|
+| PREEMPT | Voluntary | **Full** | **Full** |
+| HZ | 300 | **1000** | **1000** |
+| TCP | CUBIC | **BBR** | **BBR** |
+| Zswap | Varsayılan kapalı | **ZSTD açık** | **ZSTD açık** |
+| Modüller | Modüler | **Modüler** | **Statik (kapalı)** |
+| KASLR | Evet | Evet | Evet |
+| SLAB hardening | Hayır | Hayır | **Evet** |
+| IMA | Hayır | Hayır | **Evet** |
+| Lockdown | Hayır | Hayır | **Evet** |
+| USER_NS | Sınırsız | Sınırsız | **Sadece root** |
+| BPF yetkisiz | Evet | Evet | **Hayır** |
+| AMD/NVIDIA | Varsayılan | **Optimize** | **Optimize** |
+| Intel i915 | Varsayılan | **Kapalı** | **Kapalı** |
+| KALLSYMS | Evet | Evet | **Hayır** |
+| PROC_KCORE | Evet | Evet | **Hayır** |
+| DEBUG_FS | Evet | Evet | **Hayır** |
 
 ---
 

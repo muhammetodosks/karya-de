@@ -1,0 +1,15 @@
+[Unit]
+Description=Karya Sentinel - 7/24 Guvenlik Tarama ve Yama Sistemi
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/usr/lib/karya/scripts/karya-sentinel.sh start
+ExecStop=/usr/lib/karya/scripts/karya-sentinel.sh stop
+Restart=always
+RestartSec=10
+StandardOutput=append:/var/log/karya/sentinel.log
+StandardError=append:/var/log/karya/sentinel.log
+
+[Install]
+WantedBy=multi-user.target
