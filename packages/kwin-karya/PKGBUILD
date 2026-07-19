@@ -2,7 +2,7 @@
 
 pkgname=kwin-karya
 pkgver=6.0.0
-pkgrel=3
+pkgrel=4
 pkgdesc="Karya DE - Fork of KWin with custom tiling, gestures, glassmorphism"
 arch=('x86_64')
 url="https://github.com/muhammetodosks/kwin"
@@ -24,7 +24,15 @@ optdepends=(
 makedepends=(
     cmake extra-cmake-modules
     wayland-protocols plasma-wayland-protocols
-    kauth kidletime ksvg
+    kauth kidletime ksvg knewstuff krunner knotifications
+    kdoctools kirigami libplasma kdecoration
+    kglobalacceld kscreenlocker plasma-activities
+    libcanberra libxkbcommon xorg-xwayland libx11
+    libxcvt libdisplay-info pipewire libevdev
+    aurorae breeze vulkan-headers vulkan-icd-loader
+    libqaccessibilityclient-qt6
+    qt6-shadertools qt6-tools
+    libei milou knighttime
 )
 provides=('kwin')
 conflicts=('kwin')
@@ -33,22 +41,21 @@ sha256sums=('SKIP')
 
 build() {
     cd "$srcdir"
-    # GitHub archive creates a subdirectory; find and enter it
     cd "$(find . -maxdepth 1 -type d | grep -v '^\.$' | head -1)"
+    # Patch rulesettings.kcfg for KF6 6.28+ compatibility
+    sed -i 's|type="Enum"|type="Int"|' src/rulesettings.kcfg
     cmake -B build -S . \
         -DCMAKE_INSTALL_PREFIX=/usr \
         -DCMAKE_BUILD_TYPE=Release \
         -DBUILD_TESTING=OFF \
+        -DKWIN_BUILD_KCMS=OFF \
         -DKWIN_BUILD_DECORATIONS=ON \
-        -DKWIN_BUILD_TABBOX=ON
+        -DKWIN_BUILD_TABBOX=OFF \
+        -DKWIN_BUILD_OVERVIEW=OFF
     cmake --build build --parallel "$(nproc)"
 }
 
 package() {
     cd "$srcdir/$(find . -maxdepth 1 -type d | grep -v '^\.$' | head -1)"
-    DESTDIR="$pkgdir" cmake --install build
-}
-
-package() {
     DESTDIR="$pkgdir" cmake --install build
 }

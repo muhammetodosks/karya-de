@@ -1,0 +1,25 @@
+# Maintainer: Karya DE Team
+
+pkgname=plasma-desktop-karya
+pkgver=0.2.0
+pkgrel=1
+pkgdesc="Karya DE - Plasma desktop shell with Karya panel and dock layouts"
+arch=('x86_64')
+url="https://github.com/muhammetodosks/karya-de"
+license=('GPL2')
+depends=(
+    plasma-desktop
+    plasma-workspace
+)
+makedepends=()
+source=("karya-dock.layout.lua"
+        "karya-panel-top.layout.lua")
+sha256sums=('SKIP'
+            'SKIP')
+
+package() {
+    install -Dm644 "$srcdir/karya-dock.layout.lua" \
+        "$pkgdir/usr/share/plasma/layout-templates/org.karya.karya-dock/contents/layout.js"
+    install -Dm644 "$srcdir/karya-panel-top.layout.lua" \
+        "$pkgdir/usr/share/plasma/layout-templates/org.karya.karya-panel-top/contents/layout.js"
+}

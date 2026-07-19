@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=XSession
+Exec=startplasma-karya
+TryExec=startplasma-karya
+DesktopNames=KDE;Karya
+Name=Karya Desktop
+Name[tr]=Karya Masaüstü
+Comment=Karya Desktop Environment based on KDE Plasma
+Comment[tr]=KDE Plasma tabanlı Karya Masaüstü Ortamı

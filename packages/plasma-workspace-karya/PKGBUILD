@@ -1,0 +1,25 @@
+# Maintainer: Karya DE Team
+
+pkgname=plasma-workspace-karya
+pkgver=0.2.0
+pkgrel=1
+pkgdesc="Karya DE - Plasma workspace with Karya session and autostart"
+arch=('x86_64')
+url="https://github.com/muhammetodosks/karya-de"
+license=('GPL2')
+depends=(
+    plasma-workspace
+    kwin-karya
+)
+makedepends=()
+source=("karya.desktop"
+        "startplasma-karya")
+sha256sums=('SKIP'
+            'SKIP')
+
+package() {
+    install -Dm644 "$srcdir/karya.desktop" \
+        "$pkgdir/usr/share/wayland-sessions/karya.desktop"
+    install -Dm755 "$srcdir/startplasma-karya" \
+        "$pkgdir/usr/bin/startplasma-karya"
+}
