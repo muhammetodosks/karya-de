@@ -6,6 +6,7 @@ set -euo pipefail
 # ==================================================
 # Kullanim:
 #   curl -sL https://github.com/muhammetodosks/karya-de/raw/master/install-nosystemd.sh | sudo bash
+#   curl -sL ... | sudo bash -s -- -y     # soru sormadan
 #
 # Hedef:  systemd olmayan Arch tabanli dagitimlar (Artix, Arco, vb.)
 # Init:   runit + elogind
@@ -15,6 +16,13 @@ VERSION="1.0.0"
 REPO_OWNER="muhammetodosks"
 REPO_NAME="karya-de"
 GITHUB="https://github.com/$REPO_OWNER/$REPO_NAME"
+FORCE=0
+
+for arg in "$@"; do
+    case "$arg" in
+        -y|--yes) FORCE=1 ;;
+    esac
+done
 
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -43,10 +51,11 @@ if command -v systemctl &>/dev/null && systemctl is-system-running &>/dev/null 2
     echo "  systemd'li sistemde standart kurulumu kullanin:"
     echo "    curl -sL $GITHUB/raw/master/install.sh | sudo bash"
     echo ""
-    echo -e "  Devam etmek istiyor musunuz? (e/H) \c"
-    read -r devam
-    if [ "$devam" != "e" ] && [ "$devam" != "E" ]; then
-        exit 1
+    if [ "$FORCE" -eq 1 ]; then
+        echo -e "  ${YELLOW}[-y] Devam ediliyor...${NC}"
+    else
+        echo -e "  ${YELLOW}Devam ediliyor (10sn)...${NC}"
+        sleep 10
     fi
 fi
 

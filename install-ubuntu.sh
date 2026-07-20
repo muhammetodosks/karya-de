@@ -3,6 +3,13 @@ set -e
 
 KARYA_VERSION="1.0.0"
 KARYA_REPO="https://github.com/muhammetodosks/karya-de.git"
+FORCE=0
+
+for arg in "$@"; do
+    case "$arg" in
+        -y|--yes) FORCE=1 ;;
+    esac
+done
 
 echo "========================================"
 echo "  Karya DE v$KARYA_VERSION - Ubuntu Kurulum"
@@ -21,10 +28,11 @@ echo "[*] Ubuntu: $(lsb_release -ds 2>/dev/null || echo 'Tespit edilemedi')"
 
 if [ "$UBUNTU_VERSION" != "noble" ] && [ "$UBUNTU_VERSION" != "jammy" ]; then
     echo "[!] Uyari: Karya DE Ubuntu 24.04 (Noble) icin test edilmistir."
-    echo "    Devam etmek istiyor musunuz? (e/H)"
-    read -r devam
-    if [ "$devam" != "e" ] && [ "$devam" != "E" ]; then
-        exit 1
+    if [ "$FORCE" -eq 0 ]; then
+        echo "    Devam etmek icin -y argumanini kullanin:"
+        echo "    curl -sL ... | sudo bash -s -- -y"
+        echo "    Devam ediliyor (10sn)..."
+        sleep 10
     fi
 fi
 

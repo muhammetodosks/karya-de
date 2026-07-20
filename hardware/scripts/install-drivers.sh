@@ -93,13 +93,8 @@ auto_install() {
             echo "  [UYARI] Intel GPU algilandi."
             echo "  Intel GPU'lar resmi olarak desteklenmez."
             echo "  NVIDIA veya AMD GPU onerilir."
-            echo "  Devam etmek istiyor musunuz? (e/H)"
-            read -r confirm
-            if [[ "$confirm" =~ ^[Ee]$ ]]; then
-                install_intel; install_vulkan
-            else
-                log "Intel kurulumu iptal edildi."
-            fi
+            echo "  Kuruluma devam ediliyor (deneysel)..."
+            install_intel; install_vulkan
             ;;
         virtual) install_vm_drivers ;;
         *) log "Bilinmeyen GPU, varsayilan suruculer kullanilacak." ;;
