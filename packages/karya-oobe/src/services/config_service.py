@@ -210,6 +210,133 @@ TitlebarDoubleClickCommand=Maximize
         path.write_text(json.dumps(components, indent=2))
 
     @staticmethod
+    def write_theme(theme: dict):
+        path = CONFIG / "karya-theme.conf"
+        path.parent.mkdir(parents=True, exist_ok=True)
+        content = f"""[Theme]
+name={theme.get("theme", "karya-dark")}
+accent={theme.get("accent", "blue")}
+
+[Effects]
+glassmorphism={str(theme.get("glassmorphism", True)).lower()}
+blur={str(theme.get("blur", False)).lower()}
+animations={str(theme.get("animations", True)).lower()}
+"""
+        path.write_text(content)
+
+    @staticmethod
+    def write_default_apps(apps: dict):
+        path = CONFIG / "karya-default-apps.conf"
+        path.parent.mkdir(parents=True, exist_ok=True)
+        content = "[Default Applications]\n"
+        for key, val in apps.items():
+            content += f"{key}={val}\n"
+        path.write_text(content)
+
+    @staticmethod
+    def install_packages(tools: dict, category: str):
+        """Install package group via apt (if available)."""
+        pkg_map = {
+            "dev": {
+                "git": "git",
+                "python": "python3 python3-pip python3-venv",
+                "nodejs": "nodejs npm",
+                "docker": "docker.io docker-compose-v2",
+                "vscode": "code",
+                "gcc": "gcc g++ clang make",
+                "cmake": "cmake",
+                "postman": "insomnia",
+                "neovim": "neovim",
+                "jdk": "default-jdk",
+            },
+            "gaming": {
+                "steam": "steam",
+                "lutris": "lutris",
+                "gamemode": "gamemode",
+                "mangohud": "mangohud",
+                "proton": "protonplus",
+                "wine": "wine wine32",
+                "heroic": "heroic-launcher",
+            },
+        }
+        pkgs = []
+        for tid, enabled in tools.items():
+            if enabled and tid in pkg_map.get(category, {}):
+                pkgs.append(pkg_map[category][tid])
+        if not pkgs:
+            return
+        try:
+            subprocess.run(
+                ["apt", "install", "-y"] + pkgs,
+                capture_output=True, timeout=300
+            )
+        except (subprocess.TimeoutExpired, FileNotFoundError):
+            pass
+
+    @staticmethod
+    def enable_game_mode():
+        # Try system-wide gamemode service (--user won't work from root)
+        try:
+            subprocess.run(["systemctl", "enable", "gamemoded"],
+                           capture_output=True, timeout=30)
+        except Exception:
+            pass
+
+    @staticmethod
+    def enable_realtime_priority():
+        path = Path("/etc/security/limits.d/99-karya-realtime.conf")
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(
+            "@realtime - rtprio 99\n"
+            "@realtime - memlock unlimited\n"
+        )
+
+    @staticmethod
+    def write_privacy(privacy: dict):
+        path = CONFIG / "karya-privacy.conf"
+        path.parent.mkdir(parents=True, exist_ok=True)
+        content = "[Privacy]\n"
+        for key in ("location", "crash_reports", "telemetry", "recent_files", "search_index"):
+            content += f"{key}={str(privacy.get(key, False)).lower()}\n"
+        path.write_text(content)
+
+    @staticmethod
+    def set_hostname(hostname: str):
+        try:
+            subprocess.run(["hostnamectl", "set-hostname", hostname],
+                           capture_output=True, timeout=30)
+        except Exception:
+            pass
+
+    @staticmethod
+    def write_display_settings(display: dict):
+        path = CONFIG / "karya-display.conf"
+        path.parent.mkdir(parents=True, exist_ok=True)
+        content = f"""[Display]
+resolution={display.get("resolution", "1920x1080")}
+scale={display.get("scale", "100")}
+refresh={display.get("refresh", "60")}
+auto_dpi={str(display.get("auto_dpi", True)).lower()}
+mirror={str(display.get("mirror", False)).lower()}
+extend={str(display.get("extend", True)).lower()}
+"""
+        path.write_text(content)
+
+    @staticmethod
+    def write_power_settings(power: dict):
+        path = CONFIG / "karya-power.conf"
+        path.parent.mkdir(parents=True, exist_ok=True)
+        content = f"""[Power]
+profile={power.get("power_profile", "balanced")}
+screen_off={power.get("screen_off", 2)}
+sleep={power.get("sleep", 2)}
+lid_sleep={str(power.get("lid_sleep", True)).lower()}
+dim_battery={str(power.get("dim_battery", True)).lower()}
+battery_perf={str(power.get("battery_perf", True)).lower()}
+"""
+        path.write_text(content)
+
+    @staticmethod
     def create_user(username: str, realname: str, password: str, autologin: bool):
         """Create a system user."""
         if not username:
@@ -230,12 +357,12 @@ TitlebarDoubleClickCommand=Maximize
 
             subprocess.run(args, check=True)
 
-            # Set password
+            # Set password via chpasswd (passwd reads from /dev/tty, not stdin)
             if password:
-                proc = subprocess.Popen(["passwd", username],
+                proc = subprocess.Popen(["chpasswd"],
                                         stdin=subprocess.PIPE,
                                         stderr=subprocess.PIPE)
-                proc.communicate(input=f"{password}\n{password}\n".encode())
+                proc.communicate(input=f"{username}:{password}\n".encode())
 
             # Autologin
             if autologin:

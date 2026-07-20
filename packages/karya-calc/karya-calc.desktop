@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Name=Karya Hesap Makinesi
+Name[tr]=Karya Hesap Makinesi
+Comment=Modern hesap makinesi
+Comment[tr]=Modern hesap makinesi
+Exec=karya-calc
+Icon=accessories-calculator
+Terminal=false
+Categories=Utility;Calculator;
+StartupNotify=false

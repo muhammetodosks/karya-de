@@ -35,12 +35,18 @@ if [ "$EUID" -ne 0 ]; then
     exit 1
 fi
 
+# Ubuntu kontrol - yonlendir
+if command -v apt &>/dev/null && ! command -v pacman &>/dev/null; then
+    echo -e "${YELLOW}[!] Ubuntu tespit edildi. Ubuntu kurulum scripti kullaniliyor...${NC}"
+    exec bash <(curl -sL "https://github.com/muhammetodosks/karya-de/raw/master/install-ubuntu.sh")
+fi
+
 # Arch Linux kontrol
-if [ ! -f /etc/arch-release ]; then
-    echo -e "${RED}[!] Karya DE yalnizca Arch Linux destekler.${NC}"
-    echo "  Ubuntu/Debian: sudo apt install ubuntu-desktop"
-    echo "  Fedora:        sudo dnf install @kde-desktop"
-    echo "  Arch Linux:    sudo pacman -S plasma"
+if [ ! -f /etc/arch-release ] && ! command -v pacman &>/dev/null; then
+    echo -e "${RED}[!] Karya DE yalnizca Arch Linux ve Ubuntu 24.04+ destekler.${NC}"
+    echo "  Arch Linux:  sudo pacman -Syu"
+    echo "  Ubuntu:      sudo apt update"
+    echo "  Detay:       https://github.com/muhammetodosks/karya-de"
     exit 1
 fi
 
@@ -54,15 +60,15 @@ curl -sL "$KEY_URL" -o "$KEY_FILE" 2>/dev/null || {
 
 # 2. Karya DE reposunu ekle
 echo -e "${GREEN}[2/5] Karya DE repolari ekleniyor...${NC}"
-cat >> /etc/pacman.conf << 'PACMAN'
+cat >> /etc/pacman.conf << PACMAN
 
 [karya-de]
 SigLevel = Optional TrustAll
-Server = https://github.com/$REPO_OWNER/$REPO_NAME/releases/download/v$VERSION
+Server = https://github.com/${REPO_OWNER}/${REPO_NAME}/releases/download/v${VERSION}
 PACMAN
 
-# Local repo yoksa GitHub Releases kullan
-cat >> /etc/pacman.conf << 'PACMAN2'
+# Local repo
+cat >> /etc/pacman.conf << PACMAN2
 
 [karya-de-local]
 SigLevel = Optional TrustAll
@@ -80,7 +86,7 @@ for PKG in karya-drivers karya-icons karya-oobe kwin-karya karya-widgets karya-d
         echo -e "${YELLOW}  [!] $PKG bulunamadi, kaynaktan derlenecek${NC}"
         PKG_BUILD_DIR="/tmp/karya-build/$PKG"
         mkdir -p "$PKG_BUILD_DIR"
-        cp -r "$GITHUB/raw/master/packages/$PKG/"* "$PKG_BUILD_DIR/"
+        curl -sL "$GITHUB/raw/master/packages/$PKG/PKGBUILD" -o "$PKG_BUILD_DIR/PKGBUILD" 2>/dev/null || true
         cd "$PKG_BUILD_DIR"
         makepkg -si --noconfirm 2>/dev/null || true
     }

@@ -1,0 +1,82 @@
+#!/usr/bin/make -f
+
+%:
+	dh $@ --parallel
+
+override_dh_auto_configure:
+	# meta package - no configure needed
+
+override_dh_auto_build:
+	# meta package - no build needed
+
+override_dh_auto_test:
+	# meta package - no tests
+
+override_dh_install:
+	# Install OOBE
+	install -d debian/karya-de/usr/bin
+	cp packages/karya-oobe/src/karya-oobe.py debian/karya-de/usr/bin/karya-oobe
+	chmod 755 debian/karya-de/usr/bin/karya-oobe
+
+	install -d debian/karya-de/usr/lib/karya/oobe/services
+	cp packages/karya-oobe/src/services/*.py debian/karya-de/usr/lib/karya/oobe/services/
+
+	# Install scripts
+	install -d debian/karya-de/usr/lib/karya/scripts
+	cp hardware/scripts/* debian/karya-de/usr/lib/karya/scripts/
+
+	# Install hardware profiles
+	install -d debian/karya-de/usr/share/karya/hardware/profiles
+	cp -r hardware/profiles/* debian/karya-de/usr/share/karya/hardware/profiles/
+
+	# Install session files
+	install -d debian/karya-de/usr/share/wayland-sessions
+	cp shell/sessions/karya.desktop debian/karya-de/usr/share/wayland-sessions/
+	install -d debian/karya-de/usr/bin
+	cp shell/sessions/startplasma-karya debian/karya-de/usr/bin/
+	chmod 755 debian/karya-de/usr/bin/startplasma-karya
+	install -d debian/karya-de/etc/profile.d
+	cp shell/sessions/karya.env debian/karya-de/etc/profile.d/
+
+	# Install layouts
+	install -d debian/karya-de/usr/share/plasma/layout-templates/org.karya.karya-dock/contents/
+	cp shell/layouts/karya-dock.layout.lua \
+		debian/karya-de/usr/share/plasma/layout-templates/org.karya.karya-dock/contents/layout.lua
+	install -d debian/karya-de/usr/share/plasma/layout-templates/org.karya.karya-panel-top/contents/
+	cp shell/layouts/karya-panel-top.layout.lua \
+		debian/karya-de/usr/share/plasma/layout-templates/org.karya.karya-panel-top/contents/layout.lua
+
+	# Install branding
+	install -d debian/karya-de/usr/share/karya/branding/logo
+	cp branding/logo/* debian/karya-de/usr/share/karya/branding/logo/
+
+	# Install SDDM theme
+	install -d debian/karya-de/usr/share/sddm/themes/karya-sddm
+	cp -r sddm-theme/karya-sddm/* debian/karya-de/usr/share/sddm/themes/karya-sddm/
+
+	# Install widgets
+	for widget in widgets/*/; do \
+		name=$$(basename $$widget); \
+		install -d debian/karya-de/usr/share/plasma/plasmoids/$$name/contents; \
+		cp -r $$widget/* debian/karya-de/usr/share/plasma/plasmoids/$$name/; \
+	done
+
+	# Install Karya applications
+	for app in packages/karya-calc packages/karya-notes packages/karya-search packages/karya-settings; do \
+		if [ -d "$$app" ]; then \
+			appname=$$(basename $$app); \
+			install -d debian/karya-de/usr/bin; \
+			cp $$app/src/$$appname.py debian/karya-de/usr/bin/$$appname; \
+			chmod 755 debian/karya-de/usr/bin/$$appname; \
+			if [ -f "$$app/$$appname.desktop" ]; then \
+				install -d debian/karya-de/usr/share/applications; \
+				cp $$app/$$appname.desktop debian/karya-de/usr/share/applications/; \
+			fi; \
+		fi; \
+	done
+
+override_dh_shlibdeps:
+	# meta package - no shared library dependencies
+
+override_dh_strip:
+	# meta package - no stripping needed

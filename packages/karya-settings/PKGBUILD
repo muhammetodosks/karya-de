@@ -1,0 +1,17 @@
+# Maintainer: Karya DE Team
+
+pkgname=karya-settings
+pkgver=1.0.0
+pkgrel=1
+pkgdesc="Karya DE - Sistem ayarlari merkezi"
+arch=('x86_64')
+url="https://karya-de.org"
+license=('GPL2')
+depends=('python' 'python-pyqt6')
+source=("src/karya-settings.py" "karya-settings.desktop")
+sha256sums=('SKIP' 'SKIP')
+
+package() {
+    install -Dm755 "$srcdir/karya-settings.py" "$pkgdir/usr/bin/karya-settings"
+    install -Dm644 "$srcdir/karya-settings.desktop" "$pkgdir/usr/share/applications/karya-settings.desktop"
+}

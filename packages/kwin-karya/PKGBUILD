@@ -32,7 +32,7 @@ makedepends=(
     aurorae breeze vulkan-headers vulkan-icd-loader
     libqaccessibilityclient-qt6
     qt6-shadertools qt6-tools
-    libei milou knighttime
+    libei
 )
 provides=('kwin')
 conflicts=('kwin')
@@ -42,8 +42,10 @@ sha256sums=('SKIP')
 build() {
     cd "$srcdir"
     cd "$(find . -maxdepth 1 -type d | grep -v '^\.$' | head -1)"
-    # Patch rulesettings.kcfg for KF6 6.28+ compatibility
-    sed -i 's|type="Enum"|type="Int"|' src/rulesettings.kcfg
+    # Patch all .kcfg files for KF6 6.28+ compatibility
+    # kconfig_compiler 6.28+ generates int assignments for Enum types,
+    # causing type mismatch errors (e.g. KWin::DecorationPolicy → int)
+    find . -name '*.kcfg' -exec sed -i 's|type="Enum"|type="Int"|' {} +
     cmake -B build -S . \
         -DCMAKE_INSTALL_PREFIX=/usr \
         -DCMAKE_BUILD_TYPE=Release \

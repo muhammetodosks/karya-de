@@ -30,6 +30,15 @@ class HardwareInfo:
         return {}
 
     @property
+    def distro(self) -> str:
+        return detect_distro()
+
+    @property
+    def distro_display(self) -> str:
+        labels = {"arch": "Arch Linux", "ubuntu": "Ubuntu/Debian", "unknown": "Bilinmeyen"}
+        return labels.get(self.distro, "Bilinmeyen")
+
+    @property
     def gpu_vendor(self) -> str:
         return self.gpu.get("vendor", "unknown")
 
@@ -103,6 +112,29 @@ class HardwareInfo:
             "performance": "Yüksek Performans",
         }
         return labels.get(profile, "Dengeli Profil")
+
+
+def detect_distro() -> str:
+    """Detect Linux distribution: 'arch', 'ubuntu', or 'unknown'."""
+    try:
+        if shutil.which("pacman"):
+            return "arch"
+        if shutil.which("apt"):
+            return "ubuntu"
+        if os.path.exists("/etc/arch-release"):
+            return "arch"
+        if os.path.exists("/etc/os-release"):
+            with open("/etc/os-release") as f:
+                data = f.read()
+            if "ubuntu" in data.lower():
+                return "ubuntu"
+            if "debian" in data.lower():
+                return "ubuntu"
+            if "arch" in data.lower():
+                return "arch"
+    except OSError:
+        pass
+    return "unknown"
 
 
 def run_detection():

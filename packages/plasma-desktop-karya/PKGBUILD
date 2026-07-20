@@ -12,14 +12,14 @@ depends=(
     plasma-workspace
 )
 makedepends=()
-source=("karya-dock.layout.lua"
-        "karya-panel-top.layout.lua")
+source=("../../shell/layouts/karya-dock.layout.lua"
+        "../../shell/layouts/karya-panel-top.layout.lua")
 sha256sums=('SKIP'
             'SKIP')
 
 package() {
     install -Dm644 "$srcdir/karya-dock.layout.lua" \
-        "$pkgdir/usr/share/plasma/layout-templates/org.karya.karya-dock/contents/layout.js"
+        "$pkgdir/usr/share/plasma/layout-templates/org.karya.karya-dock/contents/layout.lua"
     install -Dm644 "$srcdir/karya-panel-top.layout.lua" \
-        "$pkgdir/usr/share/plasma/layout-templates/org.karya.karya-panel-top/contents/layout.js"
+        "$pkgdir/usr/share/plasma/layout-templates/org.karya.karya-panel-top/contents/layout.lua"
 }

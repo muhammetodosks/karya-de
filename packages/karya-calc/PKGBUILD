@@ -1,0 +1,17 @@
+# Maintainer: Karya DE Team
+
+pkgname=karya-calc
+pkgver=1.0.0
+pkgrel=1
+pkgdesc="Karya DE - Modern hesap makinesi"
+arch=('x86_64')
+url="https://karya-de.org"
+license=('GPL2')
+depends=('python' 'python-pyqt6')
+source=("src/karya-calc.py" "karya-calc.desktop")
+sha256sums=('SKIP' 'SKIP')
+
+package() {
+    install -Dm755 "$srcdir/karya-calc.py" "$pkgdir/usr/bin/karya-calc"
+    install -Dm644 "$srcdir/karya-calc.desktop" "$pkgdir/usr/share/applications/karya-calc.desktop"
+}

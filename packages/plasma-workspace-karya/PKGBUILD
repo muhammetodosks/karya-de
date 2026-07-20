@@ -12,14 +12,26 @@ depends=(
     kwin-karya
 )
 makedepends=()
-source=("karya.desktop"
-        "startplasma-karya")
+source=("../../shell/sessions/karya.desktop"
+        "../../shell/sessions/karya-wayland.desktop"
+        "../../shell/sessions/karya-x11.desktop"
+        "../../shell/sessions/startplasma-karya"
+        "../../shell/sessions/karya.env")
 sha256sums=('SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
             'SKIP')
 
 package() {
     install -Dm644 "$srcdir/karya.desktop" \
         "$pkgdir/usr/share/wayland-sessions/karya.desktop"
+    install -Dm644 "$srcdir/karya-wayland.desktop" \
+        "$pkgdir/usr/share/wayland-sessions/karya-wayland.desktop"
+    install -Dm644 "$srcdir/karya-x11.desktop" \
+        "$pkgdir/usr/share/xsessions/karya-x11.desktop"
     install -Dm755 "$srcdir/startplasma-karya" \
         "$pkgdir/usr/bin/startplasma-karya"
+    install -Dm644 "$srcdir/karya.env" \
+        "$pkgdir/etc/profile.d/karya.env"
 }

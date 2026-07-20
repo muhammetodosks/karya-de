@@ -7,11 +7,12 @@
 
 ![License](https://img.shields.io/badge/lisans-GPLv2-blue)
 ![Qt](https://img.shields.io/badge/Qt-6-green)
-![Arch](https://img.shields.io/badge/mimari-x86__64-1793D1)
+![Arch](https://img.shields.io/badge/Arch-x86__64-1793D1)
+![Ubuntu](https://img.shields.io/badge/Ubuntu-24.04+-E95420)
 ![NVIDIA](https://img.shields.io/badge/NVIDIA-destekleniyor-76B900)
 ![AMD](https://img.shields.io/badge/AMD-destekleniyor-ED1C24)
 ![Intel](https://img.shields.io/badge/Intel-desteklenmiyor-555555)
-![Durum](https://img.shields.io/badge/durum-beta-green)
+![Durum](https://img.shields.io/badge/durum-v1.0.0--stable-brightgreen)
 ![TR](https://img.shields.io/badge/dil-T%C3%BCrk%C3%A7e-red)
 
 **Karya DE** - Modern, sıfırdan inşa edilmiş Türk masaüstü ortamı.
@@ -25,6 +26,13 @@ Qt6 ve KDE teknolojileri üzerine inşa edilmiştir ancak **KDE Plasma değildir
 # Arch Linux
 sudo pacman -Syu
 curl -sL https://github.com/muhammetodosks/karya-de/raw/master/install.sh | sudo bash
+sudo reboot
+```
+
+```bash
+# Ubuntu 24.04+
+sudo apt update
+curl -sL https://github.com/muhammetodosks/karya-de/raw/master/install-ubuntu.sh | sudo bash
 sudo reboot
 ```
 
@@ -53,8 +61,9 @@ make install
 | **Wayland** | Varsayılan | Varsayılan | Varsayılan | Deneysel |
 | **NVIDIA Wayland** | Tam EGLStreams | Sınırlı | Sınırlı | Yok |
 | **Init** | elogind+runit | systemd | systemd | systemd |
-| **Widget** | 4 Türkçe widget | Binlerce | Uzantılar | Panel eklenti |
-| **OOBE** | Donanım bilinçli | Yok | İlk çalıştırma | Yok |
+| **Widget** | 4 Türkçe widget + 4 uygulama | Binlerce | Uzantılar | Panel eklenti |
+| **OOBE** | Donanım bilinçli **(Güncellendi)** | Yok | İlk çalıştırma | Yok |
+| **Karya Apps** | Hesap Makinesi, Notlar, Arama, Ayarlar **(Yeni)** | Yok | Yok | Yok |
 
 Karya DE, özellikle **NVIDIA/AMD GPU kullanıcıları** ve **Türkçe masaüstü** arayanlar için tasarlanmıştır.
 
@@ -128,10 +137,17 @@ Karya DE, başlangıçtan itibaren Türk kullanıcılar için tasarlanmış bir 
 | Karya Haber | org.karya.haber | Kategori filtreli, 10 kaynak, renk kodlu kategoriler |
 | Karya Sistem | org.karya.sistem | CPU/RAM/Disk/Network anlık monitör |
 
-### OOBE Kurulum Sihirbazı
-- PyQt6 ile yazılmış, 7 adımlı kurulum asistanı
+### OOBE Kurulum Sihirbazı **(Güncellendi)**
+- PyQt6 ile yazılmış, **14 sayfalık** kapsamlı kurulum asistanı
 - Donanım algılama ile başlar (GPU, ses, ağ, laptop/VM)
 - Sürücü seçimi, layout seçimi, bileşen ayarları
+- **Tema seçimi** (koyu/açık/mavi + vurgu rengi + efektler)
+- **Varsayılan uygulama seçimi** (tarayıcı, terminal, dosya yöneticisi, editör, müzik)
+- **Geliştirme araçları** (Git, Python, Node.js, Docker, VS Code, GCC, JDK)
+- **Oyun araçları** (Steam, Lutris, GameMode, Proton, Wine)
+- **Gizlilik ayarları** (konum, çökme raporu, telemetri, hostname)
+- **Ekran ayarları** (çözünürlük, ölçekleme, yenileme hızı, DPI, çoklu ekran)
+- **Güç yönetimi** (profil, ekran kapanma, uyku, pil tasarrufu)
 - Kullanıcı oluşturma ve otomatik giriş ayarı
 - Adım adım ilerleme çubuğu ve canlı log
 
@@ -406,9 +422,9 @@ cp kernel/config-6.17-x86_64 /usr/src/linux/.config
 | **Init sistemi** | elogind + runit | systemd | systemd | systemd |
 | **Wayland** | Varsayılan | Varsayılan | Varsayılan | Deneysel |
 | **NVIDIA Wayland** | Tam (EGLStreams) | Sınırlı | Sınırlı | Yok |
-| **Widget sistemi** | 4 Türkçe widget | Binlerce eklenti | Uzantılar | Panel eklentileri |
+| **Widget sistemi** | 4 Türkçe widget + 4 uygulama | Binlerce eklenti | Uzantılar | Panel eklentileri |
 | **Yapılandırma** | OOBE + otomatik | Sistem ayarları | GNOME Ayarlar | Panel ayarları |
-| **Kurulum** | Arch PKGBUILD + ISO | Distro paketleri | Distro paketleri | Distro paketleri |
+| **Kurulum** | Arch PKGBUILD + Ubuntu PPA + ISO | Distro paketleri | Distro paketleri | Distro paketleri |
 | **Hedef kitle** | Türk kullanıcılar, NVIDIA/AMD | Genel kullanım | Genel kullanım | Eski donanım |
 
 **Karya DE'nin avantajları:**
@@ -420,9 +436,7 @@ cp kernel/config-6.17-x86_64 /usr/src/linux/.config
 
 **Karya DE'nin sınırlamaları:**
 - Intel GPU resmi desteği yok
-- Yalnızca Arch Linux ve x86_64
 - Geniş eklenti ekosistemi yok (henüz)
-- Beta aşamasında
 - Yalnızca NVIDIA GTX 700+ ve AMD GCN 2+ optimize edilmiş
 
 ---
@@ -436,7 +450,7 @@ cp kernel/config-6.17-x86_64 /usr/src/linux/.config
 | Disk | 10 GB | 32+ GB |
 | GPU | NVIDIA GTX 700+ / AMD RX 400+ | NVIDIA RTX 2000+ / AMD RX 6000+ |
 | CPU | 2 çekirdek | 4+ çekirdek |
-| OS | Arch Linux | Arch Linux |
+| OS | Arch Linux / Ubuntu 24.04+ | Arch Linux / Ubuntu 24.04+ |
 
 ### 1. Depoyu Klonla
 
@@ -513,7 +527,20 @@ makepkg -si
 cd ../karya-oobe
 makepkg -si
 
-# 5. Ana Karya DE paketi (hepsini kurar)
+# 5. Karya uygulamaları
+cd ../karya-calc
+makepkg -si
+
+cd ../karya-notes
+makepkg -si
+
+cd ../karya-search
+makepkg -si
+
+cd ../karya-settings
+makepkg -si
+
+# 6. Ana Karya DE paketi (hepsini kurar)
 cd ../karya-de-meta
 makepkg -si
 ```
@@ -555,7 +582,7 @@ sudo cmake --install build
 
 ## Widget Koleksiyonu
 
-Karya DE ile gelen 4 özel widget:
+Karya DE ile gelen **4 özel widget** ve **4 yerel uygulama**:
 
 ### Karya Hava
 - 16 Türk şehri için anlık hava durumu
@@ -592,13 +619,28 @@ Plasmoid.title: "Karya Hava"
 
 Tüm widgetlar **SVG ikon** kullanır, **hiçbir yerde emoji yoktur.**
 
+### Karya Uygulamaları **(Yeni)**
+Karya DE ile gelen 4 yerel Python/PyQt6 uygulaması:
+
+| Uygulama | Dosya | Özellikler |
+|----------|-------|------------|
+| Karya Hesap Makinesi | `karya-calc.py` | 4 işlem, bilimsel mod, hafıza, klavye desteği |
+| Karya Notlar | `karya-notes.py` | Zengin metin, kategoriler, arama, otomatik kaydetme |
+| Karya Arama | `karya-search.py` | dosya/klasör/uygulama arama, içerik indeksleme, anlık sonuç |
+| Karya Ayarlar | `karya-settings.py` | Görünüm, donanım, sürücü, dil, güç yönetimi |
+
+Tüm uygulamalar **PyQt6** ile yazılmıştır, **Karya DE temasını** kullanır, **SVG ikon** kullanır.
+
 ---
 
 ## OOBE Kurulum Sihirbazı
 
-Karya DE, ilk çalıştırmada 7 adımlı bir kurulum sihirbazı başlatır:
+Karya DE, ilk çalıştırmada **14 sayfalık** kapsamlı bir kurulum sihirbazı başlatır:
 
-### Adım 1: Donanım Algılama
+### Sayfa 1: Karşılama
+Karya DE logosu, sürüm bilgisi ve "Başla" butonu.
+
+### Sayfa 2: Donanım Algılama
 ```
 - GPU modeli ve sürücüsü
 - RAM miktarı
@@ -608,19 +650,19 @@ Karya DE, ilk çalıştırmada 7 adımlı bir kurulum sihirbazı başlatır:
 - Laptop/VM tespiti
 ```
 
-### Adım 2: GPU Sürücü Seçimi
+### Sayfa 3: GPU Sürücü Seçimi
 Algılanan GPU'ya göre uygun sürücü listelenir:
 - NVIDIA: Proprietary / Nouveau / Optimus
 - AMD: AMDGPU (açık kaynak) / AMDGPU-PRO
 - VM: VirtualBox Guest / VMware
 
-### Adım 3: Masaüstü Düzeni
+### Sayfa 4: Masaüstü Düzeni
 RAM ve sistem kaynaklarına göre önerilen layout:
 - 4 GB altı: Minimal veya Classic
 - 4-8 GB: Modern (önerilen)
 - 8 GB üstü: Tüm layoutlar
 
-### Adım 4: Bileşen Ayarları
+### Sayfa 5: Bileşen Ayarları
 Performans profiline göre otomatik etkin/kapalı:
 - Auto Tiling (her zaman açık)
 - Glassmorphism (GPU gerekli)
@@ -629,16 +671,48 @@ Performans profiline göre otomatik etkin/kapalı:
 - Sıcak Köşeler (her zaman)
 - Gece Modu (Türkiye koordinatları)
 
-### Adım 5: Kullanıcı
+### Sayfa 6: Tema Seçimi
+- Koyu / Açık / Mavi tema
+- Vurgu rengi seçimi
+- Efekt seviyesi (hafif/orta/tam)
+
+### Sayfa 7: Varsayılan Uygulamalar
+- Tarayıcı (Firefox/Chromium)
+- Terminal (Konsole/Alacritty)
+- Dosya yöneticisi (Dolphin/Thunar)
+- Editör (Kate/VSCode)
+- Müzik (Elisa/Spotify)
+
+### Sayfa 8: Geliştirme Araçları
+- Git, Python, Node.js, Docker
+- VS Code, GCC, JDK seçenekleri
+
+### Sayfa 9: Oyun Araçları
+- Steam, Lutris, GameMode, Proton, Wine
+
+### Sayfa 10: Gizlilik Ayarları
+- Konum servisleri
+- Çökme raporu gönderimi
+- Telemetri
+- Hostname ayarı
+
+### Sayfa 11: Ekran Ayarları
+- Çözünürlük, ölçekleme, yenileme hızı
+- DPI ayarı, çoklu ekran yapılandırması
+
+### Sayfa 12: Güç Yönetimi
+- Performans profili (güç tasarrufu/dengeli/performans)
+- Ekran kapanma süresi
+- Uyku modu
+- Pil tasarrufu (laptop)
+
+### Sayfa 13: Kullanıcı
 - Kullanıcı adı, tam ad, şifre
 - Otomatik giriş
 - Tema uygulama
 
-### Adım 6: Özet
-Tüm seçimlerin listelendiği önizleme ekranı.
-
-### Adım 7: Kurulum
-Adım adım ilerleme çubuğu ile kurulum:
+### Sayfa 14: Özet ve Kurulum
+Tüm seçimlerin listelendiği önizleme ekranı + adım adım kurulum:
 1. Donanım algılanıyor
 2. Sürücüler kuruluyor
 3. Sistem yapılandırılıyor
@@ -897,11 +971,20 @@ karya-de/
 ├── sddm-theme/                 # SDDM giriş teması
 │   └── karya-sddm/             # Login ekranı (QML)
 ├── calamares/                  # ISO kurulum modülleri
-├── packages/                   # Arch PKGBUILD'ları (6 adet)
+├── apps/                       # Karya Python uygulamaları (4 adet)
+│   ├── karya-calc/             # Hesap Makinesi
+│   ├── karya-notes/            # Notlar
+│   ├── karya-search/           # Masaüstü Arama
+│   └── karya-settings/         # Karya Ayarlar
+├── packages/                   # Arch PKGBUILD'ları (10 adet)
 │   ├── karya-de-meta/          # Ana meta paket
 │   ├── kwin-karya/             # Fork KWin
 │   ├── karya-widgets/          # Widget paketi
 │   ├── karya-oobe/             # Kurulum sihirbazı (PyQt6)
+│   ├── karya-calc/             # Hesap Makinesi
+│   ├── karya-notes/            # Notlar
+│   ├── karya-search/           # Masaüstü Arama
+│   ├── karya-settings/         # Karya Ayarlar
 │   ├── karya-drivers/          # Sürücü desteği
 │   └── karya-icons/            # İkon teması
 ├── iso/                        # Arch ISO konfigürasyonu
@@ -924,7 +1007,11 @@ karya-de/
 | `kwin-karya` | Fork KWin + tiling + glassmorphism | Qt6, KF6 |
 | `plasma-workspace` | Panel, bildirim, shell | kwin |
 | `karya-widgets` | 4 widget (hava/namaz/haber/sistem) | workspace |
-| `karya-oobe` | Kurulum sihirbazı | PyQt6, bash |
+| `karya-oobe` | Kurulum sihirbazı **(Güncellendi)** | PyQt6, bash |
+| `karya-calc` | Hesap Makinesi **(Yeni)** | Python, PyQt6 |
+| `karya-notes` | Notlar uygulaması **(Yeni)** | Python, PyQt6 |
+| `karya-search` | Masaüstü arama **(Yeni)** | Python, PyQt6 |
+| `karya-settings` | Karya Ayarlar **(Yeni)** | Python, PyQt6 |
 | `karya-drivers` | GPU sürücü desteği | bash, jq |
 | `karya-icons` | SVG ikon teması | breeze-icons |
 

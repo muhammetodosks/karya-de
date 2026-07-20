@@ -1,0 +1,22 @@
+#!/bin/sh
+set -e
+
+case "$1" in
+    purge|remove)
+        # SDDM temizligi
+        rm -f /etc/sddm.conf.d/karya.conf
+
+        # OOBE autostart temizligi
+        rm -f /etc/xdg/autostart/karya-first-run.desktop
+
+        # Build servisi temizligi
+        if command -v systemctl >/dev/null 2>&1; then
+            systemctl disable karya-build.service 2>/dev/null || true
+            rm -f /etc/systemd/system/karya-build.service
+        fi
+
+        # KWin binary temizligi
+        rm -f /usr/bin/kwin_karya_wrapper
+        rm -rf /opt/karya-de
+        ;;
+esac

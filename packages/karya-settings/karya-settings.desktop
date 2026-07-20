@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Name=Karya Ayarlar
+Name[tr]=Karya Ayarlar
+Comment=Karya DE sistem ayarlari
+Comment[tr]=Karya DE sistem ayarlari
+Exec=karya-settings
+Icon=preferences-system
+Terminal=false
+Categories=Settings;DesktopSettings;
+StartupNotify=false

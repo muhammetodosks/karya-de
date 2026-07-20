@@ -1,0 +1,17 @@
+# Maintainer: Karya DE Team
+
+pkgname=karya-search
+pkgver=1.0.0
+pkgrel=1
+pkgdesc="Karya DE - Uygulama ve dosya arama araci"
+arch=('x86_64')
+url="https://karya-de.org"
+license=('GPL2')
+depends=('python' 'python-pyqt6')
+source=("src/karya-search.py" "karya-search.desktop")
+sha256sums=('SKIP' 'SKIP')
+
+package() {
+    install -Dm755 "$srcdir/karya-search.py" "$pkgdir/usr/bin/karya-search"
+    install -Dm644 "$srcdir/karya-search.desktop" "$pkgdir/usr/share/applications/karya-search.desktop"
+}

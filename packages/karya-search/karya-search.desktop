@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Name=Karya Ara
+Name[tr]=Karya Ara
+Comment=Uygulama ve dosya arama
+Comment[tr]=Uygulama ve dosya arama
+Exec=karya-search
+Icon=system-search
+Terminal=false
+Categories=Utility;Application;
+StartupNotify=false

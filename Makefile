@@ -66,3 +66,26 @@ packages:
 			cd "$$pkg" && makepkg -si --noconfirm 2>/dev/null || true; \
 		fi; \
 	done
+
+# .deb paketi oluştur (Ubuntu)
+deb:
+	@echo "=== Karya DE .deb Paketi ==="
+	@chmod 755 debian/rules debian/karya-de.postinst debian/karya-de.postrm
+	@if command -v dpkg-buildpackage &>/dev/null; then \
+		dpkg-buildpackage -b -us -uc; \
+		echo ".deb paketi olusturuldu."; \
+	else \
+		echo "dpkg-dev paketi gerekli: sudo apt install dpkg-dev"; \
+		exit 1; \
+	fi
+
+# Karya uygulamalarını test et
+test-apps:
+	@echo "Karya uygulamalari test ediliyor..."
+	@for app in karya-calc karya-notes karya-search karya-settings; do \
+		if [ -f "packages/$$app/src/$$app.py" ]; then \
+			python3 -c "import ast; ast.parse(open('packages/$$app/src/$$app.py').read()); print(f'  $$app: OK')"; \
+		else \
+			echo "  $$app: bulunamadi"; \
+		fi; \
+	done

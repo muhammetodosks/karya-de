@@ -1,0 +1,62 @@
+#!/bin/sh
+set -e
+
+case "$1" in
+    configure)
+        # SDDM temasini aktif et
+        if [ -d /usr/share/sddm/themes/karya-sddm ]; then
+            mkdir -p /etc/sddm.conf.d
+            cat > /etc/sddm.conf.d/karya.conf << 'EOF'
+[Theme]
+Current=karya-sddm
+EOF
+        fi
+
+        # OOBE autostart
+        mkdir -p /etc/xdg/autostart
+        cat > /etc/xdg/autostart/karya-first-run.desktop << 'EOF'
+[Desktop Entry]
+Type=Application
+Name=Karya First Run
+Name[tr]=Karya Ilk Calistirma
+Comment=Karya DE first run setup wizard
+Comment[tr]=Karya DE ilk calistirma kurulum sihirbazi
+Exec=/usr/bin/karya-oobe
+OnlyShowIn=Karya
+X-KDE-autostart-phase=2
+NoDisplay=true
+EOF
+
+        # KWin build servisi (ilk acilista derleme)
+        if command -v systemctl >/dev/null 2>&1; then
+            cat > /etc/systemd/system/karya-build.service << 'EOF'
+[Unit]
+Description=Karya DE - KWin Build Service
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/lib/karya/scripts/build-kwin.sh
+RemainAfterExit=yes
+StandardOutput=journal
+
+[Install]
+WantedBy=multi-user.target
+EOF
+            systemctl enable karya-build.service 2>/dev/null || true
+        fi
+
+        # Kullaniciya bildir
+        echo ""
+        echo "========================================"
+        echo "  Karya DE basariyla kuruldu!"
+        echo "========================================"
+        echo "  Ilk acilista KWin derlenecek."
+        echo "  Bu islem 5-15 dakika surebilir."
+        echo ""
+        echo "  Yeniden baslatmak icin: sudo reboot"
+        echo "========================================"
+        echo ""
+        ;;
+esac

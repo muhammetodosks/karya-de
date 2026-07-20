@@ -6,12 +6,12 @@ export KDE_SESSION_VERSION=6
 export KDE_FULL_SESSION=true
 export DESKTOP_SESSION=karya
 export XDG_SESSION_DESKTOP=karya
-export XDG_CURRENT_DESKTOP=KDE:plasmawayland
+export XDG_CURRENT_DESKTOP=Karya:plasmawayland
 export XDG_SESSION_TYPE=wayland
 
 # Load Karya environment
-if [ -f /etc/xdg/karya/env.sh ]; then
-    source /etc/xdg/karya/env.sh
+if [ -f /etc/profile.d/karya.env ]; then
+    source /etc/profile.d/karya.env
 fi
 
 # Start plasma session

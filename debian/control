@@ -1,0 +1,94 @@
+Source: karya-de
+Section: x11
+Priority: optional
+Maintainer: Karya DE Team <karya@karya-de.org>
+Build-Depends: debhelper-compat (= 13)
+Standards-Version: 4.7.0
+Homepage: https://github.com/muhammetodosks/karya-de
+Rules-Requires-Root: no
+
+Package: karya-de
+Architecture: amd64
+Depends: ${misc:Depends},
+         python3 (>= 3.10),
+         python3-pyqt6,
+         python3-pip,
+         qt6-base-dev,
+         qt6-declarative-dev,
+         qt6-wayland-dev,
+         qt6-shadertools-dev,
+         qt6-tools-dev,
+         cmake (>= 3.20),
+         extra-cmake-modules,
+         wayland-protocols,
+         plasma-wayland-protocols,
+         git,
+         jq,
+         pciutils,
+         libepoxy-dev,
+         libxcb-cursor-dev,
+         libxcb-keysyms1-dev,
+         libxcb-util-dev,
+         libxcb-util-wm-dev,
+         libxcb-xrm-dev,
+         libdrm-dev,
+         libinput-dev,
+         libei-dev,
+         libsystemd-dev,
+         libvulkan-dev,
+         liblcms2-dev,
+         libhwdata-dev,
+         libcanberra-dev,
+         libxkbcommon-dev,
+         libx11-dev,
+         libxcvt-dev,
+         libdisplay-info-dev,
+         libevdev-dev,
+         libqaccessibilityclient-qt6-dev,
+         libkf6config-dev,
+         libkf6coreaddons-dev,
+         libkf6crash-dev,
+         libkf6dbusaddons-dev,
+         libkf6declarative-dev,
+         libkf6globalaccel-dev,
+         libkf6guiaddons-dev,
+         libkf6i18n-dev,
+         libkf6iconthemes-dev,
+         libkf6kio-dev,
+         libkf6itemmodels-dev,
+         libkf6itemviews-dev,
+         libkf6package-dev,
+         libkf6service-dev,
+         libkf6widgetsaddons-dev,
+         libkf6windowsystem-dev,
+         libkf6xmlgui-dev,
+         libkf6wayland-dev,
+         libkf6auth-dev,
+         libkf6idletime-dev,
+         libkf6svg-dev,
+         libkf6newstuff-dev,
+         libkf6runner-dev,
+         libkf6notifications-dev,
+         libkf6doctools-dev,
+         libkf6kirigami-dev,
+         libkf6plasma-dev,
+         libkf6screenlocker-dev,
+         libkf6globalacceld-dev,
+         libplasma-activities-dev,
+         sddm,
+         pipewire,
+         wireplumber,
+         fonts-noto,
+         fonts-noto-color-emoji
+Recommends: nvidia-driver | xserver-xorg-video-amdgpu | xserver-xorg-video-intel
+Suggests: steam, lutris, code, docker.io
+Description: Karya Desktop Environment
+ Modern Turkish desktop environment built on Qt6 and KDE Frameworks 6.
+ Features custom window manager, panel system, widget collection,
+ and hardware-aware configuration.
+ .
+ Karya DE is an independent desktop environment (not KDE Plasma)
+ designed for Turkish users with NVIDIA/AMD optimization.
+ .
+ WARNING: First boot will compile the window manager from source.
+ This is a one-time process taking 5-15 minutes.

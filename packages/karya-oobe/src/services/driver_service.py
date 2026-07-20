@@ -5,6 +5,7 @@ Karya DE - Driver Installer Service
 import subprocess
 import os
 from pathlib import Path
+from services.hardware_service import detect_distro
 
 
 class DriverInstaller:
@@ -69,28 +70,26 @@ class DriverInstaller:
     @staticmethod
     def install(driver_id: str) -> bool:
         info = DriverInstaller.get_driver_info(driver_id)
-        pkgs = info.get("pacman", [])
+        distro = detect_distro()
 
-        if not pkgs:
-            return True
+        if distro == "arch":
+            pkgs = info.get("pacman", [])
+            if not pkgs:
+                return True
+            cmd = ["pacman", "-S", "--noconfirm"] + pkgs
+        elif distro == "ubuntu":
+            pkgs = info.get("apt", [])
+            if not pkgs:
+                return True
+            cmd = ["apt", "install", "-y"] + pkgs
+        else:
+            return False
 
         try:
             result = subprocess.run(
-                ["pacman", "-S", "--noconfirm"] + pkgs,
-                capture_output=True, text=True, timeout=300
+                cmd, capture_output=True, text=True, timeout=300
             )
-            if result.returncode == 0:
-                return True
-
-            # Try apt fallback
-            apt_pkgs = info.get("apt", [])
-            if apt_pkgs:
-                result = subprocess.run(
-                    ["apt", "install", "-y"] + apt_pkgs,
-                    capture_output=True, text=True, timeout=300
-                )
-                return result.returncode == 0
-            return False
+            return result.returncode == 0
         except subprocess.TimeoutExpired:
             return False
 

@@ -1,8 +1,9 @@
 [Desktop Entry]
-Type=XSession
+Type=Application
 Exec=startplasma-karya
 TryExec=startplasma-karya
-DesktopNames=KDE;Karya
+DesktopNames=KDE,Karya
+X-GDM-SessionRegisters=true
 Name=Karya Desktop
 Name[tr]=Karya Masaüstü
 Comment=Karya Desktop Environment based on KDE Plasma

@@ -1,0 +1,11 @@
+karya-de (1.0.0-1) noble; urgency=medium
+
+  * Initial release for Ubuntu 24.04
+  * Custom window manager (KWin fork)
+  * Panel and dock system
+  * Hardware-aware OOBE setup wizard
+  * GPU driver auto-detection and installation
+  * Custom SDDM theme
+  * Turkish language support
+
+ -- Karya DE Team <karya@karya-de.org>  Sun, 20 Jul 2026 00:00:00 +0300

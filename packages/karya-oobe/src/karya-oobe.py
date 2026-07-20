@@ -10,6 +10,11 @@ import subprocess
 import json
 from pathlib import Path
 
+# Ensure OOBE services package is on path
+_oobe_services = Path("/usr/lib/karya/oobe")
+if _oobe_services.exists() and str(_oobe_services) not in sys.path:
+    sys.path.insert(0, str(_oobe_services))
+
 from PyQt6.QtWidgets import (
     QApplication, QWizard, QWizardPage, QVBoxLayout, QHBoxLayout,
     QLabel, QComboBox, QCheckBox, QRadioButton, QButtonGroup,
@@ -219,6 +224,7 @@ class WelcomePage(QWizardPage):
             ("Wifi", "Var" if self.hw.has_wifi else "Yok", None),
             ("Bluetooth", "Var" if self.hw.has_bluetooth else "Yok", None),
             ("Laptop", "Evet" if self.hw.is_laptop else "Hayir", None),
+            ("Dagitim", self.hw.distro_display, None),
         ]
 
         for i, (label, value, extra) in enumerate(rows):
@@ -553,6 +559,530 @@ class UserPage(QWizardPage):
         }
 
 
+class ThemePage(QWizardPage):
+    def __init__(self, hw_info: HardwareInfo):
+        super().__init__()
+        self.hw = hw_info
+
+        layout = QVBoxLayout()
+
+        title = QLabel("Tema Secimi")
+        title.setObjectName("titleLabel")
+        layout.addWidget(title)
+
+        subtitle = QLabel("Karya DE'nin gorunumunu ozellestirin:")
+        subtitle.setObjectName("subtitleLabel")
+        layout.addWidget(subtitle)
+
+        # Renk temasi
+        theme_group = QGroupBox("Renk Temasi")
+        theme_layout = QVBoxLayout(theme_group)
+        self.theme_group = QButtonGroup(self)
+
+        themes = [
+            ("karya-dark", "Karya Dark (Onerilen)", "Koyu tema, goz yormaz, pil tasarrufu saglar", True),
+            ("karya-light", "Karya Light", "Acik tema, aydinlik ortamlar icin", False),
+            ("karya-blue", "Karya Blue", "Mavi agirlikli ozel tema", False),
+            ("system", "Sistem Temasi", "Isletim sisteminin varsayilan temasini kullan", False),
+        ]
+        for tid, name, desc, rec in themes:
+            rb = QRadioButton(f"  {name}")
+            rb.setProperty("theme", tid)
+            self.theme_group.addButton(rb)
+            rb_layout = QVBoxLayout()
+            rbw = QWidget()
+            rbw.setLayout(rb_layout)
+            rb_layout.setContentsMargins(0, 0, 0, 0)
+            rb_layout.addWidget(rb)
+            dl = QLabel(desc)
+            dl.setStyleSheet("color: rgba(255,255,255,0.5); font-size: 12px; padding-left: 32px;")
+            rb_layout.addWidget(dl)
+            theme_layout.addWidget(rbw)
+            if rec:
+                rb.setChecked(True)
+                rl = QLabel("  ONERILEN")
+                rl.setStyleSheet("color: #2ecc71; font-size: 11px; font-weight: bold; padding-left: 32px;")
+                theme_layout.addWidget(rl)
+        layout.addWidget(theme_group)
+
+        # Vurgu rengi
+        accent_group = QGroupBox("Vurgu Rengi")
+        accent_layout = QVBoxLayout(accent_group)
+        self.accent_group = QButtonGroup(self)
+        accents = [("blue", "Mavi", True), ("purple", "Mor"), ("green", "Yesil"),
+                    ("red", "Kirmizi"), ("orange", "Turuncu"), ("pink", "Pembe")]
+        for aid, name, *rec in accents:
+            rb = QRadioButton(f"  {name}")
+            rb.setProperty("accent", aid)
+            self.accent_group.addButton(rb)
+            accent_layout.addWidget(rb)
+            if rec and rec[0]:
+                rb.setChecked(True)
+        layout.addWidget(accent_group)
+
+        # Efektler
+        effects_group = QGroupBox("Goruntu Efektleri")
+        effects_layout = QVBoxLayout(effects_group)
+        self.glass_check = QCheckBox("  Glassmorphism (Cam Efekti) - GPU gerektirir")
+        self.glass_check.setChecked(self.hw.gpu_vendor not in ("virtual", "intel"))
+        effects_layout.addWidget(self.glass_check)
+        self.blur_check = QCheckBox("  Pencere Bulaniklastirma - 4GB+ RAM onerilir")
+        self.blur_check.setChecked(self.hw.ram_mb >= 4096)
+        effects_layout.addWidget(self.blur_check)
+        self.anim_check = QCheckBox("  Gelismis Animasyonlar")
+        self.anim_check.setChecked(True)
+        effects_layout.addWidget(self.anim_check)
+        layout.addWidget(effects_group)
+
+        layout.addStretch()
+        self.setLayout(layout)
+
+    def get_config(self) -> dict:
+        theme_btn = self.theme_group.checkedButton()
+        accent_btn = self.accent_group.checkedButton()
+        return {
+            "theme": theme_btn.property("theme") if theme_btn else "karya-dark",
+            "accent": accent_btn.property("accent") if accent_btn else "blue",
+            "glassmorphism": self.glass_check.isChecked(),
+            "blur": self.blur_check.isChecked(),
+            "animations": self.anim_check.isChecked(),
+        }
+
+
+class DefaultAppsPage(QWizardPage):
+    def __init__(self):
+        super().__init__()
+        layout = QVBoxLayout()
+
+        title = QLabel("Varsayilan Uygulamalar")
+        title.setObjectName("titleLabel")
+        layout.addWidget(title)
+
+        subtitle = QLabel("Karya DE'de kullanilacak varsayilan uygulamalari secin:")
+        subtitle.setObjectName("subtitleLabel")
+        layout.addWidget(subtitle)
+
+        # Web tarayici
+        layout.addWidget(self._section_label("Web Tarayici"))
+        self.browser_combo = QComboBox()
+        self.browser_combo.addItems([
+            "Firefox (Onerilen)", "Google Chrome", "Brave", "Microsoft Edge", "Chromium"
+        ])
+        self.browser_combo.setCurrentIndex(0)
+        layout.addWidget(self.browser_combo)
+
+        # Terminal
+        layout.addWidget(self._section_label("Terminal Emulatoru"))
+        self.terminal_combo = QComboBox()
+        self.terminal_combo.addItems([
+            "Konsole (Onerilen)", "Alacritty", "Kitty", "GNOME Terminal", "Terminator"
+        ])
+        self.terminal_combo.setCurrentIndex(0)
+        layout.addWidget(self.terminal_combo)
+
+        # Dosya yoneticisi
+        layout.addWidget(self._section_label("Dosya Yoneticisi"))
+        self.fm_combo = QComboBox()
+        self.fm_combo.addItems([
+            "Dolphin (Onerilen)", "Nautilus", "Thunar", "Nemo", "PCManFM"
+        ])
+        self.fm_combo.setCurrentIndex(0)
+        layout.addWidget(self.fm_combo)
+
+        # Metin editoru
+        layout.addWidget(self._section_label("Metin Editoru"))
+        self.editor_combo = QComboBox()
+        self.editor_combo.addItems([
+            "Kate (Onerilen)", "VS Code", "Gedit", "Vim", "Nano"
+        ])
+        self.editor_combo.setCurrentIndex(0)
+        layout.addWidget(self.editor_combo)
+
+        # Muzik calar
+        layout.addWidget(self._section_label("Muzik Calar"))
+        self.music_combo = QComboBox()
+        self.music_combo.addItems([
+            "Elisa (Onerilen)", "Spotify", "Rhythmbox", "Clementine", "VLC"
+        ])
+        self.music_combo.setCurrentIndex(0)
+        layout.addWidget(self.music_combo)
+
+        layout.addStretch()
+        self.setLayout(layout)
+
+    def _section_label(self, text):
+        lbl = QLabel(text)
+        lbl.setObjectName("sectionLabel")
+        return lbl
+
+    def get_config(self) -> dict:
+        return {
+            "browser": self.browser_combo.currentText().split(" (")[0].lower(),
+            "terminal": self.terminal_combo.currentText().split(" (")[0].lower(),
+            "file_manager": self.fm_combo.currentText().split(" (")[0].lower(),
+            "text_editor": self.editor_combo.currentText().split(" (")[0].lower(),
+            "music_player": self.music_combo.currentText().split(" (")[0].lower(),
+        }
+
+
+class DevToolsPage(QWizardPage):
+    def __init__(self):
+        super().__init__()
+        layout = QVBoxLayout()
+
+        title = QLabel("Gelistirme Araclari")
+        title.setObjectName("titleLabel")
+        layout.addWidget(title)
+
+        subtitle = QLabel("Kurmak istediginiz gelistirme araclarini secin:")
+        subtitle.setObjectName("subtitleLabel")
+        layout.addWidget(subtitle)
+
+        tools = [
+            ("git", "Git", "Versiyon kontrol sistemi", True),
+            ("python", "Python + Pip", "Python 3 ve paket yoneticisi", True),
+            ("nodejs", "Node.js + NPM", "JavaScript runtime ve paket yoneticisi", False),
+            ("docker", "Docker", "Container platformu", False),
+            ("vscode", "VS Code", "Microsoft'un populer editoru", False),
+            ("gcc", "GCC/Clang", "C/C++ derleyici", True),
+            ("cmake", "CMake", "Build sistemi", True),
+            ("postman", "Postman/Insomnia", "API test araci", False),
+            ("neovim", "Neovim", "Modern terminal editoru", False),
+            ("jdk", "Java JDK", "Java gelistirme kiti", False),
+        ]
+
+        self.tool_checks = {}
+        for tid, name, desc, default in tools:
+            cb = QCheckBox(f"  {name}")
+            cb.setChecked(default)
+            cb.setToolTip(desc)
+            self.tool_checks[tid] = cb
+            layout.addWidget(cb)
+            dl = QLabel(desc)
+            dl.setStyleSheet("color: rgba(255,255,255,0.5); font-size: 12px; padding-left: 36px;")
+            layout.addWidget(dl)
+
+        layout.addStretch()
+        self.setLayout(layout)
+
+    def get_config(self) -> dict:
+        return {tid: cb.isChecked() for tid, cb in self.tool_checks.items()}
+
+
+class GamingPage(QWizardPage):
+    def __init__(self):
+        super().__init__()
+        layout = QVBoxLayout()
+
+        title = QLabel("Oyun Kurulumu")
+        title.setObjectName("titleLabel")
+        layout.addWidget(title)
+
+        subtitle = QLabel("Oyun platformu ve araclarini secin:")
+        subtitle.setObjectName("subtitleLabel")
+        layout.addWidget(subtitle)
+
+        tools = [
+            ("steam", "Steam", "Valve'in oyun platformu. Binlerce oyun.", False),
+            ("lutris", "Lutris", "Oyun yoneticisi. Windows oyunlarini calistirir.", False),
+            ("gamemode", "GameMode", "FPS optimize eden sistem araci", True),
+            ("mangohud", "MangoHud", "Oyun ici FPS/sistem monitoru", False),
+            ("proton", "Proton GE", "Geli�tirilmis Proton (Steam oyunlari icin)", False),
+            ("wine", "Wine", "Windows uygulamalarini calistirma katmani", False),
+            ("heroic", "Heroic Launcher", "Epic/GOG oyun launcheri", False),
+        ]
+
+        self.game_checks = {}
+        for gid, name, desc, default in tools:
+            cb = QCheckBox(f"  {name}")
+            cb.setChecked(default)
+            cb.setToolTip(desc)
+            self.game_checks[gid] = cb
+            layout.addWidget(cb)
+            dl = QLabel(desc)
+            dl.setStyleSheet("color: rgba(255,255,255,0.5); font-size: 12px; padding-left: 36px;")
+            layout.addWidget(dl)
+
+        # Performans modu
+        perf_group = QGroupBox("Oyun Performansi")
+        perf_layout = QVBoxLayout(perf_group)
+        self.game_mode_cb = QCheckBox("Oyun Modu (Govde atamasi + CPU governor)")
+        self.game_mode_cb.setChecked(True)
+        perf_layout.addWidget(self.game_mode_cb)
+        self.realtime_cb = QCheckBox("Gerçek Zamanli Oncelik (Oyunlara CPU onceligi)")
+        self.realtime_cb.setChecked(False)
+        perf_layout.addWidget(self.realtime_cb)
+        layout.addWidget(perf_group)
+
+        layout.addStretch()
+        self.setLayout(layout)
+
+    def get_config(self) -> dict:
+        return {
+            "tools": {gid: cb.isChecked() for gid, cb in self.game_checks.items()},
+            "game_mode": self.game_mode_cb.isChecked(),
+            "realtime_priority": self.realtime_cb.isChecked(),
+        }
+
+
+class PrivacyPage(QWizardPage):
+    def __init__(self):
+        super().__init__()
+        layout = QVBoxLayout()
+
+        title = QLabel("Gizlilik Ayarlari")
+        title.setObjectName("titleLabel")
+        layout.addWidget(title)
+
+        subtitle = QLabel("Karya DE'nin gizlilik tercihlerini yapilandirin:")
+        subtitle.setObjectName("subtitleLabel")
+        layout.addWidget(subtitle)
+
+        # Gizlilik secenekleri
+        items = [
+            ("location", "Konum Servisleri", "Uygulamalarin konumunuza erismesine izin ver", False),
+            ("crash", "C2a Raporu Gonder", "Karya DE cokmelerinde anonim rapor gonder", True),
+            ("telemetry", "Kullanim Verisi", "Anonim kullanim istatistigi gonder", False),
+            ("recent", "Son Dosyalari Hatirla", "Acilan dosyalari kaydet", True),
+            ("search", "Dosya Icerigini Indexle", "Hizli arama icin dosya iceriklerini tara", True),
+        ]
+        self.privacy_checks = {}
+        for pid, name, desc, default in items:
+            cb = QCheckBox(f"  {name}")
+            cb.setChecked(default)
+            cb.setToolTip(desc)
+            self.privacy_checks[pid] = cb
+            layout.addWidget(cb)
+            dl = QLabel(desc)
+            dl.setStyleSheet("color: rgba(255,255,255,0.5); font-size: 12px; padding-left: 36px;")
+            layout.addWidget(dl)
+
+        # Hostname
+        hostname_group = QGroupBox("Makine Adi (Hostname)")
+        hostname_layout = QVBoxLayout(hostname_group)
+        self.hostname_input = QLineEdit()
+        import socket
+        default_host = socket.gethostname() or "karya-pc"
+        self.hostname_input.setText(default_host)
+        self.hostname_input.setPlaceholderText("ornek: karya-laptop")
+        hostname_layout.addWidget(self.hostname_input)
+        hl = QLabel("Bu isim ag uzerinde gorunecektir")
+        hl.setStyleSheet("color: rgba(255,255,255,0.5); font-size: 12px;")
+        hostname_layout.addWidget(hl)
+        layout.addWidget(hostname_group)
+
+        layout.addStretch()
+        self.setLayout(layout)
+
+    def get_config(self) -> dict:
+        return {
+            "location": self.privacy_checks["location"].isChecked(),
+            "crash_reports": self.privacy_checks["crash"].isChecked(),
+            "telemetry": self.privacy_checks["telemetry"].isChecked(),
+            "recent_files": self.privacy_checks["recent"].isChecked(),
+            "search_index": self.privacy_checks["search"].isChecked(),
+            "hostname": self.hostname_input.text().strip() or "karya-pc",
+        }
+
+
+class DisplayPage(QWizardPage):
+    def __init__(self, hw_info: HardwareInfo):
+        super().__init__()
+        self.hw = hw_info
+
+        layout = QVBoxLayout()
+
+        title = QLabel("Ekran Ayarlari")
+        title.setObjectName("titleLabel")
+        layout.addWidget(title)
+
+        subtitle = QLabel("Ekran cozunurluk ve olcekleme tercihleri:")
+        subtitle.setObjectName("subtitleLabel")
+        layout.addWidget(subtitle)
+
+        # Cozunurluk
+        layout.addWidget(self._sl("Cozunurluk"))
+        self.res_combo = QComboBox()
+        # Try to detect native resolution
+        try:
+            res = subprocess.run(
+                ["xrandr"], capture_output=True, text=True, timeout=5
+            )
+            native = "1920x1080"
+            for line in res.stdout.split("\n"):
+                if " connected" in line and "x" in line:
+                    import re
+                    m = re.search(r'(\d+x\d+)', line.split("connected")[1] if "connected" in line else line)
+                    if m:
+                        native = m.group(1)
+                    break
+            self.res_combo.addItems([
+                f"{native} (Native, Onerilen)",
+                "2560x1440", "1920x1200", "1920x1080",
+                "1680x1050", "1600x900", "1440x900",
+                "1366x768", "1280x720"
+            ])
+            # Select native
+            for i in range(self.res_combo.count()):
+                if native in self.res_combo.itemText(i):
+                    self.res_combo.setCurrentIndex(i)
+                    break
+        except Exception:
+            self.res_combo.addItems(["1920x1080 (Onerilen)", "2560x1440", "1920x1200",
+                                     "1680x1050", "1366x768"])
+        layout.addWidget(self.res_combo)
+
+        # Olcekleme
+        layout.addWidget(self._sl("Olcekleme (Scale)"))
+        self.scale_combo = QComboBox()
+        scales = ["%%100 (Onerilen)", "%%125", "%%150", "%%175", "%%200"]
+        self.scale_combo.addItems(scales)
+        if self.hw.is_laptop or self.hw.gpu_vendor in ("intel",):
+            self.scale_combo.setCurrentIndex(1)
+        layout.addWidget(self.scale_combo)
+
+        # Yenileme hizi
+        layout.addWidget(self._sl("Yenileme Hizi"))
+        self.refresh_combo = QComboBox()
+        self.refresh_combo.addItems(["60 Hz (Onerilen)", "75 Hz", "120 Hz", "144 Hz", "165 Hz", "240 Hz"])
+        layout.addWidget(self.refresh_combo)
+
+        # DPI
+        self.dpi_spin = QGroupBox("DPI Ayari")
+        dpi_layout = QVBoxLayout(self.dpi_spin)
+        self.dpi_check = QCheckBox("Otomatik DPI algilama (Onerilen)")
+        self.dpi_check.setChecked(True)
+        dpi_layout.addWidget(self.dpi_check)
+        layout.addWidget(self.dpi_spin)
+
+        # Coklu ekran
+        multi_group = QGroupBox("Coklu Ekran")
+        multi_layout = QVBoxLayout(multi_group)
+        self.mirror_cb = QCheckBox("Ekranlari yansit (Mirror)")
+        self.extend_cb = QCheckBox("Ekranlari genislet (Extended - Onerilen)")
+        self.extend_cb.setChecked(True)
+        multi_layout.addWidget(self.mirror_cb)
+        multi_layout.addWidget(self.extend_cb)
+        layout.addWidget(multi_group)
+
+        layout.addStretch()
+        self.setLayout(layout)
+
+    def _sl(self, text):
+        lbl = QLabel(text)
+        lbl.setObjectName("sectionLabel")
+        return lbl
+
+    def get_config(self) -> dict:
+        res_text = self.res_combo.currentText()
+        res = res_text.split(" ")[0] if "(" in res_text else res_text
+        return {
+            "resolution": res,
+            "scale": self.scale_combo.currentText().replace("%%", "").split(" ")[0],
+            "refresh": self.refresh_combo.currentText().split(" ")[0],
+            "auto_dpi": self.dpi_check.isChecked(),
+            "mirror": self.mirror_cb.isChecked(),
+            "extend": self.extend_cb.isChecked(),
+        }
+
+
+class PowerPage(QWizardPage):
+    def __init__(self, hw_info: HardwareInfo):
+        super().__init__()
+        self.hw = hw_info
+
+        layout = QVBoxLayout()
+
+        title = QLabel("Guc Ayarlari")
+        title.setObjectName("titleLabel")
+        layout.addWidget(title)
+
+        subtitle = QLabel("Guc yonetimi ve pil tercihleri:")
+        subtitle.setObjectName("subtitleLabel")
+        layout.addWidget(subtitle)
+
+        # Guc profili
+        profile_group = QGroupBox("Guc Profili")
+        profile_layout = QVBoxLayout(profile_group)
+        self.profile_group = QButtonGroup(self)
+        profiles = [
+            ("performance", "Performans", "Maksimum hiz, pil omru onemsiz", not self.hw.is_laptop),
+            ("balanced", "Dengeli (Onerilen)", "Performans ve pil omru arasinda denge", True),
+            ("powersave", "Guc Tasarrufu", "Pil omrunu uzat, dusuk performans", self.hw.is_laptop),
+        ]
+        for pid, name, desc, rec in profiles:
+            rb = QRadioButton(f"  {name}")
+            rb.setProperty("profile", pid)
+            self.profile_group.addButton(rb)
+            profile_layout.addWidget(rb)
+            dl = QLabel(desc)
+            dl.setStyleSheet("color: rgba(255,255,255,0.5); font-size: 12px; padding-left: 32px;")
+            profile_layout.addWidget(dl)
+            if rec:
+                rb.setChecked(True)
+        layout.addWidget(profile_group)
+
+        # Ekran kapanma
+        screen_group = QGroupBox("Ekran Kapanma")
+        screen_layout = QVBoxLayout(screen_group)
+        self.screen_off_combo = QComboBox()
+        self.screen_off_combo.addItems([
+            "1 dakika", "3 dakika", "5 dakika (Onerilen)",
+            "10 dakika", "15 dakika", "30 dakika", "Hic kapatma"
+        ])
+        self.screen_off_combo.setCurrentIndex(2)
+        screen_layout.addWidget(QLabel("Ekran kapanma suresi:"))
+        screen_layout.addWidget(self.screen_off_combo)
+        layout.addWidget(screen_group)
+
+        # Uyku
+        sleep_group = QGroupBox("Uyku Ayarlari")
+        sleep_layout = QVBoxLayout(sleep_group)
+        self.sleep_combo = QComboBox()
+        self.sleep_combo.addItems([
+            "5 dakika", "10 dakika", "15 dakika (Onerilen)",
+            "30 dakika", "1 saat", "Hic uyuma"
+        ])
+        self.sleep_combo.setCurrentIndex(2)
+        sleep_layout.addWidget(QLabel("Uykuya gecme suresi:"))
+        sleep_layout.addWidget(self.sleep_combo)
+
+        if self.hw.is_laptop:
+            self.lid_cb = QCheckBox("Kulak kapagini kapatinca uykuya gec (Laptop)")
+            self.lid_cb.setChecked(True)
+            sleep_layout.addWidget(self.lid_cb)
+
+        layout.addWidget(sleep_group)
+
+        # Pil
+        if self.hw.is_laptop:
+            battery_group = QGroupBox("Pil Tasarrufu")
+            battery_layout = QVBoxLayout(battery_group)
+            self.dim_cb = QCheckBox("Pilde ekran karart")
+            self.dim_cb.setChecked(True)
+            battery_layout.addWidget(self.dim_cb)
+            self.battery_perf_cb = QCheckBox("Pilde performansi dusur")
+            self.battery_perf_cb.setChecked(True)
+            battery_layout.addWidget(self.battery_perf_cb)
+            layout.addWidget(battery_group)
+
+        layout.addStretch()
+        self.setLayout(layout)
+
+    def get_config(self) -> dict:
+        profile_btn = self.profile_group.checkedButton()
+        result = {
+            "power_profile": profile_btn.property("profile") if profile_btn else "balanced",
+            "screen_off": self.screen_off_combo.currentIndex(),
+            "sleep": self.sleep_combo.currentIndex(),
+        }
+        if self.hw.is_laptop:
+            result["lid_sleep"] = getattr(self, 'lid_cb', None) and self.lid_cb.isChecked()
+            result["dim_battery"] = getattr(self, 'dim_cb', None) and self.dim_cb.isChecked()
+            result["battery_perf"] = getattr(self, 'battery_perf_cb', None) and self.battery_perf_cb.isChecked()
+        return result
+
+
 class PreviewPage(QWizardPage):
     def __init__(self):
         super().__init__()
@@ -641,14 +1171,21 @@ class InstallPage(QWizardPage):
 
     def run_installation(self, config: dict):
         steps = [
-            ("Donanim algilaniyor...", 5, self._detect_hardware),
-            ("Suruculer kuruluyor...", 20, self._install_drivers),
-            ("Sistem yapilandiriliyor...", 40, self._configure_system),
-            ("KWin ayarlari uygulaniyor...", 55, self._configure_kwin),
-            ("Panel duzeni ayarlaniyor...", 70, self._configure_panel),
-            ("Bilesenler etkinlestiriliyor...", 80, self._enable_components),
-            ("Kullanici olusturuluyor...", 90, self._create_user),
-            ("Temizlik yapiliyor...", 95, self._cleanup),
+            ("Donanim algilaniyor...", 3, self._detect_hardware),
+            ("Suruculer kuruluyor...", 8, self._install_drivers),
+            ("Tema uygulaniyor...", 15, self._apply_theme),
+            ("Varsayilan uygulamalar ayarlaniyor...", 20, self._set_default_apps),
+            ("Gelistirme araclari kuruluyor...", 28, self._install_dev_tools),
+            ("Oyun araclari kuruluyor...", 35, self._install_gaming),
+            ("Gizlilik ayarlari yapiliyor...", 42, self._apply_privacy),
+            ("Ekran ayarlari uygulaniyor...", 50, self._apply_display),
+            ("Guc yonetimi ayarlaniyor...", 55, self._apply_power),
+            ("Sistem yapilandiriliyor...", 62, self._configure_system),
+            ("KWin ayarlari uygulaniyor...", 70, self._configure_kwin),
+            ("Panel duzeni ayarlaniyor...", 78, self._configure_panel),
+            ("Bilesenler etkinlestiriliyor...", 85, self._enable_components),
+            ("Kullanici olusturuluyor...", 92, self._create_user),
+            ("Temizlik yapiliyor...", 97, self._cleanup),
             ("Tamamlandi!", 100, None),
         ]
 
@@ -676,6 +1213,40 @@ class InstallPage(QWizardPage):
         driver = config.get("driver", "auto")
         subprocess.run(["bash", "/usr/lib/karya/scripts/install-drivers.sh", driver],
                        capture_output=True, timeout=300)
+
+    def _apply_theme(self, config):
+        theme = config.get("theme", {})
+        ConfigWriter.write_theme(theme)
+
+    def _set_default_apps(self, config):
+        apps = config.get("default_apps", {})
+        ConfigWriter.write_default_apps(apps)
+
+    def _install_dev_tools(self, config):
+        tools = config.get("dev_tools", {})
+        ConfigWriter.install_packages(tools, "dev")
+
+    def _install_gaming(self, config):
+        gaming = config.get("gaming", {})
+        ConfigWriter.install_packages(gaming.get("tools", {}), "gaming")
+        if gaming.get("game_mode"):
+            ConfigWriter.enable_game_mode()
+        if gaming.get("realtime_priority"):
+            ConfigWriter.enable_realtime_priority()
+
+    def _apply_privacy(self, config):
+        privacy = config.get("privacy", {})
+        ConfigWriter.write_privacy(privacy)
+        if privacy.get("hostname"):
+            ConfigWriter.set_hostname(privacy["hostname"])
+
+    def _apply_display(self, config):
+        display = config.get("display", {})
+        ConfigWriter.write_display_settings(display)
+
+    def _apply_power(self, config):
+        power = config.get("power", {})
+        ConfigWriter.write_power_settings(power)
 
     def _configure_system(self, config):
         ConfigWriter.write_kdeglobals(config)
@@ -722,6 +1293,13 @@ class KaryaSetupWizard(QWizard):
         self.gpu_page = GpuSelectionPage(hw_info)
         self.layout_page = LayoutPage(hw_info)
         self.components_page = ComponentsPage(hw_info)
+        self.theme_page = ThemePage(hw_info)
+        self.default_apps_page = DefaultAppsPage()
+        self.dev_tools_page = DevToolsPage()
+        self.gaming_page = GamingPage()
+        self.privacy_page = PrivacyPage()
+        self.display_page = DisplayPage(hw_info)
+        self.power_page = PowerPage(hw_info)
         self.user_page = UserPage()
         self.preview_page = PreviewPage()
         self.install_page = InstallPage()
@@ -730,6 +1308,13 @@ class KaryaSetupWizard(QWizard):
         self.addPage(self.gpu_page)
         self.addPage(self.layout_page)
         self.addPage(self.components_page)
+        self.addPage(self.theme_page)
+        self.addPage(self.default_apps_page)
+        self.addPage(self.dev_tools_page)
+        self.addPage(self.gaming_page)
+        self.addPage(self.privacy_page)
+        self.addPage(self.display_page)
+        self.addPage(self.power_page)
         self.addPage(self.user_page)
         self.addPage(self.preview_page)
         self.addPage(self.install_page)
@@ -763,6 +1348,14 @@ class KaryaSetupWizard(QWizard):
 
     def _update_preview(self):
         config = self._collect_config()
+        theme = config.get("theme", {})
+        apps = config.get("default_apps", {})
+        dev = config.get("dev_tools", {})
+        gaming = config.get("gaming", {})
+        privacy = config.get("privacy", {})
+        disp = config.get("display", {})
+        power = config.get("power", {})
+
         preview_data = {
             "GPU Surucusu": {
                 "Secilen Surucu": config["driver"],
@@ -770,6 +1363,51 @@ class KaryaSetupWizard(QWizard):
             },
             "Masaustu Duzeni": {
                 "Duzen": config["layout"],
+            },
+            "Tema": {
+                "Renk Temasi": theme.get("theme", "karya-dark"),
+                "Vurgu Rengi": theme.get("accent", "blue"),
+                "Glassmorphism": theme.get("glassmorphism", False),
+                "Blur": theme.get("blur", False),
+                "Animasyon": theme.get("animations", True),
+            },
+            "Varsayilan Uygulamalar": {
+                "Tarayici": apps.get("browser", "firefox"),
+                "Terminal": apps.get("terminal", "konsole"),
+                "Dosya Yoneticisi": apps.get("file_manager", "dolphin"),
+                "Metin Editoru": apps.get("text_editor", "kate"),
+                "Muzik": apps.get("music_player", "elisa"),
+            },
+            "Gelistirme Araclari": {
+                "Git": dev.get("git", False),
+                "Python": dev.get("python", False),
+                "Node.js": dev.get("nodejs", False),
+                "Docker": dev.get("docker", False),
+                "VS Code": dev.get("vscode", False),
+                "GCC/Clang": dev.get("gcc", False),
+            },
+            "Oyun": {
+                "Steam": gaming.get("tools", {}).get("steam", False),
+                "Lutris": gaming.get("tools", {}).get("lutris", False),
+                "GameMode": gaming.get("tools", {}).get("gamemode", False),
+                "Oyun Modu": gaming.get("game_mode", False),
+            },
+            "Gizlilik": {
+                "Konum": privacy.get("location", False),
+                "C2k Raporu": privacy.get("crash_reports", True),
+                "Telemetri": privacy.get("telemetry", False),
+                "Dosya Index": privacy.get("search_index", True),
+                "Makine Adi": privacy.get("hostname", "karya-pc"),
+            },
+            "Ekran": {
+                "Cozunurluk": disp.get("resolution", "1920x1080"),
+                "Olcekleme": f"{disp.get('scale', '100')}%%",
+                "Yenileme": f"{disp.get('refresh', '60')} Hz",
+            },
+            "Guc": {
+                "Profil": power.get("power_profile", "balanced"),
+                "Ekran Kapanma": f"{power.get('screen_off', 2)}. sirada",
+                "Uyku": f"{power.get('sleep', 2)}. sirada",
             },
             "Bilesenler": {
                 "Auto Tiling": config["components"].get("tiling", False),
@@ -784,6 +1422,7 @@ class KaryaSetupWizard(QWizard):
                 "Otomatik Giris": config["user"].get("autologin", False),
             },
             "Sistem": {
+                "Dagitim": self.hw.distro_display,
                 "Profil": self.hw.get_performance_label(),
                 "RAM": f"{self.hw.ram_mb} MB",
                 "CPU": f"{self.hw.cpu_model} ({self.hw.cpu_cores} cekirdek)",
@@ -796,6 +1435,13 @@ class KaryaSetupWizard(QWizard):
             "driver": self.gpu_page.get_selected_driver(),
             "layout": self.layout_page.get_selected_layout(),
             "components": self.components_page.get_components(),
+            "theme": self.theme_page.get_config(),
+            "default_apps": self.default_apps_page.get_config(),
+            "dev_tools": self.dev_tools_page.get_config(),
+            "gaming": self.gaming_page.get_config(),
+            "privacy": self.privacy_page.get_config(),
+            "display": self.display_page.get_config(),
+            "power": self.power_page.get_config(),
             "user": self.user_page.get_user_info(),
             "lock_file": str(Path.home() / ".config" / "karya-first-run.lock"),
         }

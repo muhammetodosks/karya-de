@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Name=Karya Not Defteri
+Name[tr]=Karya Not Defteri
+Comment=Basit ve hizli not alma
+Comment[tr]=Basit ve hizli not alma
+Exec=karya-notes
+Icon=accessories-text-editor
+Terminal=false
+Categories=Utility;TextEditor;
+StartupNotify=false
