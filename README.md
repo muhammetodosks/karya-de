@@ -1383,6 +1383,33 @@ karya-de/
 
 ---
 
+## Düzeltilen Hatalar (v1.0.0)
+
+Aşağıdaki hatalar tespit edilmiş ve giderilmiştir:
+
+### 1. Ubuntu 24.04 APT Paket Hataları (`install-ubuntu.sh`)
+
+- **Varolmayan paketler**: `libxcb-util-wm-dev`, `libhwdata-dev`, `libqaccessibilityclient-qt6-dev` Ubuntu 24.04 resmi depolarında bulunmamaktadır. Kaldırılmıştır. `hwdata` (runtime) ile değiştirilmiştir.
+- **KF6 paketleri eksik**: `libkf6kirigami-dev`, `libkf6plasma-dev`, `libkf6screenlocker-dev`, `libkf6globalacceld-dev`, `libplasma-activities-dev` Ubuntu stok reposunda yok. Kubuntu Backports PPA (`ppa:kubuntu-ppa/backports`) otomatik ekleniyor; her paket `apt-cache show` ile kontrol edilip varsa kuruluyor, yoksa atlanıyor.
+- **Pipo maskesi**: `apt install ... | tail -3` yüzünden `set -e` apt hatalarını yakalayamıyordu (çıkış kodu pipe zincirindeki son komuttan geliyor). Kritik komutlardan pipe kaldırıldı; `git clone`'a `|| exit 1` eklendi.
+
+### 2. curl|bash'de `read` Bekleme Sorunu (`install-ubuntu.sh`, `install.sh`, `install-nosystemd.sh`)
+
+- curl ile pipe edilmiş betiklerde stdin tüketildiği için `read -t 10` komutu kullanıcıdan giriş alamıyordu. Çözüm: `-y` flag'i ile otomatik devam (`sleep 10`) kullanıldı.
+
+### 3. Shellcheck Uyarıları (Tüm Betikler)
+
+- `detect-hardware.sh`: SC2155 (declare+exit maskesi) satır 74, 76, 78, 80, 83, 85, 87, 89, 91, 93, 95, 97, 99 — düzeltildi.
+- `install-drivers.sh`: SC2155 (satır 23), SC2010 (satır 44) — düzeltildi.
+- Tüm 6 betik `shellcheck -S warning` ile 0 hata, 0 uyarı vermektedir.
+
+### 4. Docker Testinde Tespit Edilen Sorunlar
+
+- **install.sh (Arch Linux)**: Docker üzerinde çalıştırıldı, `curl: command not found` hatası `|| true` ile korunuyordu; tüm hata yolları güvenli.
+- **install-ubuntu.sh (Ubuntu 24.04)**: 3 eksik paket + pipe maskesi tespit edildi. Düzeltildikten sonra temel paketler (git, cmake, qt6, build-essential) başarıyla kuruluyor; KF6 paketleri PPA üzerinden geliyor.
+
+---
+
 ## Sıkça Sorulan Sorular (SSS)
 
 ### Karya DE systemd gerektiriyor mu?
