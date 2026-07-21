@@ -62,8 +62,9 @@ detect_audio() {
         has_pulse=true; audio_server="pulseaudio"
     else audio_server="none"; fi
 
-    local alsa_cards=$(aplay -l 2>/dev/null | grep -c 'card' || echo "0")
-    local audio_hw=$(lspci -nn 2>/dev/null | grep -i 'audio' | head -3 | sed 's/.*: //' | cut -c1-80)
+    local alsa_cards audio_hw
+    alsa_cards=$(aplay -l 2>/dev/null | grep -c 'card' || echo "0")
+    audio_hw=$(lspci -nn 2>/dev/null | grep -i 'audio' | head -3 | sed 's/.*: //' | cut -c1-80)
 
     cat > "$KARYA_HARDWARE_DIR/audio.json" << JSONEOF
 {
@@ -79,8 +80,9 @@ JSONEOF
 
 detect_network() {
     local wlan=false eth=false bt=false
+    local name
     for iface in /sys/class/net/*; do
-        local name=$(basename "$iface")
+        name=$(basename "$iface")
         [[ "$name" == "lo" ]] && continue
         if [[ -d "$iface/wireless" ]]; then wlan=true; else eth=true; fi
     done
@@ -98,15 +100,20 @@ JSONEOF
 }
 
 detect_system() {
-    local ram_total=$(grep MemTotal /proc/meminfo | awk '{print int($2/1024)}')
-    local cpu_model=$(grep 'model name' /proc/cpuinfo | head -1 | sed 's/.*: //' | cut -c1-60)
-    local cpu_cores=$(nproc)
-    local cpu_threads=$(grep -c processor /proc/cpuinfo)
-    local kernel=$(uname -r)
-    local arch=$(uname -m)
+    local ram_total cpu_model cpu_cores cpu_threads kernel arch
+    ram_total=$(grep MemTotal /proc/meminfo | awk '{print int($2/1024)}')
+    cpu_model=$(grep 'model name' /proc/cpuinfo | head -1 | sed 's/.*: //' | cut -c1-60)
+    cpu_cores=$(nproc)
+    cpu_threads=$(grep -c processor /proc/cpuinfo)
+    kernel=$(uname -r)
+    arch=$(uname -m)
     local is_laptop=false is_vm=false
 
-    if [[ -d /sys/class/power_supply ]] && ls /sys/class/power_supply | grep -q 'BAT[0-9]'; then is_laptop=true; fi
+    if [[ -d /sys/class/power_supply ]]; then
+        for supply in /sys/class/power_supply/BAT*; do
+            [[ -e "$supply" ]] && is_laptop=true && break
+        done
+    fi
     if grep -qi 'hypervisor\|kvm\|qemu\|vmware\|virtualbox' /proc/cpuinfo 2>/dev/null; then is_vm=true; fi
 
     cat > "$KARYA_HARDWARE_DIR/system.json" << JSONEOF
@@ -125,11 +132,11 @@ JSONEOF
 }
 
 generate_profile() {
-    local gpu_vendor=$(jq -r '.vendor' "$KARYA_HARDWARE_DIR/gpu.json" 2>/dev/null || echo "unknown")
-    local ram=$(jq -r '.ram_mb' "$KARYA_HARDWARE_DIR/system.json" 2>/dev/null || echo "4096")
-    local is_laptop=$(jq -r '.is_laptop' "$KARYA_HARDWARE_DIR/system.json" 2>/dev/null || echo "false")
-    local is_vm=$(jq -r '.is_vm' "$KARYA_HARDWARE_DIR/system.json" 2>/dev/null || echo "false")
-    local profile compositor animations blur
+    local gpu_vendor ram is_laptop is_vm profile compositor animations blur
+    gpu_vendor=$(jq -r '.vendor' "$KARYA_HARDWARE_DIR/gpu.json" 2>/dev/null || echo "unknown")
+    ram=$(jq -r '.ram_mb' "$KARYA_HARDWARE_DIR/system.json" 2>/dev/null || echo "4096")
+    is_laptop=$(jq -r '.is_laptop' "$KARYA_HARDWARE_DIR/system.json" 2>/dev/null || echo "false")
+    is_vm=$(jq -r '.is_vm' "$KARYA_HARDWARE_DIR/system.json" 2>/dev/null || echo "false")
 
     if [[ $ram -lt 4096 ]]; then
         profile="lightweight"; compositor="xrender"; animations=false; blur=false

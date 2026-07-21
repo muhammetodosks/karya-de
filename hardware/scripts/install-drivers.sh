@@ -72,7 +72,8 @@ install_vm_drivers() {
 
 install_vulkan() {
     log "Vulkan destegi kuruluyor..."
-    local vendor=$(jq -r '.vendor' "$KARYA_HARDWARE_DIR/gpu.json" 2>/dev/null || echo "unknown")
+    local vendor
+    vendor=$(jq -r '.vendor' "$KARYA_HARDWARE_DIR/gpu.json" 2>/dev/null || echo "unknown")
     case "$vendor" in
         nvidia) pacman -S --noconfirm vulkan-icd-loader lib32-vulkan-icd-loader 2>&1 | tee -a "$LOG" ;;
         amd) pacman -S --noconfirm vulkan-radeon lib32-vulkan-radeon 2>&1 | tee -a "$LOG" ;;
@@ -83,7 +84,8 @@ install_vulkan() {
 
 auto_install() {
     log "=== Karya DE Otomatik Surucu Kurulumu ==="
-    local vendor=$(jq -r '.vendor' "$KARYA_HARDWARE_DIR/gpu.json" 2>/dev/null || echo "unknown")
+    local vendor
+    vendor=$(jq -r '.vendor' "$KARYA_HARDWARE_DIR/gpu.json" 2>/dev/null || echo "unknown")
 
     case "$vendor" in
         nvidia) install_nvidia_proprietary ;;
