@@ -42,9 +42,28 @@ apt update -qq
 
 echo ""
 echo "[2/6] Bagimliliklari kuruluyor..."
+
+# Kubuntu Backports PPA (KF6 paketleri icin)
+if ! apt-cache show libkf6config-dev &>/dev/null; then
+    echo "  -> Kubuntu Backports PPA ekleniyor (KF6 icin)..."
+    apt install -y -qq software-properties-common 2>/dev/null
+    add-apt-repository -y -u ppa:kubuntu-ppa/backports 2>&1 | tail -1 || echo "  [!] PPA eklenemedi, KF6 paketleri eksik kalabilir"
+fi
+
+# 1. Adim: Temel sistem paketleri (olmazsa olmaz)
+echo "  -> Temel paketler kuruluyor..."
 apt install -y -qq \
     git cmake build-essential pkg-config \
     qt6-base-dev qt6-declarative-dev qt6-wayland-dev qt6-shadertools-dev qt6-tools-dev \
+    libepoxy-dev libxcb-util-dev libxcb-xrm-dev \
+    libdrm-dev libinput-dev libsystemd-dev \
+    libvulkan-dev liblcms2-dev hwdata \
+    libxkbcommon-dev libx11-dev libxcvt-dev libdisplay-info-dev \
+    libevdev-dev python3-pyqt6 python3-pip
+
+# 2. Adim: KF6 ve XCB paketleri (bazilari Ubuntu'da eksik olabilir)
+echo "  -> KF6 paketleri deneniyor..."
+for pkg in \
     libkf6config-dev libkf6coreaddons-dev libkf6crash-dev libkf6dbusaddons-dev \
     libkf6declarative-dev libkf6globalaccel-dev libkf6guiaddons-dev libkf6i18n-dev \
     libkf6iconthemes-dev libkf6kio-dev libkf6itemmodels-dev libkf6itemviews-dev \
@@ -54,17 +73,18 @@ apt install -y -qq \
     libkf6kirigami-dev libkf6plasma-dev libkf6screenlocker-dev \
     libkf6globalacceld-dev libplasma-activities-dev \
     extra-cmake-modules wayland-protocols plasma-wayland-protocols \
-    libepoxy-dev libxcb-cursor-dev libxcb-keysyms1-dev \
-    libxcb-util-dev libxcb-util-wm-dev libxcb-xrm-dev \
-    libdrm-dev libinput-dev libei-dev libsystemd-dev \
-    libvulkan-dev liblcms2-dev libhwdata-dev libcanberra-dev \
-    libxkbcommon-dev libx11-dev libxcvt-dev libdisplay-info-dev \
-    libevdev-dev libqaccessibilityclient-qt6-dev \
-    python3-pyqt6 python3-pip 2>&1 | tail -3
+    libxcb-cursor-dev libxcb-keysyms1-dev \
+    libei-dev libcanberra-dev; do
+    if apt-cache show "$pkg" &>/dev/null; then
+        apt install -y -qq "$pkg" 2>/dev/null
+    else
+        echo "  [!] $pkg mevcut degil (PPA gerekli olabilir)"
+    fi
+done
 
 echo ""
 echo "[3/6] Karya DE kaynagi indiriliyor..."
-git clone --depth=1 --branch "v$KARYA_VERSION" "$KARYA_REPO" /opt/karya-de 2>&1 | tail -1
+git clone --depth=1 --branch "v$KARYA_VERSION" "$KARYA_REPO" /opt/karya-de 2>&1 || { echo "[!] Kaynak indirilemedi: $KARYA_REPO"; exit 1; }
 cd /opt/karya-de
 
 echo ""
@@ -81,7 +101,7 @@ cmake -B build -S . \
     -DBUILD_TESTING=OFF \
     -DKWIN_BUILD_KCMS=OFF \
     -DKWIN_BUILD_DECORATIONS=ON
-cmake --build build --parallel "$(nproc)" 2>&1 | tail -5
+cmake --build build --parallel "$(nproc)"
 DESTDIR=/ cmake --install build
 cd /opt/karya-de
 
