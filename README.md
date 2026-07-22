@@ -1439,6 +1439,7 @@ Bu proje GNU General Public License v2.0 altında lisanslanmıştır.
 Detaylar için [COPYING](COPYING) dosyasına bakın.
 
 Güvenlik politikası için [SECURITY.md](SECURITY.md) dosyasına bakın.
+Sıkça Sorulan Sorular için [SIKÇA_SORULAN_SORULAR.md](SIKÇA_SORULAN_SORULAR.md) dosyasına bakın.
 Sponsorluk ve bağış için [SPONSORLUK.md](SPONSORLUK.md) dosyasına bakın.
 
 ---
