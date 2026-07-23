@@ -273,7 +273,7 @@ ansible-playbook -i inventory.ini site.yml --ask-become-pass
 
 ---
 
-## 🎉 Release & Paylaş
+## 🎉 Release ve Paylaş
 
 Karya Sun güncellemesini ve Karya DE'yi her yerde paylaş, duyur, yay!
 
@@ -357,7 +357,7 @@ Hata buldun mu? [GitHub Issues](https://github.com/muhammetodosks/karya-de/issue
 
 - [İstatistikler](#istatistikler)
 - [☀️ Karya Sun — Devasa Güncelleme](#karya-sun--devasa-güncelleme)
-- [Release & Paylaş](#release--paylaş)
+- [Release ve Paylaş](#release-ve-paylaş)
 - [Özet](#özet)
 - [Özellikler](#özellikler)
 - [Donanım Desteği](#donanım-desteği)
