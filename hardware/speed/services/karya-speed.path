@@ -1,0 +1,8 @@
+[Unit]
+Description=Karya SPEED - Profile Watcher
+
+[Path]
+PathModified=/etc/karya/speed/current.conf
+
+[Install]
+WantedBy=multi-user.target

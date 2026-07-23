@@ -1,0 +1,34 @@
+[submodule "sources/kwin"]
+    path = sources/kwin
+    url = https://github.com/muhammetodosks/kwin.git
+    branch = karya-v6
+
+[submodule "sources/plasma-workspace"]
+    path = sources/plasma-workspace
+    url = https://github.com/muhammetodosks/plasma-workspace.git
+    branch = karya-v6
+
+[submodule "sources/plasma-desktop"]
+    path = sources/plasma-desktop
+    url = https://github.com/muhammetodosks/plasma-desktop.git
+    branch = karya-v6
+
+[submodule "sources/plasma-pa"]
+    path = sources/plasma-pa
+    url = https://github.com/muhammetodosks/plasma-pa.git
+    branch = karya-v6
+
+[submodule "sources/systemsettings"]
+    path = sources/systemsettings
+    url = https://github.com/muhammetodosks/systemsettings.git
+    branch = karya-v6
+
+[submodule "sources/breeze"]
+    path = sources/breeze
+    url = https://github.com/muhammetodosks/breeze.git
+    branch = karya-v6
+
+[submodule "sources/kdeplasma-addons"]
+    path = sources/kdeplasma-addons
+    url = https://github.com/muhammetodosks/kdeplasma-addons.git
+    branch = karya-v6

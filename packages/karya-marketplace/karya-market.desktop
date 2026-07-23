@@ -1,0 +1,15 @@
+[Desktop Entry]
+Name=Karya Market
+Name[tr]=Karya Market
+Comment=Theme, Plugin and Marketplace Manager
+Comment[tr]=Tema, Eklenti ve Pazaryeri Yoneticisi
+Exec=karya-market
+Icon=karya-market
+Terminal=false
+Type=Application
+Categories=Qt;KDE;System;Settings;
+MimeType=
+X-KDE-PluginInfo-Version=1.0
+X-KDE-PluginInfo-Depends=
+X-KDE-PluginInfo-License=GPL
+X-KDE-PluginInfo-EnabledByDefault=true

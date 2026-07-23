@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-import sys, math
+import sys
+from decimal import Decimal, DivisionByZero, InvalidOperation
 from PyQt6.QtWidgets import (
     QApplication, QMainWindow, QWidget, QVBoxLayout, QGridLayout,
     QPushButton, QLineEdit, QLabel
@@ -29,6 +30,7 @@ QPushButton.clear { background: #e74c3c; }
 QPushButton.clear:hover { background: #c0392b; }
 """
 
+
 class KaryaCalc(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -53,37 +55,37 @@ class KaryaCalc(QMainWindow):
         self.display.setFont(QFont("Noto Sans", 28, QFont.Weight.Bold))
         layout.addWidget(self.display)
 
-        self.prev = ""
+        self.prev = Decimal("0")
         self.op = ""
         self.reset_display = False
 
         buttons = [
-            ("C", "clear", 1), ("±", "neg", 1), ("%", "%", 1), ("÷", "/", 1),
-            ("7", "7", 1), ("8", "8", 1), ("9", "9", 1), ("×", "*", 1),
-            ("4", "4", 1), ("5", "5", 1), ("6", "6", 1), ("−", "-", 1),
-            ("1", "1", 1), ("2", "2", 1), ("3", "3", 1), ("+", "+", 1),
-            ("0", "0", 2), (".", ".", 1), ("=", "=", 1),
+            ("C", "clear"), ("±", "neg"), ("%", "%"), ("÷", "/"),
+            ("7", "7"), ("8", "8"), ("9", "9"), ("×", "*"),
+            ("4", "4"), ("5", "5"), ("6", "6"), ("−", "-"),
+            ("1", "1"), ("2", "2"), ("3", "3"), ("+", "+"),
+            ("", ""), ("0", "0"), (".", "."), ("=", "="),
         ]
 
         grid = QGridLayout()
         grid.setSpacing(6)
         r, c = 0, 0
-        for text, cmd, span in buttons:
+        for text, cmd in buttons:
+            if not cmd:
+                c += 1
+                continue
             btn = QPushButton(text)
-            if cmd in ("clear",):
-                btn.setProperty("class", "clear")
+            if cmd == "clear":
                 btn.setStyleSheet(self._btn_style("#e74c3c"))
             elif cmd == "=":
-                btn.setProperty("class", "equal")
                 btn.setStyleSheet(self._btn_style("#27ae60"))
             elif cmd in ("+", "-", "*", "/", "%"):
-                btn.setProperty("class", "op")
                 btn.setStyleSheet(self._btn_style("#4a90d9"))
             else:
                 btn.setStyleSheet(self._btn_style("#16213e"))
             btn.clicked.connect(lambda _, c=cmd: self._click(c))
-            grid.addWidget(btn, r, c, 1, span)
-            c += span
+            grid.addWidget(btn, r, c, 1, 1)
+            c += 1
             if c >= 4:
                 c = 0
                 r += 1
@@ -99,12 +101,34 @@ class KaryaCalc(QMainWindow):
             QPushButton:hover {{ background: {self._lighten(color)}; }}
         """
 
-    def _lighten(self, h):
-        return h.replace("e74c3c", "c0392b").replace("27ae60", "2ecc71").replace("4a90d9", "5ba0e9").replace("16213e", "0f3460")
+    @staticmethod
+    def _lighten(h):
+        return {"#e74c3c": "#c0392b", "#27ae60": "#2ecc71",
+                "#4a90d9": "#5ba0e9", "#16213e": "#0f3460"}.get(h, h)
+
+    @staticmethod
+    def _sanitize_input(val: str) -> str:
+        allowed = set("0123456789.-")
+        sanitized = "".join(c for c in val if c in allowed)
+        if not sanitized or sanitized in ("-", "."):
+            return "0"
+        return sanitized
 
     def _click(self, cmd):
         cur = self.display.text()
-        if cmd.isdigit() or cmd == ".":
+
+        if cmd == "clear":
+            self.display.setText("0")
+            self.prev = Decimal("0")
+            self.op = ""
+            self.reset_display = False
+
+        elif cmd == "neg":
+            if cur in ("Hata", "0"):
+                return
+            self.display.setText(("-" + cur) if not cur.startswith("-") else cur[1:])
+
+        elif cmd.isdigit() or cmd == ".":
             if self.reset_display or cur == "0":
                 self.display.setText(cmd if cmd != "." else "0.")
                 self.reset_display = False
@@ -112,39 +136,43 @@ class KaryaCalc(QMainWindow):
                 if cmd == "." and "." in cur:
                     return
                 self.display.setText(cur + cmd)
+
         elif cmd in ("+", "-", "*", "/", "%"):
-            self.prev = cur
+            safe = self._sanitize_input(cur)
+            try:
+                self.prev = Decimal(safe)
+            except:
+                self.prev = Decimal("0")
             self.op = cmd
             self.reset_display = True
+
         elif cmd == "=":
             if not self.op:
                 return
             try:
-                a, b = float(self.prev), float(cur)
-                result = {
-                    "+": a + b, "-": a - b, "*": a * b,
-                    "/": a / b if b != 0 else float("inf"),
-                    "%": a * b / 100
-                }[self.op]
-                if result == float("inf"):
-                    self.display.setText("Hata")
-                else:
-                    self.display.setText(str(int(result) if result == int(result) else round(result, 10)))
+                a = self.prev
+                safe_b = self._sanitize_input(cur)
+                b = Decimal(safe_b)
+                ops = {
+                    "+": lambda x, y: x + y,
+                    "-": lambda x, y: x - y,
+                    "*": lambda x, y: x * y,
+                    "/": lambda x, y: x / y,
+                    "%": lambda x, y: x * y / Decimal("100"),
+                }
+                result = ops[self.op](a, b)
+                if isinstance(result, Decimal):
+                    if result == result.to_integral_value():
+                        self.display.setText(str(int(result)))
+                    else:
+                        self.display.setText(str(round(result, 10)))
+            except (DivisionByZero, InvalidOperation):
+                self.display.setText("Hata")
             except Exception:
                 self.display.setText("Hata")
             self.op = ""
             self.reset_display = True
-        elif cmd == "clear":
-            self.display.setText("0")
-            self.prev = ""
-            self.op = ""
-        elif cmd == "neg":
-            if cur == "Hata":
-                return
-            if cur.startswith("-"):
-                self.display.setText(cur[1:])
-            else:
-                self.display.setText("-" + cur)
+
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

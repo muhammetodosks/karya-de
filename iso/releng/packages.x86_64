@@ -1,5 +1,7 @@
 # Karya DE ISO Packages
 karya-de-meta
+karya-speed
+karya-market
 xorg-server
 xorg-xinit
 wayland

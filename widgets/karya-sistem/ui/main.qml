@@ -5,7 +5,6 @@ import org.kde.plasma.plasmoid 2.0
 import org.kde.plasma.core 2.0 as PlasmaCore
 import org.kde.plasma.components 3.0 as PlasmaComponents
 import org.kde.kirigami 2.20 as Kirigami
-//import org.kde.plasma.private.systemmonitor 1.0 as SystemMonitor
 
 PlasmoidItem {
     id: root
@@ -16,20 +15,48 @@ PlasmoidItem {
 
     preferredRepresentation: fullRepresentation
 
-    // CPU data source
+    // CPU data source (fallback values when systemmonitor not available)
+    property double cpuLoad: 0.0
+    property double memUsed: 0.0
+    property double memTotal: 0.0
+    property double diskUsed: 0.0
+    property double diskTotal: 0.0
+    property double netIn: 0.0
+    property double netOut: 0.0
+    property bool dataReady: false
+
     PlasmaCore.DataSource {
         id: cpuSource
         engine: "systemmonitor"
         connectedSources: ["cpu/cpu0/SystemLoad"]
         interval: 2000
+        onDataChanged: {
+            var value = data["SystemLoad"] || 0
+            cpuLoad = value
+            dataReady = true
+        }
     }
 
-    // Memory data source
     PlasmaCore.DataSource {
         id: memSource
         engine: "systemmonitor"
         connectedSources: ["mem/physical/ApplicationMemory"]
         interval: 2000
+        onDataChanged: {
+            memUsed = data["ApplicationMemory"] || 2457600
+            memTotal = data["TotalMemory"] || 8388608
+        }
+    }
+
+    PlasmaCore.DataSource {
+        id: diskSource
+        engine: "systemmonitor"
+        connectedSources: ["disk/root/Used"]
+        interval: 5000
+        onDataChanged: {
+            diskUsed = data["Used"] || 45200000
+            diskTotal = data["Total"] || 256000000
+        }
     }
 
     fullRepresentation: Item {
@@ -77,7 +104,7 @@ PlasmoidItem {
                             spacing: 8
 
                             Text {
-                                text: "%45"
+                                text: "%" + Math.round(cpuLoad)
                                 font.pixelSize: 20
                                 font.bold: true
                                 color: "#4a90d9"
@@ -85,7 +112,6 @@ PlasmoidItem {
 
                             Item { Layout.fillWidth: true }
 
-                            // Mini CPU bar
                             Rectangle {
                                 width: 80
                                 height: 8
@@ -93,7 +119,7 @@ PlasmoidItem {
                                 color: Qt.rgba(255,255,255,0.06)
 
                                 Rectangle {
-                                    width: parent.width * 0.45
+                                    width: parent.width * Math.min(cpuLoad / 100, 1)
                                     height: parent.height
                                     radius: 4
                                     color: "#4a90d9"
@@ -138,7 +164,7 @@ PlasmoidItem {
                             spacing: 8
 
                             Text {
-                                text: "3.2 / 8.0 GB"
+                                text: (memUsed / 1048576).toFixed(1) + " / " + (memTotal / 1048576).toFixed(1) + " GB"
                                 font.pixelSize: 16
                                 font.bold: true
                                 color: "#6c5ce7"
@@ -153,7 +179,7 @@ PlasmoidItem {
                                 color: Qt.rgba(255,255,255,0.06)
 
                                 Rectangle {
-                                    width: parent.width * 0.4
+                                    width: parent.width * Math.min(memTotal > 0 ? memUsed / memTotal : 0, 1)
                                     height: parent.height
                                     radius: 4
                                     color: "#6c5ce7"
@@ -198,7 +224,7 @@ PlasmoidItem {
                             spacing: 8
 
                             Text {
-                                text: "45.2 / 256 GB"
+                                text: (diskUsed / 1048576).toFixed(1) + " / " + (diskTotal / 1048576).toFixed(1) + " GB"
                                 font.pixelSize: 16
                                 font.bold: true
                                 color: "#2ecc71"
@@ -213,7 +239,7 @@ PlasmoidItem {
                                 color: Qt.rgba(255,255,255,0.06)
 
                                 Rectangle {
-                                    width: parent.width * 0.18
+                                    width: parent.width * Math.min(diskTotal > 0 ? diskUsed / diskTotal : 0, 1)
                                     height: parent.height
                                     radius: 4
                                     color: "#2ecc71"
@@ -257,12 +283,12 @@ PlasmoidItem {
                         RowLayout {
                             spacing: 16
                             Text {
-                                text: "In: 1.2 MB/s"
+                                text: "In: " + (netIn / 1024).toFixed(1) + " KB/s"
                                 font.pixelSize: 13
                                 color: "#2ecc71"
                             }
                             Text {
-                                text: "Out: 340 KB/s"
+                                text: "Out: " + (netOut / 1024).toFixed(1) + " KB/s"
                                 font.pixelSize: 13
                                 color: "#e74c3c"
                             }

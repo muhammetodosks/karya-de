@@ -40,6 +40,17 @@ allow karya_kwin_t self:unix_dgram_socket { create send };
 dev_read_urand(karya_kwin_t)
 dev_rw_dri(karya_kwin_t)
 
+# Karya SPEED performance tuner
+domain_type(karya_speed_t)
+domain_obj(karya_speed_t)
+
+allow karya_speed_t self:process { execmem };
+allow karya_speed_t self:unix_stream_socket create_stream_socket_perms;
+allow karya_speed_t self:capability { sys_admin sys_nice sys_rawio };
+allow karya_speed_t karya_hardware_t:file { read write open };
+dev_rw_sysfs(karya_speed_t)
+dev_rw_dri(karya_speed_t)
+
 # Karya widget'lari
 domain_type(karya_widgets_t)
 domain_obj(karya_widgets_t)

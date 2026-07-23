@@ -1,14 +1,15 @@
 #!/usr/bin/env python3
-import sys, json
+import sys, json, hashlib
 from pathlib import Path
 from datetime import datetime
 from PyQt6.QtWidgets import (
     QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
     QPushButton, QListWidget, QTextEdit, QLabel, QListWidgetItem,
-    QSplitter, QInputDialog, QMessageBox
+    QSplitter, QInputDialog, QMessageBox, QLineEdit, QDialog,
+    QDialogButtonBox, QFormLayout
 )
 from PyQt6.QtCore import Qt, QTimer
-from PyQt6.QtGui import QFont, QIcon
+from PyQt6.QtGui import QFont
 
 STYLE = """
 QMainWindow { background: #1a1a2e; }
@@ -37,10 +38,43 @@ QPushButton {
 QPushButton:hover { background: #5ba0e9; }
 QPushButton#deleteBtn { background: #e74c3c; }
 QPushButton#deleteBtn:hover { background: #c0392b; }
+QPushButton#lockBtn { background: #6c5ce7; }
+QPushButton#lockBtn:hover { background: #7c6cf7; }
 QLabel#title { color: #4a90d9; font-size: 16px; font-weight: bold; padding: 4px; }
 """
 
 NOTES_DIR = Path.home() / ".local" / "share" / "karya-notes"
+CONFIG_FILE = NOTES_DIR / ".config.json"
+
+
+class PasswordDialog(QDialog):
+    def __init__(self, parent=None, title="Sifre Girin", message=""):
+        super().__init__(parent)
+        self.setWindowTitle(title)
+        self.setFixedSize(350, 150)
+        self.setStyleSheet("background: #1a1a2e; color: white;")
+
+        layout = QVBoxLayout(self)
+        if message:
+            lbl = QLabel(message)
+            lbl.setStyleSheet("color: white; font-size: 13px;")
+            layout.addWidget(lbl)
+
+        self.password_input = QLineEdit()
+        self.password_input.setEchoMode(QLineEdit.EchoMode.Password)
+        self.password_input.setStyleSheet(
+            "background: #0f3460; color: white; border: none; border-radius: 8px; padding: 10px; font-size: 14px;"
+        )
+        self.password_input.setPlaceholderText("Sifre...")
+        layout.addWidget(self.password_input)
+
+        buttons = QDialogButtonBox(QDialogButtonBox.StandardButton.Ok | QDialogButtonBox.StandardButton.Cancel)
+        buttons.accepted.connect(self.accept)
+        buttons.rejected.connect(self.reject)
+        layout.addWidget(buttons)
+
+    def password(self):
+        return self.password_input.text()
 
 
 class KaryaNotes(QMainWindow):
@@ -54,6 +88,10 @@ class KaryaNotes(QMainWindow):
         self.notes = []
         self.current_id = None
         self.dirty = False
+        self.locked = False
+
+        if not self._check_password():
+            sys.exit(0)
 
         central = QWidget()
         self.setCentralWidget(central)
@@ -61,9 +99,18 @@ class KaryaNotes(QMainWindow):
         layout.setSpacing(8)
         layout.setContentsMargins(12, 12, 12, 12)
 
+        title_row = QHBoxLayout()
         title = QLabel("Karya Not Defteri")
         title.setObjectName("title")
-        layout.addWidget(title)
+        title_row.addWidget(title)
+
+        title_row.addStretch()
+
+        self.lock_btn = QPushButton("Kitle" if not self.locked else "Kilit Ac")
+        self.lock_btn.setObjectName("lockBtn")
+        self.lock_btn.clicked.connect(self.toggle_lock)
+        title_row.addWidget(self.lock_btn)
+        layout.addLayout(title_row)
 
         splitter = QSplitter(Qt.Orientation.Horizontal)
 
@@ -107,10 +154,72 @@ class KaryaNotes(QMainWindow):
         if self.notes:
             self.note_list.setCurrentRow(0)
 
-        # Auto-save every 30 seconds
         self.save_timer = QTimer()
         self.save_timer.timeout.connect(self.auto_save)
         self.save_timer.start(30000)
+
+    def _check_password(self):
+        config = self._load_config()
+        if config.get("password_hash"):
+            dlg = PasswordDialog(self, "Kilitli", "Not defteri sifre korumali. Sifreyi girin:")
+            if dlg.exec() == QDialog.DialogCode.Accepted:
+                entered = dlg.password()
+                if hashlib.sha256(entered.encode()).hexdigest() == config["password_hash"]:
+                    return True
+                QMessageBox.warning(self, "Hata", "Yanlis sifre!")
+                return False
+            return False
+        else:
+            reply = QMessageBox.question(self, "Sifre Ayarla",
+                "Not defteriniz icin bir sifre belirlemek ister misiniz?",
+                QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
+            if reply == QMessageBox.StandardButton.Yes:
+                dlg = PasswordDialog(self, "Yeni Sifre", "Not defteri icin sifre belirleyin:")
+                dlg.password_input.setEchoMode(QLineEdit.EchoMode.Password)
+                if dlg.exec() == QDialog.DialogCode.Accepted:
+                    pwd = dlg.password()
+                    if len(pwd) < 4:
+                        QMessageBox.warning(self, "Hata", "Sifre en az 4 karakter olmali!")
+                        return True
+                    confirm = PasswordDialog(self, "Sifre Tekrar", "Sifreyi tekrar girin:")
+                    if confirm.exec() == QDialog.DialogCode.Accepted and confirm.password() == pwd:
+                        config["password_hash"] = hashlib.sha256(pwd.encode()).hexdigest()
+                        self._save_config(config)
+                        QMessageBox.information(self, "Tamam", "Sifre basariyla ayarlandi.")
+                    else:
+                        QMessageBox.warning(self, "Hata", "Sifreler eslesmiyor!")
+            return True
+
+    def toggle_lock(self):
+        if self.locked:
+            config = self._load_config()
+            dlg = PasswordDialog(self, "Kilit Ac", "Sifreyi girin:")
+            if dlg.exec() == QDialog.DialogCode.Accepted:
+                if hashlib.sha256(dlg.password().encode()).hexdigest() == config.get("password_hash", ""):
+                    self.locked = False
+                    self.lock_btn.setText("Kitle")
+                    self.editor.setReadOnly(False)
+                    self.note_list.setEnabled(True)
+                else:
+                    QMessageBox.warning(self, "Hata", "Yanlis sifre!")
+        else:
+            self.locked = True
+            self.lock_btn.setText("Kilit Ac")
+            self.editor.setReadOnly(True)
+            self.note_list.setEnabled(False)
+
+    def _load_config(self):
+        if CONFIG_FILE.exists():
+            try:
+                return json.loads(CONFIG_FILE.read_text())
+            except:
+                pass
+        return {}
+
+    @staticmethod
+    def _save_config(config):
+        CONFIG_FILE.parent.mkdir(parents=True, exist_ok=True)
+        CONFIG_FILE.write_text(json.dumps(config, indent=2))
 
     def _mark_dirty(self):
         self.dirty = True
@@ -119,6 +228,8 @@ class KaryaNotes(QMainWindow):
         self.notes = []
         self.note_list.clear()
         for f in sorted(NOTES_DIR.glob("*.json"), reverse=True):
+            if f.name == ".config.json":
+                continue
             try:
                 data = json.loads(f.read_text())
                 data["_path"] = str(f)

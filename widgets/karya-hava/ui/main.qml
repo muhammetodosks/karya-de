@@ -16,31 +16,70 @@ PlasmoidItem {
 
     preferredRepresentation: fullRepresentation
 
+    property string currentTemp: "24"
+    property string currentCondition: "Acik"
+    property string currentFeels: "22"
+    property string currentHumidity: "45"
+    property string currentWind: "12"
+    property string currentCity: "Istanbul"
+
     // Weather data model
     ListModel {
         id: weatherModel
+    }
 
-        Component.onCompleted: {
-            // Istanbul default data
-            append({
-                city: "Istanbul",
-                temp: 24,
-                feelsLike: 22,
-                condition: "Acik",
-                humidity: 45,
-                wind: 12,
-                icon: "weather-clear",
-                forecast: [
-                    { day: "Pzt", temp: 26, icon: "weather-clear" },
-                    { day: "Sali", temp: 28, icon: "weather-clear" },
-                    { day: "Car", temp: 22, icon: "weather-clouds" },
-                    { day: "Per", temp: 18, icon: "weather-showers" },
-                    { day: "Cum", temp: 25, icon: "weather-clear" },
-                    { day: "Cmt", temp: 23, icon: "weather-clouds" },
-                    { day: "Paz", temp: 27, icon: "weather-clear" },
-                ]
-            })
+    function loadCityData(city) {
+        weatherModel.clear()
+        currentCity = city
+
+        var data = {
+            "Istanbul": { temp: 24, feels: 22, cond: "Acik", humid: 45, wind: 12 },
+            "Ankara": { temp: 18, feels: 16, cond: "Acik", humid: 35, wind: 8 },
+            "Izmir": { temp: 28, feels: 26, cond: "Acik", humid: 50, wind: 15 },
+            "Bursa": { temp: 22, feels: 20, cond: "Parçali bulutlu", humid: 48, wind: 10 },
+            "Antalya": { temp: 30, feels: 28, cond: "Acik", humid: 55, wind: 12 },
+            "Adana": { temp: 32, feels: 30, cond: "Acik", humid: 40, wind: 8 },
+            "Trabzon": { temp: 20, feels: 18, cond: "Kapali", humid: 60, wind: 20 },
+            "Erzurum": { temp: 12, feels: 10, cond: "Az bulutlu", humid: 30, wind: 15 },
+            "Gaziantep": { temp: 26, feels: 24, cond: "Acik", humid: 32, wind: 10 },
+            "Diyarbakir": { temp: 28, feels: 26, cond: "Acik", humid: 28, wind: 12 },
+            "Samsun": { temp: 22, feels: 20, cond: "Parçali bulutlu", humid: 55, wind: 18 },
+            "Konya": { temp: 20, feels: 18, cond: "Acik", humid: 30, wind: 12 },
+            "Eskisehir": { temp: 18, feels: 16, cond: "Acik", humid: 35, wind: 10 },
+            "Kayseri": { temp: 20, feels: 18, cond: "Az bulutlu", humid: 32, wind: 14 },
+            "Mersin": { temp: 30, feels: 28, cond: "Acik", humid: 50, wind: 10 },
+            "Kocaeli": { temp: 24, feels: 22, cond: "Parçali bulutlu", humid: 48, wind: 12 }
         }
+
+        var d = data[city] || data["Istanbul"]
+        currentTemp = d.temp
+        currentCondition = d.cond
+        currentFeels = d.feels
+        currentHumidity = d.humid
+        currentWind = d.wind
+
+        weatherModel.append({
+            city: city,
+            temp: d.temp,
+            feelsLike: d.feels,
+            condition: d.cond,
+            humidity: d.humid,
+            wind: d.wind,
+            icon: "weather-clear",
+            forecast: [
+                { day: "Pzt", temp: d.temp + 2, icon: "weather-clear" },
+                { day: "Sali", temp: d.temp + 4, icon: "weather-clear" },
+                { day: "Car", temp: d.temp - 2, icon: "weather-clouds" },
+                { day: "Per", temp: d.temp - 6, icon: "weather-showers" },
+                { day: "Cum", temp: d.temp + 1, icon: "weather-clear" },
+                { day: "Cmt", temp: d.temp - 1, icon: "weather-clouds" },
+                { day: "Paz", temp: d.temp + 3, icon: "weather-clear" },
+            ]
+        })
+    }
+
+    Component.onCompleted: {
+        loadCityData("Istanbul")
     }
 
     fullRepresentation: Item {
@@ -66,6 +105,10 @@ PlasmoidItem {
                     "Eskisehir", "Kayseri", "Mersin", "Kocaeli"
                 ]
                 currentIndex: 0
+
+                onActivated: {
+                    loadCityData(model[index])
+                }
 
                 background: Rectangle {
                     radius: 10
@@ -94,7 +137,6 @@ PlasmoidItem {
                     anchors.margins: 20
                     spacing: 16
 
-                    // Weather icon
                     Kirigami.Icon {
                         source: "weather-clear"
                         implicitWidth: 64
@@ -107,14 +149,14 @@ PlasmoidItem {
                         Layout.fillWidth: true
 
                         Text {
-                            text: "24 C"
+                            text: currentTemp + " C"
                             font.pixelSize: 40
                             font.bold: true
                             color: "white"
                         }
 
                         Text {
-                            text: "Acik, hissedilen 22 C"
+                            text: currentCondition + ", hissedilen " + currentFeels + " C"
                             font.pixelSize: 13
                             color: Qt.rgba(255,255,255,0.6)
                         }
@@ -122,12 +164,12 @@ PlasmoidItem {
                         RowLayout {
                             spacing: 16
                             Text {
-                                text: "Nem: %45"
+                                text: "Nem: %" + currentHumidity
                                 font.pixelSize: 11
                                 color: Qt.rgba(255,255,255,0.4)
                             }
                             Text {
-                                text: "Ruzgar: 12 km/h"
+                                text: "Ruzgar: " + currentWind + " km/h"
                                 font.pixelSize: 11
                                 color: Qt.rgba(255,255,255,0.4)
                             }
@@ -151,12 +193,12 @@ PlasmoidItem {
 
                     Repeater {
                         model: [
-                            { hour: "12:00", temp: "24", icon: "weather-clear" },
-                            { hour: "15:00", temp: "26", icon: "weather-clear" },
-                            { hour: "18:00", temp: "22", icon: "weather-clouds" },
-                            { hour: "21:00", temp: "19", icon: "weather-clear-night" },
-                            { hour: "00:00", temp: "17", icon: "weather-clear-night" },
-                            { hour: "03:00", temp: "16", icon: "weather-clear-night" },
+                            { hour: "12:00", temp: currentTemp, icon: "weather-clear" },
+                            { hour: "15:00", temp: parseInt(currentTemp) + 2, icon: "weather-clear" },
+                            { hour: "18:00", temp: parseInt(currentTemp) - 2, icon: "weather-clouds" },
+                            { hour: "21:00", temp: parseInt(currentTemp) - 5, icon: "weather-clear-night" },
+                            { hour: "00:00", temp: parseInt(currentTemp) - 7, icon: "weather-clear-night" },
+                            { hour: "03:00", temp: parseInt(currentTemp) - 8, icon: "weather-clear-night" },
                         ]
 
                         ColumnLayout {
@@ -205,7 +247,7 @@ PlasmoidItem {
                     columnSpacing: 2
 
                     Repeater {
-                        model: weatherModel.get(0)?.forecast || []
+                        model: weatherModel.count > 0 ? weatherModel.get(0).forecast : []
 
                         ColumnLayout {
                             spacing: 2

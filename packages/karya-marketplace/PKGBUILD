@@ -1,0 +1,54 @@
+# Maintainer: Karya DE Team
+
+pkgname=karya-market
+pkgver=1.0.0
+pkgrel=1
+pkgdesc="Karya Market - Theme, plugin and marketplace manager for KDE Plasma 6"
+arch=('x86_64')
+url="https://karya-de.org"
+license=('GPL2')
+depends=(
+    'python' 'python-pyqt6' 'python-requests'
+    'kwin' 'plasma-desktop' 'plasma-workspace'
+    'curl' 'karchive' 'extra-cmake-modules'
+)
+optdepends=(
+    'plasma-sdk: Plasma theme development tools'
+    'kde-cli-tools: KDE CLI tools for theme management'
+)
+source=(
+    "karya-marketplace/src/karya-market.py"
+    "karya-marketplace/backend/karya-theme-manager.py"
+    "karya-marketplace/backend/karya-plugin-manager.py"
+    "karya-marketplace/backend/__init__.py"
+    "karya-marketplace/karya-market.desktop"
+)
+sha256sums=('SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP')
+
+package() {
+    # Main app
+    install -Dm755 "$srcdir/../../karya-marketplace/src/karya-market.py" \
+        "$pkgdir/usr/bin/karya-market"
+
+    # Backend
+    install -dm755 "$pkgdir/usr/lib/karya/market"
+    install -Dm755 "$srcdir/../../karya-marketplace/backend/karya-theme-manager.py" \
+        "$pkgdir/usr/lib/karya/market/karya-theme-manager.py"
+    install -Dm755 "$srcdir/../../karya-marketplace/backend/karya-plugin-manager.py" \
+        "$pkgdir/usr/lib/karya/market/karya-plugin-manager.py"
+    install -Dm644 "$srcdir/../../karya-marketplace/backend/__init__.py" \
+        "$pkgdir/usr/lib/karya/market/__init__.py"
+
+    # Symlinks for CLI
+    ln -sf /usr/lib/karya/market/karya-theme-manager.py "$pkgdir/usr/bin/karya-theme-manager"
+    ln -sf /usr/lib/karya/market/karya-plugin-manager.py "$pkgdir/usr/bin/karya-plugin-manager"
+
+    # Desktop file
+    install -Dm644 "$srcdir/../../karya-marketplace/karya-market.desktop" \
+        "$pkgdir/usr/share/applications/karya-market.desktop"
+
+    # Icon
+    install -dm755 "$pkgdir/usr/share/icons/hicolor/256x256/apps"
+    install -Dm644 "$srcdir/../../branding/icons/karya-market.svg" \
+        "$pkgdir/usr/share/icons/hicolor/256x256/apps/karya-market.svg" 2>/dev/null || true
+}

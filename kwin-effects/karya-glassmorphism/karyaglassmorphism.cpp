@@ -15,8 +15,8 @@ public:
     KaryaGlassmorphismEffect();
     ~KaryaGlassmorphismEffect() override;
 
-    void paintWindow(const RenderTarget& renderTarget, const RenderWindow& renderWindow,
-                     QRegion region, WindowPaintData& data) override;
+    void drawWindow(const RenderTarget& renderTarget, const RenderWindow& renderWindow,
+                    int mask, QRegion region, WindowPaintData& data) override;
 
     static bool supported();
     static bool enabledByDefault() { return false; }
@@ -41,23 +41,21 @@ KaryaGlassmorphismEffect::KaryaGlassmorphismEffect()
         m_opacity = obj.value("opacity").toDouble(0.75);
         m_enabled = obj.value("enabled").toBool(true);
     }
-
-    reconfigure(ReconfigureAll);
 }
 
 KaryaGlassmorphismEffect::~KaryaGlassmorphismEffect()
 {
 }
 
-void KaryaGlassmorphismEffect::paintWindow(const RenderTarget& renderTarget,
-                                            const RenderWindow& renderWindow,
-                                            QRegion region, WindowPaintData& data)
+void KaryaGlassmorphismEffect::drawWindow(const RenderTarget& renderTarget,
+                                           const RenderWindow& renderWindow,
+                                           int mask, QRegion region, WindowPaintData& data)
 {
     if (m_enabled) {
         data.opacity *= m_opacity;
     }
 
-    effects->paintWindow(renderTarget, renderWindow, region, data);
+    effects->drawWindow(renderTarget, renderWindow, mask, region, data);
 }
 
 bool KaryaGlassmorphismEffect::supported()

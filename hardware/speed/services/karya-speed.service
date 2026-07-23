@@ -1,0 +1,16 @@
+[Unit]
+Description=Karya SPEED - Performance Tuning Daemon
+Documentation=https://github.com/karya-de/karya-de
+After=multi-user.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/speed daemon
+Restart=on-failure
+RestartSec=10
+Nice=-20
+CPUSchedulingPolicy=fifo
+CPUSchedulingPriority=99
+
+[Install]
+WantedBy=multi-user.target

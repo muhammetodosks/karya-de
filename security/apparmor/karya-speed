@@ -1,0 +1,50 @@
+# Karya DE - Karya SPEED AppArmor Profili
+# speed komutu icin sikilastirilmis erisim profili.
+
+#include <tunables/global>
+
+/usr/bin/speed {
+    #include <abstractions/base>
+    #include <abstractions/bash>
+
+    # Konfigurasyon
+    /etc/karya/speed/**               rw,
+    /usr/share/karya/speed/profiles/* r,
+    /usr/share/karya/speed/tuners/*   r,
+
+    # Sysctl erisimi
+    /proc/sys/**                       w,
+    /sys/**                            w,
+
+    # CPU Frekans
+    /sys/devices/system/cpu/**         w,
+
+    # GPU
+    /sys/class/drm/**                  w,
+    /sys/kernel/debug/dri/**           w,
+
+    # Blok cihaz
+    /sys/block/**                     rw,
+    /dev/sd*                          rw,
+    /dev/nvme*                        rw,
+    /dev/hd*                          rw,
+    /dev/vd*                          rw,
+
+    # Isi
+    /sys/class/thermal/**             rw,
+
+    # Ag
+    /proc/net/**                       r,
+    /sys/class/net/**                  w,
+
+    # Process
+    /proc/*/status                     r,
+    /proc/*/maps                       r,
+
+    # Systemd servis yonetimi
+    /run/systemd/**                    rw,
+
+    # GPU binary
+    /usr/bin/nvidia-smi               rix,
+    /usr/bin/intel_gpu_freq           rix,
+}

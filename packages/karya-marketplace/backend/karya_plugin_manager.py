@@ -1,0 +1,1 @@
+karya-plugin-manager.py

@@ -1,0 +1,57 @@
+# Maintainer: Karya DE Team
+# Kernel: linux-karya - Performance desktop kernel with Karya tuning
+
+pkgname=linux-karya
+pkgver=6.17
+pkgrel=1
+pkgdesc="Karya DE - Performance-tuned Linux kernel (6.17) for desktop/workstation"
+arch=('x86_64')
+url="https://kernel.org"
+license=('GPL2')
+depends=('coreutils' 'linux-firmware' 'kmod')
+optdepends=(
+    'nvidia-dkms: NVIDIA GPU driver support'
+    'nvidia-utils: NVIDIA GPU utilities'
+)
+makedepends=(
+    'bc' 'base-devel' 'docbook-xsl' 'git' 'python' 'tar' 'xz' 'zstd'
+    'libelf' 'rsync' 'perl' 'cpio' 'pahole'
+)
+
+source=(
+    "https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-$pkgver.tar.xz"
+    "config"
+)
+validpgpkeys=(
+    'ABAF11C65A2970B130ABE3C479BE3E4300411886'
+    '647F28654894E3BD457199BE38DBBDC86092693E'
+)
+sha256sums=('SKIP' 'SKIP')
+
+prepare() {
+    cd "$srcdir/linux-$pkgver"
+    cp "$srcdir/config" .config
+    make olddefconfig
+}
+
+build() {
+    cd "$srcdir/linux-$pkgver"
+    make -j$(nproc) bzImage modules
+}
+
+package() {
+    cd "$srcdir/linux-$pkgver"
+    make INSTALL_MOD_PATH="$pkgdir/usr" INSTALL_PATH="$pkgdir/boot" modules_install install
+
+    rm -f "$pkgdir/boot/vmlinuz" "$pkgdir/boot/System.map"
+    mv "$pkgdir/boot/vmlinuz-$pkgver" "$pkgdir/boot/vmlinuz-linux-karya"
+    mv "$pkgdir/boot/System.map-$pkgver" "$pkgdir/boot/System.map-linux-karya"
+
+    install -Dm644 "$srcdir/linux-$pkgver/.config" \
+        "$pkgdir/usr/share/karya/kernel/config-6.17-x86_64"
+
+    # Install headers
+    make INSTALL_HDR_PATH="$pkgdir/usr" headers_install
+}
+
+# vim:set ts=2 sw=2 et:

@@ -1,0 +1,11 @@
+# Karya SPEED - udev rules
+# Apply performance profiles on AC/battery events (laptops)
+
+# AC adapter plugged in -> apply last used performance profile or performance
+SUBSYSTEM=="power_supply", ATTR{online}=="1", RUN+="/usr/bin/speed performance"
+
+# AC adapter unplugged -> apply powersave profile
+SUBSYSTEM=="power_supply", ATTR{online}=="0", RUN+="/usr/bin/speed powersave"
+
+# CPU online/offline events
+SUBSYSTEM=="cpu", ACTION=="add", RUN+="/usr/bin/speed apply balanced"

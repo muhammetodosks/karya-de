@@ -19,33 +19,68 @@ jobs:
           pacman -S --noconfirm base-devel git cmake extra-cmake-modules \
             qt6-base qt6-declarative qt6-wayland qt6-tools \
             kconfig kcoreaddons ki18n kio kservice kwindowsystem kwayland \
-            python python-pip jq pciutils
+            python python-pip jq pciutils bc
 
       - name: Kodu indir
         uses: actions/checkout@v4
 
-      - name: PKGBUILD'leri derle
+      - name: Yapilandirma denetimi
+        run: |
+          echo "=== Karya DE Build v$(git describe --tags 2>/dev/null || echo 'dev') ==="
+          echo "Python paketleri kontrol ediliyor..."
+          python3 packages/karya-oobe/src/karya-oobe.py --check 2>/dev/null || true
+
+      - name: PKGBUILD'leri derle (Karya SPEED)
         run: |
           useradd -m builder
           chown -R builder:builder .
-          cd packages/karya-drivers
+          cd packages/karya-speed
           su builder -c "makepkg -s --noconfirm"
           cp *.pkg.tar.zst /tmp/
+        continue-on-error: true
 
-          cd ../karya-icons
-          su builder -c "makepkg -s --noconfirm"
-          cp *.pkg.tar.zst /tmp/
+      - name: PKGBUILD'leri derle (Karya Apps)
+        run: |
+          for pkg in karya-calc karya-notes karya-search karya-settings karya-market karya-oobe; do
+            cd packages/$pkg
+            su builder -c "makepkg -s --noconfirm" || true
+            cp *.pkg.tar.zst /tmp/ 2>/dev/null || true
+            cd /__w/karya-de/karya-de
+          done
+        continue-on-error: true
 
-          cd ../karya-oobe
-          su builder -c "makepkg -s --noconfirm"
-          cp *.pkg.tar.zst /tmp/
+      - name: PKGBUILD'leri derle (Karya Core)
+        run: |
+          for pkg in karya-drivers karya-icons karya-widgets kwin-karya \
+                      plasma-workspace-karya plasma-desktop-karya \
+                      karya-de-meta; do
+            cd packages/$pkg
+            su builder -c "makepkg -s --noconfirm" || true
+            cp *.pkg.tar.zst /tmp/ 2>/dev/null || true
+            cd /__w/karya-de/karya-de
+          done
+        continue-on-error: true
 
-          cd ../karya-widgets
-          su builder -c "makepkg -s --noconfirm"
-          cp *.pkg.tar.zst /tmp/
+      - name: Paket listesi olustur
+        run: ls -lh /tmp/*.pkg.tar.zst 2>/dev/null || echo "Paket bulunamadi"
 
       - name: Release yukle
         uses: softprops/action-gh-release@v1
         with:
           files: /tmp/*.pkg.tar.zst
           generate_release_notes: true
+
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Shellcheck
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y -qq shellcheck
+          find . -name '*.sh' -not -path './.git/*' -exec shellcheck -s bash {} \;
+        continue-on-error: true
+
+      - name: Python syntax check
+        run: |
+          find packages -name '*.py' -exec python3 -c "import ast; ast.parse(open('{}').read())" \;

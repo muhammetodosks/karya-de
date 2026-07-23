@@ -1,0 +1,72 @@
+# Maintainer: Karya DE Team
+
+pkgname=karya-speed
+pkgver=1.0.0
+pkgrel=1
+pkgdesc="Karya SPEED - Performance tuning system for CPU, I/O, memory, network, GPU, and latency"
+arch=('x86_64')
+url="https://karya-de.org"
+license=('GPL2')
+depends=('bash' 'jq' 'coreutils')
+optdepends=(
+    'systemd: Service management (optional)'
+    'runit: Service management (optional)'
+)
+source=(
+    "hardware/speed/speed.sh"
+    "hardware/speed/profiles/performance.conf"
+    "hardware/speed/profiles/balanced.conf"
+    "hardware/speed/profiles/powersave.conf"
+    "hardware/speed/tuners/cpu.sh"
+    "hardware/speed/tuners/io.sh"
+    "hardware/speed/tuners/memory.sh"
+    "hardware/speed/tuners/network.sh"
+    "hardware/speed/tuners/gpu.sh"
+    "hardware/speed/tuners/sysctl.sh"
+    "hardware/speed/tuners/latency.sh"
+    "hardware/speed/tuners/storage.sh"
+    "hardware/speed/tuners/thermal.sh"
+    "hardware/speed/udev/99-karya-speed.rules"
+    "hardware/speed/services/karya-speed.service"
+    "hardware/speed/services/runit"
+)
+sha256sums=('SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP'
+            'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP')
+
+package() {
+    # Main CLI
+    install -Dm755 "$srcdir/../../hardware/speed/speed.sh" \
+        "$pkgdir/usr/bin/speed"
+
+    # Profiles
+    install -dm755 "$pkgdir/usr/share/karya/speed/profiles"
+    install -Dm644 "$srcdir/../../hardware/speed/profiles/performance.conf" \
+        "$pkgdir/usr/share/karya/speed/profiles/performance.conf"
+    install -Dm644 "$srcdir/../../hardware/speed/profiles/balanced.conf" \
+        "$pkgdir/usr/share/karya/speed/profiles/balanced.conf"
+    install -Dm644 "$srcdir/../../hardware/speed/profiles/powersave.conf" \
+        "$pkgdir/usr/share/karya/speed/profiles/powersave.conf"
+
+    # Tuners
+    install -dm755 "$pkgdir/usr/share/karya/speed/tuners"
+    for tuner in cpu io memory network gpu sysctl latency storage thermal; do
+        install -Dm755 "$srcdir/../../hardware/speed/tuners/$tuner.sh" \
+            "$pkgdir/usr/share/karya/speed/tuners/$tuner.sh"
+    done
+
+    # udev
+    install -Dm644 "$srcdir/../../hardware/speed/udev/99-karya-speed.rules" \
+        "$pkgdir/usr/lib/udev/rules.d/99-karya-speed.rules"
+
+    # systemd service
+    install -Dm644 "$srcdir/../../hardware/speed/services/karya-speed.service" \
+        "$pkgdir/usr/lib/systemd/system/karya-speed.service"
+
+    # runit
+    install -dm755 "$pkgdir/etc/runit/sv/karya-speed"
+    install -Dm755 "$srcdir/../../hardware/speed/services/runit" \
+        "$pkgdir/etc/runit/sv/karya-speed/run"
+
+    # Config dir
+    install -dm755 "$pkgdir/etc/karya/speed"
+}

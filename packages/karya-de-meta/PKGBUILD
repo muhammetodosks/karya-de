@@ -2,14 +2,16 @@
 
 pkgname=karya-de-meta
 pkgver=1.0.0
-pkgrel=3
+pkgrel=4
 pkgdesc="Karya Desktop Environment - Complete meta package (tek komutla kurulum)"
 arch=('x86_64')
 url="https://karya-de.org"
 license=('GPL2')
 install=karya-de-meta.install
 depends=(
+    linux-karya
     kwin-karya
+    karya-market
     xorg-server
     xorg-xinit
     xorg-xrandr
@@ -44,6 +46,7 @@ depends=(
     karya-widgets
     karya-oobe
     karya-drivers
+    karya-speed
     karya-calc
     karya-notes
     karya-search

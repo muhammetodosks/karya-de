@@ -14,5 +14,10 @@ if [ -f /etc/profile.d/karya.env ]; then
     source /etc/profile.d/karya.env
 fi
 
+# Apply Karya SPEED profile at startup
+if command -v speed &>/dev/null; then
+    speed balanced 2>/dev/null &
+fi
+
 # Start plasma session
 exec /usr/lib/plasma-dbus-run-session-if-needed /usr/bin/startplasma-wayland
