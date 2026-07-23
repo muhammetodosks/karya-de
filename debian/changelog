@@ -1,3 +1,20 @@
+karya-de (1.1.0-1) noble; urgency=medium
+
+  * Karya Sun massive cloud update
+  * Karya Sync — CRDT multi-device sync (Rust)
+  * Karya Vault — Zero-knowledge encrypted storage (Go)
+  * Karya Relay — Remote desktop access via WebRTC+QUIC (C++)
+  * Karya Store — GraphQL marketplace backend (Node.js)
+  * Karya Watch — Prometheus+Loki+Grafana monitoring (Go)
+  * Karya SPEED — Hardware-aware performance tuning subsystem
+  * Karya Market — PyQt6 theme/plugin marketplace browser
+  * Custom kernel PKGBUILDs (linux-karya + linux-karya-hardened)
+  * All Python/Shell/PKGBUILD/QML syntax verified
+  * Unicode escape bug fixed permanently
+  * Docker Compose / Kubernetes Helm / Ansible deployment support
+
+ -- Karya DE Team <karya@karya-de.org>  Thu, 23 Jul 2026 00:00:00 +0300
+
 karya-de (1.0.0-1) noble; urgency=medium
 
   * Initial release for Ubuntu 24.04
